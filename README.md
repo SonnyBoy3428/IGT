@@ -6,19 +6,12 @@ This repository is for the course IGT - Integration Technologies at the Mannheim
 * [Docker for Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows)
 	* Install it
 	* Create a Docker-ID
-* [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
-	* Open the MySQL Workbench
-	* Add a new connection 
-	* Name your new connection appropriately 
-	* Type in 'localhost' as the host 
-	* Type in '3306' as the port 
-	* Type in 'root' as the user 
-	* Store the password 'root' in the vault
+* [MySQL Workbench and MySQL Connector J](https://dev.mysql.com/downloads/windows/installer/8.0.html)
+	* Use the windows installer if you have Windows and merely install these two tools (**no other tools or servers are necessary**)
+	* If you are using a different platform you'll have to look into that yourself
+	* Yet here are some starting links: [Workbench](https://dev.mysql.com/downloads/workbench/) and [Connector J](https://dev.mysql.com/downloads/connector/j/)
 * [MySQL via Docker](https://hub.docker.com/r/mysql/mysql-server/)
-	* In Command Prompt execute the following: docker pull mysql/mysql-server:5.7 (Version 5.7 is important since it did not work with the lates version)
-	* Wait for the completion of the installing procedure
-	* Execute the following command: docker run --name=igtDatabase -e MYSQL_ROOT_HOST=[YOUR_HOST] -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=customerOrderManager -p 3306:3306 -d mysql/mysql-server:5.7
-	* [YOUR_HOST] has to be a very specific IP-Address. Do the following: Open MySQL Workbench and right-click on the connection you've created for this task. Click on 'Edit Connection'. Click on 'Test Connection' and if an error pops up use the displayed IP-Address in the error box for [YOUR_HOST].
+	* The link is only provided for your convenience. You don't need to install the image just continue reading and you'll get there
 * [Eclipse Oxygen](https://www.eclipse.org/downloads/)
 	* IntelliJ won't work with the Community Edition. It doesn't support Hibernate.
 	* Install the workload 'Java for Developers'
@@ -29,8 +22,29 @@ This repository is for the course IGT - Integration Technologies at the Mannheim
 		* Search for JBoss Tools 4.5.3 Final
 		* Install the package
 
+		
+# Setting up the tools
+Before we get started make sure you cloned this repository onto your computer. I don't know if you have to set up hibernate for Eclipse again but if you do have to follow these tutorials to the needed extent:
+
+* [MySQL via Docker](https://hub.docker.com/r/mysql/mysql-server/)
+	* Just navigate to the folder [./Docker/](Docker/) and execute this command via a terminal: "docker-compose up"
+	* Wait a minute until the server is ready to be worked with
+* Integrate MySQL Connector J into project (if needed)
+	* In Eclipse right click the project in the project explorer and click on **Properties**
+	* Got to **Java Build Path** and click on **Add External JAR**
+	* Navigate to the folder [./Resources/](Resources/) and add the JAR for the connector
+* MySQL Workbench
+	* Open the MySQL Workbench
+	* Add a new connection 
+	* Name your new connection appropriately 
+	* Type in 'localhost' as the host 
+	* Type in '3308' as the port 
+	* Type in 'root' as the user 
+	* Store the password 'root' in the vault
+	
+	
 # Setting up an own project
-Follow the directions of this link [here](http://www.codejava.net/frameworks/hibernate/hibernate-hello-world-tutorial-for-beginners-with-eclipse-and-mysql)
+Follow the directions of this link [here](http://www.codejava.net/frameworks/hibernate/hibernate-hello-world-tutorial-for-beginners-with-eclipse-and-mysql) and this link [here](http://www.codejava.net/frameworks/hibernate/java-hibernate-reverse-engineering-tutorial-with-eclipse-and-mysql)
 
 # Other useful links for a rough understanding
 * [Hibernate and IntelliJ](https://www.youtube.com/watch?v=nl3-XaV8X4A&t=370s) - Just forget the IntelliJ part. It won't work with the community edition.
