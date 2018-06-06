@@ -9,5 +9,9 @@
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3308/customerOrderManager</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+    	<property name="show_sql">true</property>
+    	<property name="hbm2ddl.auto">create</property>
+    	<mapping class="hsma.ss2018.informatik.igt.kohler.javawithhibernate.Customer"/>
+    	<mapping class="hsma.ss2018.informatik.igt.kohler.javawithhibernate.District"/>
     </session-factory>
 </hibernate-configuration>
