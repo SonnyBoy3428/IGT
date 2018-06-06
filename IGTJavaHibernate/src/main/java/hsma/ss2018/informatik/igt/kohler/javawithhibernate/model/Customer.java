@@ -28,10 +28,6 @@ public class Customer {
 		return customerId;
 	}
 	
-	public void setCustomerId(long customerId) {
-		this.customerId = customerId;
-	}
-	
 	@Column(name = "FirstName")
 	public String getFirstName() {
 		return firstName;
