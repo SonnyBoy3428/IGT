@@ -11,7 +11,7 @@ public class Warehouse {
 	private String location;
 	private String owner;
 	
-	private Set<Stock> stock;
+	private Set<District> district;
 	
 	public Warehouse() {
 	}
@@ -46,11 +46,11 @@ public class Warehouse {
 	}
 	
 	@OneToMany(mappedBy = "warehouse")
-	public Set<Stock> getStock(){
-		return stock;
+	public Set<District> getDistricts(){
+		return district;
 	}
 	
-	public void setStock(Set<Stock> stock) {
-		this.stock = stock;
+	public void setDistricts(Set<District> district) {
+		this.district = district;
 	}
 }

@@ -1,5 +1,7 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.util.Set;
+
 import org.hibernate.Session;
 
 public class CustomerManager extends EntityManager{	
@@ -28,6 +30,28 @@ public class CustomerManager extends EntityManager{
 		session.close();
 		
 		return customerToXML(customer);
+	}
+	
+	public String getAllCustomers() {
+		Session session = sessionFactory.openSession();
+		
+		//Customer customer = session
+		
+		session.close();
+		
+		return customerToXML(customer);
+	}
+	
+	public String getCustomerOrderHistory(long customerId) {
+		Session session = sessionFactory.openSession();
+		
+		Customer customer = session.get(Customer.class,  customerId);
+		
+		session.close();
+		
+		Set<Order> orders = customer.getOrders();
+		
+		return ordersToXML(orders);
 	}
 	
 	public void deleteCustomer(long customerId) {
@@ -61,7 +85,7 @@ public class CustomerManager extends EntityManager{
 		session.close();
 	}
 	
-	protected String customerToXML(Customer customer) {
+	protected static String customerToXML(Customer customer) {
 		String xmlCustomer;
 		
 		xmlCustomer = "<Customer>"
@@ -71,8 +95,26 @@ public class CustomerManager extends EntityManager{
 				+ "<Address>" + customer.getAddress() + "</Address>"
 				+ "<Telephone>" + customer.getTelephone() + "</Telephone>"
 				+ "<CreditCardNr>" + customer.getCreditCardNr() + "</CreditCardNr>"
+				+ "<DistrictId" + customer.getDistrict().getDistrictId() + "</DistrictId>"
+				+ "<DistrictLocation" + customer.getDistrict().getLocation() + "</DistrictLocation>"
 				+ "</Customer>";
 		
 		return xmlCustomer;
+	}
+	
+	protected String ordersToXML(Set<Order> orders) {
+		String xmlOrders;
+		
+		xmlOrders = "<Orders>";
+		
+		if(orders != null && orders.size() > 0) {
+			for(Order order : orders) {
+				xmlOrders += OrderManager.orderToXML(order); 
+			}
+		}
+				
+		xmlOrders += "</Orders>";
+		
+		return xmlOrders;
 	}
 }

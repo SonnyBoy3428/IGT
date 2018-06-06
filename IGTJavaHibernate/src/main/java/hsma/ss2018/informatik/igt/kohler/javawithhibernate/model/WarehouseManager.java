@@ -1,5 +1,7 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.util.Set;
+
 import org.hibernate.Session;
 
 public class WarehouseManager extends EntityManager{
@@ -18,6 +20,18 @@ public class WarehouseManager extends EntityManager{
 	}
 	
 	public String getWarehouse(long warehouseId) {
+		Session session = sessionFactory.openSession();
+		
+		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
+		
+		session.close();
+		
+		Set<District> districts = warehouse.getDistricts();
+		
+		return districtsToXML(districts);
+	}
+	
+	public String getWarehouseDistricts(long warehouseId) {
 		Session session = sessionFactory.openSession();
 		
 		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
@@ -55,7 +69,7 @@ public class WarehouseManager extends EntityManager{
 		session.close();
 	}
 	
-	protected String warehouseToXML(Warehouse warehouse) {
+	protected static String warehouseToXML(Warehouse warehouse) {
 		String xmlWarehouse;
 		
 		xmlWarehouse = "<Warehouse>"
@@ -65,5 +79,21 @@ public class WarehouseManager extends EntityManager{
 				+ "</Warehouse>";
 		
 		return xmlWarehouse;
+	}
+	
+	protected String districtsToXML(Set<District> districts) {
+		String xmlDistricts;
+		
+		xmlDistricts = "<Districts>";
+		
+		if(districts != null && districts.size() > 0) {
+			for(District district : districts) {
+				xmlDistricts += DistrictManager.districtToXML(district); 
+			}
+		}
+		
+		xmlDistricts += "</Districts>";
+		
+		return xmlDistricts;
 	}
 }

@@ -40,7 +40,7 @@ public class OrderManager extends EntityManager{
 		session.close();
 	}
 	
-	protected String orderToXML(Order order) {
+	protected static String orderToXML(Order order) {
 		String xmlOrder;
 		
 		xmlOrder = "<Order>"
