@@ -1,6 +1,7 @@
-package hsma.ss2018.informatik.igt.kohler.javawithhibernate;
+package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "DISTRICT")
@@ -8,7 +9,9 @@ public class District {
 	private long districtId;
 	private String location;
 	
-	private long warehouseId;
+	private Warehouse warehouse;
+	
+	private Set<Customer> customers;
 	
 	public District() {
 	}
@@ -33,12 +36,22 @@ public class District {
 		this.location = location;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
-	public long getWarehouseId() {
-		return warehouseId;
+	@ManyToOne
+	@JoinColumn(name = "WarehouseId")
+	public Warehouse getWarehouse() {
+		return warehouse;
 	}
 	
-	public void setWarehouseId(long warehouseId) {
-		this.warehouseId = warehouseId;
+	public void setWarehouse(Warehouse warehouse) {
+		this.warehouse = warehouse;
+	}
+	
+	@OneToMany(mappedBy = "district")
+	public Set<Customer> getCustomers(){
+		return customers;
+	}
+	
+	public void setCustomers(Set<Customer> customers) {
+		this.customers = customers;
 	}
 }

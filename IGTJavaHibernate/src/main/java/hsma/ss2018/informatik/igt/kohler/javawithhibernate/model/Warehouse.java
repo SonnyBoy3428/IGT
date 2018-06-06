@@ -1,4 +1,6 @@
-package hsma.ss2018.informatik.igt.kohler.javawithhibernate;
+package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
+
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -8,6 +10,8 @@ public class Warehouse {
 	private long warehouseId;
 	private String location;
 	private String owner;
+	
+	private Set<Stock> stock;
 	
 	public Warehouse() {
 	}
@@ -23,7 +27,7 @@ public class Warehouse {
 		this.warehouseId = warehouseId;
 	}
 	
-	@Column(name = )
+	@Column(name = "Location")
 	public String getLocation() {
 		return location;
 	}
@@ -32,12 +36,21 @@ public class Warehouse {
 		this.location = location;
 	}
 	
-	@Column(name = )
+	@Column(name = "Owner")
 	public String getOwner() {
 		return owner;
 	}
 	
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+	
+	@OneToMany(mappedBy = "warehouse")
+	public Set<Stock> getStock(){
+		return stock;
+	}
+	
+	public void setStock(Set<Stock> stock) {
+		this.stock = stock;
 	}
 }

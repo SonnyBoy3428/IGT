@@ -49,3 +49,6 @@ Follow the directions of this link [here](http://www.codejava.net/frameworks/hib
 # Other useful links for a rough understanding
 * [Hibernate and IntelliJ](https://www.youtube.com/watch?v=nl3-XaV8X4A&t=370s) - Just forget the IntelliJ part. It won't work with the community edition.
 * [Generate Classes in Java from existing database tables](http://www.codejava.net/frameworks/hibernate/java-hibernate-reverse-engineering-tutorial-with-eclipse-and-mysql)
+* [Hibernate Bidirectional One-To-Many Relationship](http://www.baeldung.com/hibernate-one-to-many)
+* [Best Practices: One-To-Many Relationship](https://www.thoughts-on-java.org/best-practices-many-one-one-many-associations-mappings/)
+* [Many-To-Many Relationships with extra table](https://stackoverflow.com/questions/5127129/mapping-many-to-many-association-table-with-extra-columns)

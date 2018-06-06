@@ -1,4 +1,6 @@
-package hsma.ss2018.informatik.igt.kohler.javawithhibernate;
+package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
+
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -13,6 +15,8 @@ public class Customer {
 	private String creditCardNr;
 	
 	private District district;
+	
+	private Set<Order> orders;
 	
 	public Customer() {
 	}
@@ -73,12 +77,22 @@ public class Customer {
 		this.creditCardNr = creditCardNr;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
+	@JoinColumn(name = "DistrictId")
 	public District getDistrict() {
 		return district;
 	}
 	
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+	
+	@OneToMany(mappedBy = "customer")
+	public Set<Order> getOrders() {
+		return orders;
+	}
+	
+	public void setOrders(Set<Order> orders) {
+		this.orders = orders;
 	}
 }
