@@ -1,9 +1,13 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.hibernate.Session;
 
 public class ItemManager extends EntityManager{
-	public void createItem(String itemName) {
+	public static void createItem(String itemName) {
 		Item item = new Item();
 		item.setItemName(itemName);
 		
@@ -16,7 +20,7 @@ public class ItemManager extends EntityManager{
 		session.close();
 	}
 	
-	public String getItem(long itemId) {
+	public static String getItem(long itemId) {
 		Session session = sessionFactory.openSession();
 		
 		Item item = session.get(Item.class,  itemId);
@@ -26,7 +30,20 @@ public class ItemManager extends EntityManager{
 		return itemToXML(item);
 	}
 	
-	public void deleteItem(long itemId) {
+	@SuppressWarnings("unchecked")
+	public static String getAllItems() {
+		Session session = sessionFactory.openSession();
+		
+		List<Item> itemsList = session.createQuery("from ITEM").list();
+		
+		session.close();
+		
+		Set<Item> items = new HashSet<Item>(itemsList);
+		
+		return itemsToXML(items);
+	}
+	
+	public static void deleteItem(long itemId) {
 		Session session = sessionFactory.openSession();
 		
 		Item item = session.get(Item.class,  itemId);
@@ -39,7 +56,7 @@ public class ItemManager extends EntityManager{
 		session.close();
 	}
 	
-	public void updateItem(long itemId, String itemName) {
+	public static void updateItem(long itemId, String itemName) {
 		Session session = sessionFactory.openSession();
 		
 		Item item = session.get(Item.class,  itemId);
@@ -53,7 +70,7 @@ public class ItemManager extends EntityManager{
 		session.close();
 	}
 	
-	protected String itemToXML(Item item) {
+	protected static String itemToXML(Item item) {
 		String xmlItem;
 		
 		xmlItem = "<Item>"
@@ -62,5 +79,21 @@ public class ItemManager extends EntityManager{
 				+ "</Item>";
 		
 		return xmlItem;
+	}
+	
+	protected static String itemsToXML(Set<Item> items) {
+		String xmlItems;
+		
+		xmlItems = "<Items>";
+		
+		if(items != null && items.size() > 0) {
+			for(Item item : items) {
+				xmlItems += itemToXML(item); 
+			}
+		}
+				
+		xmlItems += "</Items>";
+		
+		return xmlItems;
 	}
 }

@@ -6,7 +6,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 public abstract class EntityManager {
-	public SessionFactory sessionFactory;
+	public static SessionFactory sessionFactory;
 	
 	public void setUp() {
 		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()

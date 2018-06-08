@@ -1,11 +1,13 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
 
 public class CustomerManager extends EntityManager{	
-	public void createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr) {
+	public static void createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr) {
 		Customer customer = new Customer();
 		customer.setFirstName(firstName);
 		customer.setLastName(lastName);
@@ -13,6 +15,7 @@ public class CustomerManager extends EntityManager{
 		customer.setTelephone(telephone);
 		customer.setCreditCardNr(creditCardNr);
 		
+		try {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
@@ -20,9 +23,14 @@ public class CustomerManager extends EntityManager{
 		
 		session.getTransaction().commit();
 		session.close();
+		}catch(Exception ex) {
+			
+		}finally {
+			
+		}
 	}
 	
-	public String getCustomer(long customerId) {
+	public static String getCustomer(long customerId) {
 		Session session = sessionFactory.openSession();
 		
 		Customer customer = session.get(Customer.class,  customerId);
@@ -32,17 +40,20 @@ public class CustomerManager extends EntityManager{
 		return customerToXML(customer);
 	}
 	
-	public String getAllCustomers() {
+	@SuppressWarnings("unchecked")
+	public static String getAllCustomers() {
 		Session session = sessionFactory.openSession();
 		
-		//Customer customer = session
+		List<Customer> customersList = session.createQuery("from CUSTOMER").list();
 		
 		session.close();
 		
-		return customerToXML(customer);
+		Set<Customer> customers = new HashSet<Customer>(customersList);
+		
+		return customersToXML(customers);
 	}
 	
-	public String getCustomerOrderHistory(long customerId) {
+	public static String getCustomerOrderHistory(long customerId) {
 		Session session = sessionFactory.openSession();
 		
 		Customer customer = session.get(Customer.class,  customerId);
@@ -51,10 +62,10 @@ public class CustomerManager extends EntityManager{
 		
 		Set<Order> orders = customer.getOrders();
 		
-		return ordersToXML(orders);
+		return OrderManager.ordersToXML(orders);
 	}
 	
-	public void deleteCustomer(long customerId) {
+	public static void deleteCustomer(long customerId) {
 		Session session = sessionFactory.openSession();
 		
 		Customer customer = session.get(Customer.class,  customerId);		
@@ -67,7 +78,7 @@ public class CustomerManager extends EntityManager{
 		session.close();
 	}
 	
-	public void updateCustomer(long customerId, String firstName, String lastName, String address, String telephone, String creditCardNr) {
+	public static void updateCustomer(long customerId, String firstName, String lastName, String address, String telephone, String creditCardNr) {
 		Session session = sessionFactory.openSession();
 		
 		Customer customer = session.get(Customer.class,  customerId);		
@@ -102,19 +113,19 @@ public class CustomerManager extends EntityManager{
 		return xmlCustomer;
 	}
 	
-	protected String ordersToXML(Set<Order> orders) {
-		String xmlOrders;
+	protected static String customersToXML(Set<Customer> customers) {
+		String xmlCustomers;
 		
-		xmlOrders = "<Orders>";
+		xmlCustomers = "<Customers>";
 		
-		if(orders != null && orders.size() > 0) {
-			for(Order order : orders) {
-				xmlOrders += OrderManager.orderToXML(order); 
+		if(customers != null && customers.size() > 0) {
+			for(Customer customer : customers) {
+				xmlCustomers += CustomerManager.customerToXML(customer); 
 			}
 		}
-				
-		xmlOrders += "</Orders>";
 		
-		return xmlOrders;
+		xmlCustomers += "</Customers>";
+		
+		return xmlCustomers;
 	}
 }

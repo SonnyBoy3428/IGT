@@ -1,11 +1,13 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
 
 public class WarehouseManager extends EntityManager{
-	public void createWarehouse(String location, String owner) {
+	public static void createWarehouse(String location, String owner) {
 		Warehouse warehouse = new Warehouse();
 		warehouse.setLocation(location);
 		warehouse.setOwner(owner);
@@ -19,19 +21,7 @@ public class WarehouseManager extends EntityManager{
 		session.close();
 	}
 	
-	public String getWarehouse(long warehouseId) {
-		Session session = sessionFactory.openSession();
-		
-		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
-		
-		session.close();
-		
-		Set<District> districts = warehouse.getDistricts();
-		
-		return districtsToXML(districts);
-	}
-	
-	public String getWarehouseDistricts(long warehouseId) {
+	public static String getWarehouse(long warehouseId) {
 		Session session = sessionFactory.openSession();
 		
 		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
@@ -41,7 +31,32 @@ public class WarehouseManager extends EntityManager{
 		return warehouseToXML(warehouse);
 	}
 	
-	public void deleteWarehouse(long warehouseId) {
+	@SuppressWarnings("unchecked")
+	public static String getAllWarehouses() {
+		Session session = sessionFactory.openSession();
+		
+		List<Warehouse> warehousesList = session.createQuery("from WAREHOUSE").list();
+		
+		session.close();
+		
+		Set<Warehouse> warehouses = new HashSet<Warehouse>(warehousesList);
+		
+		return warehousesToXML(warehouses);
+	}
+	
+	public static String getWarehouseDistricts(long warehouseId) {
+		Session session = sessionFactory.openSession();
+		
+		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
+		
+		session.close();
+		
+		Set<District> districts = warehouse.getDistricts();
+		
+		return DistrictManager.districtsToXML(districts);
+	}
+	
+	public static void deleteWarehouse(long warehouseId) {
 		Session session = sessionFactory.openSession();
 		
 		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
@@ -54,7 +69,7 @@ public class WarehouseManager extends EntityManager{
 		session.close();
 	}
 	
-	public void updateWarehouse(long warehouseId, String location, String owner) {
+	public static void updateWarehouse(long warehouseId, String location, String owner) {
 		Session session = sessionFactory.openSession();
 		
 		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
@@ -81,19 +96,19 @@ public class WarehouseManager extends EntityManager{
 		return xmlWarehouse;
 	}
 	
-	protected String districtsToXML(Set<District> districts) {
-		String xmlDistricts;
+	protected static String warehousesToXML(Set<Warehouse> warehouses) {
+		String xmlWarehouses;
 		
-		xmlDistricts = "<Districts>";
+		xmlWarehouses = "<Warehouses>";
 		
-		if(districts != null && districts.size() > 0) {
-			for(District district : districts) {
-				xmlDistricts += DistrictManager.districtToXML(district); 
+		if(warehouses != null && warehouses.size() > 0) {
+			for(Warehouse warehouse : warehouses) {
+				xmlWarehouses += warehouseToXML(warehouse); 
 			}
 		}
+				
+		xmlWarehouses += "</Warehouses>";
 		
-		xmlDistricts += "</Districts>";
-		
-		return xmlDistricts;
+		return xmlWarehouses;
 	}
 }

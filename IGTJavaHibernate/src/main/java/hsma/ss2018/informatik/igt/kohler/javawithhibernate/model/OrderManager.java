@@ -1,9 +1,13 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.hibernate.Session;
 
 public class OrderManager extends EntityManager{
-	public void createOrder(Item ... items) {
+	public static void createOrder(Item ... items) {
 		Session session = sessionFactory.openSession();
 		
 		for(Item item : items) {
@@ -17,7 +21,7 @@ public class OrderManager extends EntityManager{
 		session.close();
 	}
 	
-	public String getOrder(long orderId) {
+	public static String getOrder(long orderId) {
 		Session session = sessionFactory.openSession();
 		
 		Order order = session.get(Order.class,  orderId);
@@ -27,7 +31,20 @@ public class OrderManager extends EntityManager{
 		return orderToXML(order);
 	}
 	
-	public void deleteOrder(long orderId) {
+	@SuppressWarnings("unchecked")
+	public static String getAllOrders() {
+		Session session = sessionFactory.openSession();
+		
+		List<Order> ordersList = session.createQuery("from CUSTOMER_ORDER").list();
+		
+		session.close();
+		
+		Set<Order> orders = new HashSet<Order>(ordersList);
+		
+		return ordersToXML(orders);
+	}
+	
+	public static void deleteOrder(long orderId) {
 		Session session = sessionFactory.openSession();
 		
 		Order order = session.get(Order.class,  orderId);
@@ -48,5 +65,21 @@ public class OrderManager extends EntityManager{
 				+ "</Order>";
 		
 		return xmlOrder;
+	}
+	
+	protected static String ordersToXML(Set<Order> orders) {
+		String xmlOrders;
+		
+		xmlOrders = "<Orders>";
+		
+		if(orders != null && orders.size() > 0) {
+			for(Order order : orders) {
+				xmlOrders += OrderManager.orderToXML(order); 
+			}
+		}
+				
+		xmlOrders += "</Orders>";
+		
+		return xmlOrders;
 	}
 }

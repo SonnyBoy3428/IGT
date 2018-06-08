@@ -1,5 +1,7 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
@@ -28,6 +30,19 @@ public class DistrictManager extends EntityManager{
 		return districtToXML(district);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public String getAllDistricts() {
+		Session session = sessionFactory.openSession();
+		
+		List<District> districtsList = session.createQuery("from DISTRICT").list();
+		
+		session.close();
+		
+		Set<District> districts = new HashSet<District>(districtsList);
+		
+		return districtsToXML(districts);
+	}
+	
 	public String getDistrictCustomers(long districtId) {
 		Session session = sessionFactory.openSession();
 		
@@ -37,7 +52,7 @@ public class DistrictManager extends EntityManager{
 		
 		Set<Customer> customers = district.getCustomers();
 		
-		return customersToXML(customers);
+		return CustomerManager.customersToXML(customers);
 	}
 	
 	public void deleteDistrict(long districtId) {
@@ -81,19 +96,19 @@ public class DistrictManager extends EntityManager{
 		return xmlDistrict;
 	}
 	
-	protected String customersToXML(Set<Customer> customers) {
-		String xmlCustomers;
+	protected static String districtsToXML(Set<District> districts) {
+		String xmlDistricts;
 		
-		xmlCustomers = "<Customers>";
+		xmlDistricts = "<Districts>";
 		
-		if(customers != null && customers.size() > 0) {
-			for(Customer customer : customers) {
-				xmlCustomers += CustomerManager.customerToXML(customer); 
+		if(districts != null && districts.size() > 0) {
+			for(District district : districts) {
+				xmlDistricts += districtToXML(district); 
 			}
 		}
+				
+		xmlDistricts += "</Districts>";
 		
-		xmlCustomers += "</Customers>";
-		
-		return xmlCustomers;
+		return xmlDistricts;
 	}
 }
