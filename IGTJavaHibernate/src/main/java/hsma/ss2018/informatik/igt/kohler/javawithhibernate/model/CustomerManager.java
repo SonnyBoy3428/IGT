@@ -7,7 +7,7 @@ import java.util.Set;
 import org.hibernate.Session;
 
 public class CustomerManager extends EntityManager{	
-	public static void createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr) {
+	public static Customer createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr) {
 		Customer customer = new Customer();
 		customer.setFirstName(firstName);
 		customer.setLastName(lastName);
@@ -15,33 +15,50 @@ public class CustomerManager extends EntityManager{
 		customer.setTelephone(telephone);
 		customer.setCreditCardNr(creditCardNr);
 		
+		Session session = null;
+		
 		try {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
+			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
 		
-		session.save(customer);
+			session.save(customer);
 		
-		session.getTransaction().commit();
-		session.close();
+			session.getTransaction().commit();
 		}catch(Exception ex) {
-			
+			// TODO
 		}finally {
-			
+			if(session != null) {
+				session.close();
+			}
 		}
+		
+		return customer;
 	}
 	
-	public static String getCustomer(long customerId) {
-		Session session = sessionFactory.openSession();
+	public static Customer getCustomer(long customerId) {
+		Customer customer = null;
 		
-		Customer customer = session.get(Customer.class,  customerId);
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
 		
-		return customerToXML(customer);
+			customer = session.get(Customer.class,  customerId);
+		
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		
+		return customer;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static String getAllCustomers() {
+	public static Set<Customer> getAllCustomers() {
 		Session session = sessionFactory.openSession();
 		
 		List<Customer> customersList = session.createQuery("from CUSTOMER").list();
@@ -50,10 +67,10 @@ public class CustomerManager extends EntityManager{
 		
 		Set<Customer> customers = new HashSet<Customer>(customersList);
 		
-		return customersToXML(customers);
+		return customers;
 	}
 	
-	public static String getCustomerOrderHistory(long customerId) {
+	public static Set<Order> getCustomerOrderHistory(long customerId) {
 		Session session = sessionFactory.openSession();
 		
 		Customer customer = session.get(Customer.class,  customerId);
@@ -62,7 +79,7 @@ public class CustomerManager extends EntityManager{
 		
 		Set<Order> orders = customer.getOrders();
 		
-		return OrderManager.ordersToXML(orders);
+		return orders;
 	}
 	
 	public static void deleteCustomer(long customerId) {

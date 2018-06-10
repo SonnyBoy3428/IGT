@@ -7,28 +7,46 @@ import java.util.Set;
 import org.hibernate.Session;
 
 public class OrderManager extends EntityManager{
-	public static void createOrder(Item ... items) {
-		Session session = sessionFactory.openSession();
+	public static Order createOrder() {
+		Order order = null;
 		
-		for(Item item : items) {
+		Session session = null;
+		
+		try {
+			session = sessionFactory.openSession();
+			
 			session.beginTransaction();
 			
-			session.save(item);
+			session.save(order);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			//TODO
+		}finally {
+			session.close();
 		}
-	
-		session.close();
+		
+		return order;
 	}
 	
-	public static String getOrder(long orderId) {
-		Session session = sessionFactory.openSession();
+	public static Order getOrder(long orderId) {
+		Order order = null;
 		
-		Order order = session.get(Order.class,  orderId);
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+			
+			order = session.get(Order.class,  orderId);
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
 		
-		return orderToXML(order);
+		return order;
 	}
 	
 	@SuppressWarnings("unchecked")

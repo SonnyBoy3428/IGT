@@ -20,14 +20,22 @@ public class ItemManager extends EntityManager{
 		session.close();
 	}
 	
-	public static String getItem(long itemId) {
-		Session session = sessionFactory.openSession();
+	public static Item getItem(long itemId) {
+		Item item = null;
 		
-		Item item = session.get(Item.class,  itemId);
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+			
+			item = session.get(Item.class,  itemId);
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			session.close();
+		}
 		
-		return itemToXML(item);
+		return item;
 	}
 	
 	@SuppressWarnings("unchecked")
