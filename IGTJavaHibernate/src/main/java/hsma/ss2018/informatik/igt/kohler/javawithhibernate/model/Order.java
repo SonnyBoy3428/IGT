@@ -8,39 +8,70 @@ import javax.persistence.*;
 @Table(name = "CUSTOMER_ORDER")
 public class Order {
 	private long orderId;
+	private String date;
+	private byte orderCarriedOut;
+	private double totalCost;
+	
 	private Customer customer;
 	
 	private Set<Orderline> orderline;
 	
-	public Order() {
+	protected Order() {
 	}
 	
 	@Id
 	@Column(name = "OrderId")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public long getOrderId() {
+	protected long getOrderId() {
 		return orderId;
 	}
 	
-	public void setOrderId(long orderId) {
+	protected void setOrderId(long orderId) {
 		this.orderId = orderId;
 	}
 	
+	@Column(name = "Date")
+	protected String getDate() {
+		return date;
+	}
+	
+	protected void setDate(String date) {
+		this.date = date;
+	}
+	
+	@Column(name = "OrderCarriedOut")
+	protected byte getOrderCarriedOut() {
+		return orderCarriedOut;
+	}
+	
+	protected void setOrderCarriedOut(byte orderCarriedOut) {
+		this.orderCarriedOut = orderCarriedOut;
+	}
+	
+	@Column(name = "TotalCost")
+	protected double getTotalCost() {
+		return totalCost;
+	}
+	
+	protected void setTotalCost(double totalCost) {
+		this.totalCost = totalCost;
+	}
+	
 	@ManyToOne(cascade = CascadeType.ALL)
-	public Customer getCustomer() {
+	protected Customer getCustomer() {
 		return customer;
 	}
 	
-	public void setCustomer(Customer customer) {
+	protected void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
 	
-	@OneToMany(mappedBy = "order")
-	public Set<Orderline> getOrderline(){
+	@OneToMany(mappedBy = "id.order")
+	protected Set<Orderline> getOrderline(){
 		return orderline;
 	}
 	
-	public void setOrderline(Set<Orderline> orderline) {
+	protected void setOrderline(Set<Orderline> orderline) {
 		this.orderline = orderline;
 	}
 }

@@ -37,7 +37,7 @@ public class Item {
 		this.itemName = itemName;
 	}
 	
-	@OneToMany(mappedBy = "item")
+	@OneToMany(mappedBy = "id.item")
 	public Set<Orderline> getOrderline(){
 		return orderline;
 	}

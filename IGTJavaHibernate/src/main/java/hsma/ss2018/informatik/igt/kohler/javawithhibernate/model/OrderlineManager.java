@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 public class OrderlineManager extends EntityManager {
@@ -43,6 +44,7 @@ public class OrderlineManager extends EntityManager {
 			orderline.setQuantity(itemQuantity.get(item.getItemId()));
 			
 			newOrder.getOrderline().add(orderline);
+			newOrder.setCustomer(customer);
 			item.getOrderline().add(orderline);
 		
 			Session session = null;
@@ -50,14 +52,46 @@ public class OrderlineManager extends EntityManager {
 			try {
 				session = sessionFactory.openSession();
 				
+				session.beginTransaction();
 				session.save(orderline);
+				session.getTransaction().commit();
+				
+				session.beginTransaction();
 				session.update(newOrder);
+				session.getTransaction().commit();
+				
+				session.beginTransaction();
 				session.update(item);
+				session.getTransaction().commit();
 			}catch(Exception ex) {
 				// TODO
 			}finally {
 				session.close();
 			}
 		}
+	}
+	
+	public List<Orderline> getOrderline(long orderId) {	
+		Order order = null;
+		List<Orderline> orderline = null;
+		
+		Session session = null;
+		
+		try {
+			session = sessionFactory.openSession();
+			
+			Query<Orderline> query = session.createQuery("from Orderline where order.Id =" + orderId);
+			orderline = query.getResultList();
+		}catch(Exception ex) {
+			
+		}finally {
+			session.close();
+		}
+		
+		return orderline;
+	}
+	
+	public getOrderlineAsXML() {
+		
 	}
 }

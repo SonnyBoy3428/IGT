@@ -3,12 +3,17 @@ package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import java.time.LocalDate;
 import org.hibernate.Session;
 
 public class OrderManager extends EntityManager{
-	public static Order createOrder() {
+	protected static Order createOrder() {
 		Order order = null;
+		
+		String date = LocalDate.now().toString();
+		
+		order.setDate(date);
+		order.setOrderCarriedOut((byte) 0);
 		
 		Session session = null;
 		
@@ -29,7 +34,7 @@ public class OrderManager extends EntityManager{
 		return order;
 	}
 	
-	public static Order getOrder(long orderId) {
+	protected static Order getOrder(long orderId) {
 		Order order = null;
 		
 		Session session = null;
@@ -50,7 +55,7 @@ public class OrderManager extends EntityManager{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static String getAllOrders() {
+	protected static Set<Order> getAllOrders() {
 		Session session = sessionFactory.openSession();
 		
 		List<Order> ordersList = session.createQuery("from CUSTOMER_ORDER").list();
@@ -59,7 +64,7 @@ public class OrderManager extends EntityManager{
 		
 		Set<Order> orders = new HashSet<Order>(ordersList);
 		
-		return ordersToXML(orders);
+		return orders;
 	}
 	
 	public static void deleteOrder(long orderId) {
@@ -80,6 +85,8 @@ public class OrderManager extends EntityManager{
 		
 		xmlOrder = "<Order>"
 				+ "<OrderId>" + order.getOrderId() + "</ItemId>"
+				+ "<date>" + order.getDate() + "</date>"
+				+ "<orderCarriedOut>" + order.getOrderCarriedOut() + "</orderCarriedOut>"
 				+ "</Order>";
 		
 		return xmlOrder;

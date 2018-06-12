@@ -5,29 +5,26 @@ import javax.persistence.*;
 @Entity
 @Table(name = "ORDERLINE")
 public class Orderline {
+	private OrderlineId id;
 	private Order order;
 	private Item item;
 	private long quantity;
 	
-	@ManyToOne
-	@JoinColumn(name = "OrderId")
+	@EmbeddedId
+	public OrderlineId getId() {
+		return id;
+	}
+	
+	@Transient
 	public Order getOrder() {
 		return order;
 	}
 	
-	public void setOrder(Order order) {
-		this.order = order;
-	}
-	
-	@ManyToOne
-	@JoinColumn(name = "ItemId")
+	@Transient
 	public Item getItem() {
 		return item;
 	}
 	
-	public void setItem(Item item) {
-		this.item = item;
-	}
 	@Column(name = "Quantity")
 	public long getQuantity() {
 		return quantity;
