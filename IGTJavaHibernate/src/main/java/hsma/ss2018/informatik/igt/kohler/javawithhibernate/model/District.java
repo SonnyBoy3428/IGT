@@ -1,24 +1,32 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
 import javax.persistence.*;
+
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 @Table(name = "DISTRICT")
-public class District {
+public class District implements Serializable{
+	@Id
+	@Column(name = "DistrictId")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long districtId;
+	
+	@Column(name = "Location")
 	private String location;
 	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "WarehouseId")
 	private Warehouse warehouse;
 	
+	@OneToMany(mappedBy = "district", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "CustomerId")
 	private Set<Customer> customers;
 	
 	public District() {
 	}
 	
-	@Id
-	@Column(name = "DistrictId")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long getDistrictId() {
 		return districtId;
 	}
@@ -27,7 +35,6 @@ public class District {
 		this.districtId = districtId;
 	}
 	
-	@Column(name = "Location")
 	public String getLocation() {
 		return location;
 	}
@@ -36,8 +43,6 @@ public class District {
 		this.location = location;
 	}
 	
-	@ManyToOne
-	@JoinColumn(name = "WarehouseId")
 	public Warehouse getWarehouse() {
 		return warehouse;
 	}
@@ -46,7 +51,6 @@ public class District {
 		this.warehouse = warehouse;
 	}
 	
-	@OneToMany(mappedBy = "district")
 	public Set<Customer> getCustomers(){
 		return customers;
 	}

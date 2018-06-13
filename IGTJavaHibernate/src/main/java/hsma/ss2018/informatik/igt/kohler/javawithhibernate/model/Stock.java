@@ -1,35 +1,52 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "STOCK")
-public class Stock {
-	private Warehouse warehouse;
-	private Item item;
+@AssociationOverrides({
+	@AssociationOverride(name = "stockId.warehouse", joinColumns = @JoinColumn(name = "WarehouseId")),
+	@AssociationOverride(name = "stockId.item", joinColumns = @JoinColumn(name = "ItemId")),
+})
+public class Stock implements Serializable{
+	@EmbeddedId
+	private StockId stockId;
+
+	@Column(name = "Quantity", nullable = false)
 	private long quantity;
 	
-	@ManyToOne
-	@JoinColumn(name = "WarehouseId")
+	public Stock() {
+		
+	}
+	
+	public StockId getStockId() {
+		return stockId;
+	}
+	
+	public void setStockId(StockId stockId) {
+		this.stockId = stockId;
+	}
+	
+	@Transient
 	public Warehouse getWarehouse() {
-		return warehouse;
+		return getStockId().getWarehouse();
 	}
 	
 	public void setWarehouse(Warehouse warehouse) {
-		this.warehouse = warehouse;
+		getStockId().setWarehouse(warehouse);
 	}
 	
-	@ManyToOne
-	@JoinColumn(name = "ItemId")
+	@Transient
 	public Item getItem() {
-		return item;
+		return getStockId().getItem();
 	}
 	
 	public void setItem(Item item) {
-		this.item = item;
+		getStockId().setItem(item);
 	}
 	
-	@Column(name = "Quantity")
 	public long getQuantity() {
 		return quantity;
 	}

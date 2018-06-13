@@ -1,27 +1,37 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "CUSTOMER_ORDER")
-public class Order {
+public class Order implements Serializable{
+	@Id
+	@Column(name = "OrderId", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long orderId;
+	
+	@Column(name = "Date", nullable = false)
 	private String date;
+	
+	@Column(name = "OrderCarriedOut", nullable = false)
 	private byte orderCarriedOut;
+	
+	@Column(name = "TotalCost", nullable = false)
 	private double totalCost;
 	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "OrderId")
 	private Customer customer;
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.order", cascade = CascadeType.ALL)
 	private Set<Orderline> orderline;
 	
 	protected Order() {
 	}
 	
-	@Id
-	@Column(name = "OrderId")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected long getOrderId() {
 		return orderId;
 	}
@@ -30,7 +40,6 @@ public class Order {
 		this.orderId = orderId;
 	}
 	
-	@Column(name = "Date")
 	protected String getDate() {
 		return date;
 	}
@@ -39,7 +48,6 @@ public class Order {
 		this.date = date;
 	}
 	
-	@Column(name = "OrderCarriedOut")
 	protected byte getOrderCarriedOut() {
 		return orderCarriedOut;
 	}
@@ -48,7 +56,6 @@ public class Order {
 		this.orderCarriedOut = orderCarriedOut;
 	}
 	
-	@Column(name = "TotalCost")
 	protected double getTotalCost() {
 		return totalCost;
 	}
@@ -57,7 +64,6 @@ public class Order {
 		this.totalCost = totalCost;
 	}
 	
-	@ManyToOne(cascade = CascadeType.ALL)
 	protected Customer getCustomer() {
 		return customer;
 	}
@@ -66,7 +72,6 @@ public class Order {
 		this.customer = customer;
 	}
 	
-	@OneToMany(mappedBy = "id.order")
 	protected Set<Orderline> getOrderline(){
 		return orderline;
 	}

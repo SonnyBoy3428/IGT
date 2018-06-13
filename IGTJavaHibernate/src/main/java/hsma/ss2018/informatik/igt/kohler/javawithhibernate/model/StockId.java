@@ -3,27 +3,26 @@ package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 import java.io.Serializable;
 
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Embeddable
-public class OrderlineId implements Serializable{
+public class StockId implements Serializable{
 	@ManyToOne
-	private Order order;
+	private Warehouse warehouse;
 	
 	@ManyToOne
 	private Item item;
 	
-	public OrderlineId() {
+	public StockId() {
 		
 	}
 	
-	protected Order getOrder() {
-		return order;
+	protected Warehouse getWarehouse() {
+		return warehouse;
 	}
 	
-	protected void setOrder(Order order) {
-		this.order = order;
+	protected void setWarehouse(Warehouse warehouse) {
+		this.warehouse = warehouse;
 	}
 	
 	protected Item getItem() {

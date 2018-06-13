@@ -1,34 +1,49 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "CUSTOMER")
-public class Customer {
+public class Customer implements Serializable{
+	@Id
+	@Column(name = "CustomerId")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long customerId;
+	
+	@Column(name = "FirstName")
 	private String firstName;
+	
+	@Column(name = "LastName")
 	private String lastName;
+	
+	@Column(name = "Address")
 	private String address;
+	
+	@Column(name = "Telephone")
 	private String telephone;
+	
+	@Column(name = "CreditCardNr")
 	private String creditCardNr;
 	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "DistrictId")
 	private District district;
 	
+	
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "OrderId")
 	private Set<Order> orders;
 	
 	public Customer() {
 	}
 	
-	@Id
-	@Column(name = "CustomerId")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long getCustomerId() {
 		return customerId;
 	}
 	
-	@Column(name = "FirstName")
 	public String getFirstName() {
 		return firstName;
 	}
@@ -37,7 +52,6 @@ public class Customer {
 		this.firstName = firstName;
 	}
 	
-	@Column(name = "LastName")
 	public String getLastName() {
 		return lastName;
 	}
@@ -46,7 +60,6 @@ public class Customer {
 		this.lastName = lastName;
 	}
 	
-	@Column(name = "Address")
 	public String getAddress() {
 		return address;
 	}
@@ -55,7 +68,6 @@ public class Customer {
 		this.address = address;
 	}
 	
-	@Column(name = "Telephone")
 	public String getTelephone() {
 		return telephone;
 	}
@@ -64,7 +76,6 @@ public class Customer {
 		this.telephone = telephone;
 	}
 	
-	@Column(name = "CreditCardNr")
 	public String getCreditCardNr() {
 		return creditCardNr;
 	}
@@ -73,8 +84,6 @@ public class Customer {
 		this.creditCardNr = creditCardNr;
 	}
 	
-	@ManyToOne
-	@JoinColumn(name = "DistrictId")
 	public District getDistrict() {
 		return district;
 	}
@@ -83,7 +92,6 @@ public class Customer {
 		this.district = district;
 	}
 	
-	@OneToMany(mappedBy = "customer")
 	public Set<Order> getOrders() {
 		return orders;
 	}

@@ -1,37 +1,52 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "ORDERLINE")
-public class Orderline {
-	private OrderlineId orderlineId;
+@AssociationOverrides({
+	@AssociationOverride(name = "orderlineId.order", joinColumns = @JoinColumn(name = "OrderId")),
+	@AssociationOverride(name = "orderlineId.item", joinColumns = @JoinColumn(name = "ItemId")),
+})
+public class Orderline implements Serializable{
+	@EmbeddedId
+	private OrderlineId orderlineId = new OrderlineId();
+	
+	@Column(name = "Quantity", nullable = false)
 	private long quantity;
 	
-	@EmbeddedId
-	public OrderlineId getId() {
+	public Orderline() {
+		
+	}
+	
+	public OrderlineId getOrderlineId() {
 		return orderlineId;
+	}
+	
+	public void setOrderlineId(OrderlineId orderlineId) {
+		this.orderlineId = orderlineId;
 	}
 	
 	@Transient
 	public Order getOrder() {
-		return orderlineId.getOrder();
+		return getOrderlineId().getOrder();
 	}
 	
 	public void setOrder(Order order) {
-		this.orderlineId.setOrder(order);
+		getOrderlineId().setOrder(order);
 	}
 	
 	@Transient
 	public Item getItem() {
-		return orderlineId.getItem();
+		return getOrderlineId().getItem();
 	}
 	
 	public void setItem(Item item) {
-		this.orderlineId.setItem(item);
+		getOrderlineId().setItem(item);
 	}
 	
-	@Column(name = "Quantity")
 	public long getQuantity() {
 		return quantity;
 	}

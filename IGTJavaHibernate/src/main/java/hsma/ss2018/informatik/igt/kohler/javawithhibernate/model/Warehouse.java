@@ -1,24 +1,34 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "WAREHOUSE")
-public class Warehouse {
+public class Warehouse implements Serializable{
+	@Id
+	@Column(name = "WarehouseId", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long warehouseId;
+	
+	@Column(name = "Location", nullable = false)
 	private String location;
+	
+	@Column(name = "Owner", nullable = false)
 	private String owner;
 	
-	private Set<District> district;
+	@OneToMany(mappedBy = "warehouse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "DistrictId")
+	private Set<District> districts;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "stockId.warehouse", cascade = CascadeType.ALL)
+	private Set<Stock> stocks;
 	
 	public Warehouse() {
 	}
 	
-	@Id
-	@Column(name = "WarehouseId")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long getWarehouseId() {
 		return warehouseId;
 	}
@@ -27,7 +37,6 @@ public class Warehouse {
 		this.warehouseId = warehouseId;
 	}
 	
-	@Column(name = "Location")
 	public String getLocation() {
 		return location;
 	}
@@ -36,7 +45,6 @@ public class Warehouse {
 		this.location = location;
 	}
 	
-	@Column(name = "Owner")
 	public String getOwner() {
 		return owner;
 	}
@@ -45,12 +53,19 @@ public class Warehouse {
 		this.owner = owner;
 	}
 	
-	@OneToMany(mappedBy = "warehouse")
 	public Set<District> getDistricts(){
-		return district;
+		return districts;
 	}
 	
-	public void setDistricts(Set<District> district) {
-		this.district = district;
+	public void setDistricts(Set<District> districts) {
+		this.districts = districts;
+	}
+	
+	public Set<Stock> getStocks(){
+		return stocks;
+	}
+	
+	public void setStocks(Set<Stock> stocks) {
+		this.stocks = stocks;
 	}
 }

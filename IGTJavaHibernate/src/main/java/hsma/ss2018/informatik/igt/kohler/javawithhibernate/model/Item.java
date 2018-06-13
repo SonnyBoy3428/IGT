@@ -1,25 +1,33 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "ITEM")
-public class Item {
+public class Item implements Serializable{
+	@Id
+	@Column(name = "ItemId", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long itemId;
+	
+	@Column(name = "ItemName", nullable = false)
 	private String itemName;
 	
+	@Column(name = "Price", nullable = false)
+	private double price;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.item", cascade = CascadeType.ALL)
 	private Set<Orderline> orderline;
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "stockId.item", cascade = CascadeType.ALL)
 	private Set<Stock> stock;
 	
 	public Item() {
 	}
 	
-	@Id
-	@Column(name = "ItemId")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long getItemId() {
 		return itemId;
 	}
@@ -28,7 +36,6 @@ public class Item {
 		this.itemId = itemId;
 	}
 	
-	@Column(name = "ItemName")
 	public String getItemName() {
 		return itemName;
 	}
@@ -37,7 +44,14 @@ public class Item {
 		this.itemName = itemName;
 	}
 	
-	@OneToMany(mappedBy = "id.item")
+	public double getPrice() {
+		return price;
+	}
+	
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	
 	public Set<Orderline> getOrderline(){
 		return orderline;
 	}
@@ -46,7 +60,6 @@ public class Item {
 		this.orderline = orderline;
 	}
 	
-	@OneToMany(mappedBy = "item")
 	public Set<Stock> getStock(){
 		return stock;
 	}
