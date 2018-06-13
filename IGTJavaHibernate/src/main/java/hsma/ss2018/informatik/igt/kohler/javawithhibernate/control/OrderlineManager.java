@@ -1,4 +1,4 @@
-package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
+package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,6 +7,11 @@ import java.util.Set;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 
 public class OrderlineManager extends EntityManager {
 	public void createOrderline(long customerId, Map<Long, Long> itemQuantity) {

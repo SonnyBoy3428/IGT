@@ -1,10 +1,12 @@
-package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
+package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.time.LocalDate;
 import org.hibernate.Session;
+
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 
 public class OrderManager extends EntityManager{
 	protected static Order createOrder() {

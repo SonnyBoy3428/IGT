@@ -18,19 +18,19 @@ public class OrderlineId implements Serializable{
 		
 	}
 	
-	protected Order getOrder() {
+	public Order getOrder() {
 		return order;
 	}
 	
-	protected void setOrder(Order order) {
+	public void setOrder(Order order) {
 		this.order = order;
 	}
 	
-	protected Item getItem() {
+	public Item getItem() {
 		return item;
 	}
 	
-	protected void setItem(Item item) {
+	public void setItem(Item item) {
 		this.item = item;
 	}
 }

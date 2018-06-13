@@ -17,19 +17,19 @@ public class StockId implements Serializable{
 		
 	}
 	
-	protected Warehouse getWarehouse() {
+	public Warehouse getWarehouse() {
 		return warehouse;
 	}
 	
-	protected void setWarehouse(Warehouse warehouse) {
+	public void setWarehouse(Warehouse warehouse) {
 		this.warehouse = warehouse;
 	}
 	
-	protected Item getItem() {
+	public Item getItem() {
 		return item;
 	}
 	
-	protected void setItem(Item item) {
+	public void setItem(Item item) {
 		this.item = item;
 	}
 }

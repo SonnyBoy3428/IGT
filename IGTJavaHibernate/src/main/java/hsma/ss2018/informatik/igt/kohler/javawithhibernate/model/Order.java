@@ -29,54 +29,54 @@ public class Order implements Serializable{
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.order", cascade = CascadeType.ALL)
 	private Set<Orderline> orderline;
 	
-	protected Order() {
+	public Order() {
 	}
 	
-	protected long getOrderId() {
+	public long getOrderId() {
 		return orderId;
 	}
 	
-	protected void setOrderId(long orderId) {
+	public void setOrderId(long orderId) {
 		this.orderId = orderId;
 	}
 	
-	protected String getDate() {
+	public String getDate() {
 		return date;
 	}
 	
-	protected void setDate(String date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 	
-	protected byte getOrderCarriedOut() {
+	public byte getOrderCarriedOut() {
 		return orderCarriedOut;
 	}
 	
-	protected void setOrderCarriedOut(byte orderCarriedOut) {
+	public void setOrderCarriedOut(byte orderCarriedOut) {
 		this.orderCarriedOut = orderCarriedOut;
 	}
 	
-	protected double getTotalCost() {
+	public double getTotalCost() {
 		return totalCost;
 	}
 	
-	protected void setTotalCost(double totalCost) {
+	public void setTotalCost(double totalCost) {
 		this.totalCost = totalCost;
 	}
 	
-	protected Customer getCustomer() {
+	public Customer getCustomer() {
 		return customer;
 	}
 	
-	protected void setCustomer(Customer customer) {
+	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
 	
-	protected Set<Orderline> getOrderline(){
+	public Set<Orderline> getOrderline(){
 		return orderline;
 	}
 	
-	protected void setOrderline(Set<Orderline> orderline) {
+	public void setOrderline(Set<Orderline> orderline) {
 		this.orderline = orderline;
 	}
 }

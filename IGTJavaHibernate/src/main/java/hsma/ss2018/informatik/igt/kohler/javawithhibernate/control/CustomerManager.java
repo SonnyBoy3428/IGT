@@ -1,10 +1,13 @@
-package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
+package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
+
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 
 public class CustomerManager extends EntityManager{	
 	public static Customer createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr) {

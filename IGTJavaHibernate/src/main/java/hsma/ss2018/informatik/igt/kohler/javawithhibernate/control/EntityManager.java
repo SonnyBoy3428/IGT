@@ -1,4 +1,4 @@
-package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
+package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;

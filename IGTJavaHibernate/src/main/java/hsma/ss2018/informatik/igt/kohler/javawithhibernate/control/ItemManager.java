@@ -1,10 +1,12 @@
-package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
+package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
+
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 
 public class ItemManager extends EntityManager{
 	public static void createItem(String itemName) {
