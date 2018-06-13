@@ -52,3 +52,4 @@ Follow the directions of this link [here](http://www.codejava.net/frameworks/hib
 * [Hibernate Bidirectional One-To-Many Relationship](http://www.baeldung.com/hibernate-one-to-many)
 * [Best Practices: One-To-Many Relationship](https://www.thoughts-on-java.org/best-practices-many-one-one-many-associations-mappings/)
 * [Many-To-Many Relationships with extra table](https://stackoverflow.com/questions/5127129/mapping-many-to-many-association-table-with-extra-columns)
+* [Many-To-Many with no extra table](https://www.mkyong.com/hibernate/hibernate-many-to-many-example-join-table-extra-column-annotation/)
