@@ -9,21 +9,21 @@ public class OrderlineId {
 	
 	@ManyToOne
 	@JoinColumn(name = "OrderId")
-	public Order getOrder() {
+	protected Order getOrder() {
 		return order;
 	}
 	
-	public void setOrder(Order order) {
+	protected void setOrder(Order order) {
 		this.order = order;
 	}
 	
 	@ManyToOne
 	@JoinColumn(name = "ItemId")
-	public Item getItem() {
+	protected Item getItem() {
 		return item;
 	}
 	
-	public void setItem(Item item) {
+	protected void setItem(Item item) {
 		this.item = item;
 	}
 }

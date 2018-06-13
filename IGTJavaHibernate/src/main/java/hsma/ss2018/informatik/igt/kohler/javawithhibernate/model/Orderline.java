@@ -5,24 +5,30 @@ import javax.persistence.*;
 @Entity
 @Table(name = "ORDERLINE")
 public class Orderline {
-	private OrderlineId id;
-	private Order order;
-	private Item item;
+	private OrderlineId orderlineId;
 	private long quantity;
 	
 	@EmbeddedId
 	public OrderlineId getId() {
-		return id;
+		return orderlineId;
 	}
 	
 	@Transient
 	public Order getOrder() {
-		return order;
+		return orderlineId.getOrder();
+	}
+	
+	public void setOrder(Order order) {
+		this.orderlineId.setOrder(order);
 	}
 	
 	@Transient
 	public Item getItem() {
-		return item;
+		return orderlineId.getItem();
+	}
+	
+	public void setItem(Item item) {
+		this.orderlineId.setItem(item);
 	}
 	
 	@Column(name = "Quantity")
