@@ -147,7 +147,7 @@ public class DistrictManager extends EntityManager{
 		
 		try {
 			session = sessionFactory.openSession();
-		}catch(Exception ex) {
+			
 			District district = session.get(District.class,  districtId);
 			
 			session.beginTransaction();
@@ -155,6 +155,8 @@ public class DistrictManager extends EntityManager{
 			session.delete(district);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
 		}finally {
 			if(session != null) {
 				session.close();
@@ -174,7 +176,7 @@ public class DistrictManager extends EntityManager{
 		
 		try {
 			session = sessionFactory.openSession();
-		}catch(Exception ex) {
+			
 			District district = session.get(District.class,  districtId);
 			district.setDistrictName(districtName);
 			district.setDistrictSize(districtSize);
@@ -184,6 +186,8 @@ public class DistrictManager extends EntityManager{
 			session.update(district);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
 		}finally{
 			if(session != null) {
 				session.close();

@@ -6,11 +6,23 @@ import java.util.Set;
 import java.time.LocalDate;
 import org.hibernate.Session;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 
+/**
+ * This class functions as the API with which one can deal with orders.
+ * 
+ * @author Dustin Noah Young,
+ *
+ */
 public class OrderManager extends EntityManager{
+	/**
+	 * Creates an order.
+	 * 
+	 * @return The newly created order.
+	 */
 	protected static Order createOrder() {
-		Order order = null;
+		Order order = new Order();
 		
 		String date = LocalDate.now().toString();
 		
@@ -30,12 +42,21 @@ public class OrderManager extends EntityManager{
 		}catch(Exception ex) {
 			//TODO
 		}finally {
-			session.close();
+			if(session != null) {
+				session.close();
+			}
 		}
 		
 		return order;
 	}
 	
+	/**
+	 * Gets an order based on the passed order Id.
+	 * 
+	 * @param orderId Id of the order which is to be fetched.
+	 * 
+	 * @return The fetched order.
+	 */
 	protected static Order getOrder(long orderId) {
 		Order order = null;
 		
@@ -56,44 +77,86 @@ public class OrderManager extends EntityManager{
 		return order;
 	}
 	
+	/**
+	 * Gets all the orders.
+	 * 
+	 * @return All existing orders.
+	 */
 	@SuppressWarnings("unchecked")
 	protected static Set<Order> getAllOrders() {
-		Session session = sessionFactory.openSession();
+		List<Order> ordersList = null;
+		Set<Order> orders = null;
 		
-		List<Order> ordersList = session.createQuery("from CUSTOMER_ORDER").list();
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
 		
-		Set<Order> orders = new HashSet<Order>(ordersList);
+			ordersList = session.createQuery("from CUSTOMER_ORDER").getResultList();
+			
+			orders = new HashSet<Order>(ordersList);
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
 		
 		return orders;
 	}
 	
-	public static void deleteOrder(long orderId) {
-		Session session = sessionFactory.openSession();
+	/**
+	 * Deletes an order based on its Id.
+	 * 
+	 * @param orderId Id of the order that is to be deleted.
+	 */
+	protected static void deleteOrder(long orderId) {
+		Session session = null;
 		
-		Order order = session.get(Order.class,  orderId);
-		
-		session.beginTransaction();
-		
-		session.delete(order);
-		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+			
+			Order order = session.get(Order.class,  orderId);		
+			
+			session.beginTransaction();
+			
+			session.delete(order);
+			
+			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			session.close();
+		}
 	}
 	
+	/**
+	 * Converts an order object into XML-format.
+	 * 
+	 * @param order Order that is to be converted.
+	 * 
+	 * @return Order in XML format.
+	 */
 	protected static String orderToXML(Order order) {
 		String xmlOrder;
 		
 		xmlOrder = "<Order>"
 				+ "<OrderId>" + order.getOrderId() + "</ItemId>"
-				+ "<date>" + order.getDate() + "</date>"
-				+ "<orderCarriedOut>" + order.getOrderCarriedOut() + "</orderCarriedOut>"
+				+ "<Date>" + order.getDate() + "</Date>"
+				+ "<OrderCarriedOut>" + order.getOrderCarriedOut() + "</OrderCarriedOut>"
 				+ "</Order>";
 		
 		return xmlOrder;
 	}
 	
+	/**
+	 * Converts a set of orders into XML-format.
+	 * 
+	 * @param orders Set of orders that are to be converted.
+	 * 
+	 * @return orders in XML format.
+	 */
 	protected static String ordersToXML(Set<Order> orders) {
 		String xmlOrders;
 		

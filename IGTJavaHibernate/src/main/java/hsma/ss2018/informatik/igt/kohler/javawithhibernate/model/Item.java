@@ -4,7 +4,6 @@
  * 
  * @author Dustin Noah Young
  */
-
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
 import java.io.Serializable;

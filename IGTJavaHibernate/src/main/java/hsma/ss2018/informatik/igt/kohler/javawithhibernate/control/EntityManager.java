@@ -5,9 +5,17 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
+/**
+ * This class functions as an abstract class from which all table managers extend.
+ * 
+ * @author Dustin Noah Young
+ */
 public abstract class EntityManager {
 	public static SessionFactory sessionFactory;
 	
+	/**
+	 * Sets up the session factory properly.
+	 */
 	public void setUp() {
 		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
 				.configure()
@@ -20,6 +28,9 @@ public abstract class EntityManager {
 		}
 	}
 	
+	/**
+	 * Closes a session factory for good.
+	 */
 	public void exit() {
 		sessionFactory.close();
 	}

@@ -75,7 +75,6 @@ public class CustomerManager extends EntityManager{
 			session = sessionFactory.openSession();
 		
 			customer = session.get(Customer.class,  customerId);
-		
 		}catch(Exception ex) {
 			// TODO
 		}finally {
@@ -222,7 +221,7 @@ public class CustomerManager extends EntityManager{
 		
 		try {
 			session = sessionFactory.openSession();
-		}catch(Exception ex) {
+			
 			Customer customer = session.get(Customer.class,  customerId);		
 			
 			session.beginTransaction();
@@ -230,6 +229,8 @@ public class CustomerManager extends EntityManager{
 			session.delete(customer);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
 		}finally {
 			session.close();
 		}
@@ -252,7 +253,7 @@ public class CustomerManager extends EntityManager{
 		
 		try {
 			session = sessionFactory.openSession();
-		}catch(Exception ex) {
+			
 			Customer customer = session.get(Customer.class,  customerId);		
 			customer.setFirstName(firstName);
 			customer.setLastName(lastName);
@@ -265,6 +266,8 @@ public class CustomerManager extends EntityManager{
 			session.update(customer);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
 		}finally {
 			session.close();
 		}
@@ -273,7 +276,7 @@ public class CustomerManager extends EntityManager{
 	/**
 	 * Converts a Customer object into XML-format.
 	 * 
-	 * @param customer That is to be converted.
+	 * @param customer Customer that is to be converted.
 	 * 
 	 * @return Customer in XML format.
 	 */
