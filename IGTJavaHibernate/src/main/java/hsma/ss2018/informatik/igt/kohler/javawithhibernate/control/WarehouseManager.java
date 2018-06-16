@@ -6,88 +6,199 @@ import java.util.Set;
 
 import org.hibernate.Session;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
+/**
+ * This class functions as the API with which one can deal with warehouses.
+ * 
+ * @author Dustin Noah Young,
+ *
+ */
 public class WarehouseManager extends EntityManager{
-	public static void createWarehouse(String location, String owner) {
+	/**
+	 * Created a new warehouse from the given values.
+	 * 
+	 * @param location Location of the warehouse.
+	 * 
+	 * @return The newly created warehouse.
+	 */
+	public static Warehouse createWarehouse(String location, String owner) {
 		Warehouse warehouse = new Warehouse();
 		warehouse.setLocation(location);
 		warehouse.setOwner(owner);
 		
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
+		Session session = null;
 		
-		session.save(owner);
+		try {
+			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			
+			session.save(warehouse);
+			
+			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
 		
-		session.getTransaction().commit();
-		session.close();
+		return warehouse;
 	}
 	
-	public static String getWarehouse(long warehouseId) {
-		Session session = sessionFactory.openSession();
+	/**
+	 * Gets a warehouse based on the passed warehouse Id.
+	 * 
+	 * @param warehouseId Id of the warehouse that is to be fetched.
+	 * 
+	 * @return The fetched warehouse.
+	 */
+	public static Warehouse getWarehouse(long warehouseId) {
+		Warehouse warehouse = null;
 		
-		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
 		
-		return warehouseToXML(warehouse);
+			warehouse = session.get(Warehouse.class,  warehouseId);
+		
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		
+		return warehouse;
 	}
 	
+	/**
+	 * Gets all the warehouses.
+	 * 
+	 * @return All existing warehouses.
+	 */
 	@SuppressWarnings("unchecked")
-	public static String getAllWarehouses() {
-		Session session = sessionFactory.openSession();
+	public Set<Warehouse> getAllWarehouses() {
+		List<Warehouse> warehousesList = null;
+		Set<Warehouse> warehouses = null;
 		
-		List<Warehouse> warehousesList = session.createQuery("from WAREHOUSE").list();
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+			
+			warehousesList = session.createQuery("from WAREHOUSE").getResultList();
+			
+			warehouses = new HashSet<Warehouse>(warehousesList);
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();	
+			}
+		}
 		
-		Set<Warehouse> warehouses = new HashSet<Warehouse>(warehousesList);
-		
-		return warehousesToXML(warehouses);
+		return warehouses;
 	}
 	
-	public static String getWarehouseDistricts(long warehouseId) {
-		Session session = sessionFactory.openSession();
+	/**
+	 * Gets all the districts belonging to the warehouse.
+	 * 
+	 * @param warehouseId Id of the warehouse.
+	 * 
+	 * @return All districts belonging to the warehouse.
+	 */
+	public Set<District> getWarehouseDistricts(long warehouseId) {
+		Warehouse warehouse = null;
+		Set<District> districts = null;
 		
-		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
+		Session session = null;
 		
-		session.close();
-		
-		Set<District> districts = warehouse.getDistricts();
-		
-		return DistrictManager.districtsToXML(districts);
+		try {
+			session = sessionFactory.openSession();
+			
+			warehouse = session.get(Warehouse.class,  warehouseId);
+			
+			districts = warehouse.getDistricts();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();	
+			}
+		}
+						
+		return districts;
 	}
 	
-	public static void deleteWarehouse(long warehouseId) {
-		Session session = sessionFactory.openSession();
+	/**
+	 * Deletes a warehouse.
+	 * 
+	 * @param warehouseId Id of the warehouse that is to be deleted.
+	 */
+	public void deleteWarehouse(long warehouseId) {
+		Session session = null;
 		
-		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
-		
-		session.beginTransaction();
-		
-		session.delete(warehouse);
-		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+		}catch(Exception ex) {
+			Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
+			
+			session.beginTransaction();
+			
+			session.delete(warehouse);
+			
+			session.getTransaction().commit();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
 	}
 	
-	public static void updateWarehouse(long warehouseId, String location, String owner) {
-		Session session = sessionFactory.openSession();
+	/**
+	 * Updated a warehouse by it's id.
+	 * 
+	 * @param warehouseId Id of the warehouse that is to be updated.
+	 * @param location Location of the warehouse.
+	 * @param owner Owner of the warehouse.
+	 */
+	public void updateWarehouse(long warehouseId, String location, String owner) {
+		Session session = null;
 		
-		Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
-		warehouse.setLocation(location);
-		warehouse.setOwner(owner);
-		
-		session.beginTransaction();
-		
-		session.update(warehouse);
-		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+		}catch(Exception ex) {
+			Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
+			warehouse.setLocation(location);
+			warehouse.setOwner(owner);
+			
+			session.beginTransaction();
+			
+			session.update(warehouse);
+			
+			session.getTransaction().commit();
+		}finally{
+			if(session != null) {
+				session.close();
+			}
+		}
 	}
 	
-	protected static String warehouseToXML(Warehouse warehouse) {
+	/**
+	 * Turns a warehouse into XML.
+	 * 
+	 * @param warehouse Warehouse that is to be turned into XML.
+	 * 
+	 * @return XML version of the warehouse.
+	 */
+	public static String warehouseToXML(Warehouse warehouse) {
 		String xmlWarehouse;
 		
 		xmlWarehouse = "<Warehouse>"
@@ -99,7 +210,14 @@ public class WarehouseManager extends EntityManager{
 		return xmlWarehouse;
 	}
 	
-	protected static String warehousesToXML(Set<Warehouse> warehouses) {
+	/**
+	 * Turns warehouses into XML.
+	 * 
+	 * @param warehouses Warehouses that are to be turned into XML.
+	 * 
+	 * @return XML version of the warehouses.
+	 */
+	public static String warehousesToXML(Set<Warehouse> warehouses) {
 		String xmlWarehouses;
 		
 		xmlWarehouses = "<Warehouses>";

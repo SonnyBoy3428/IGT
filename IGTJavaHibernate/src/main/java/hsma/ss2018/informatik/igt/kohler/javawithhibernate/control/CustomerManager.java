@@ -13,7 +13,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 
 /**
- * This class functions as the API with which one can deal with customers
+ * This class functions as the API with which one can deal with customers.
  * 
  * @author Dustin Noah Young,
  *
@@ -22,11 +22,11 @@ public class CustomerManager extends EntityManager{
 	/**
 	 * Creates a new customer from the given values.
 	 * 
-	 * @param firstName First name of the customer
-	 * @param lastName Last name of the customer
-	 * @param address Address of the customer
-	 * @param telephone Telephone number of the customer
-	 * @param creditCardNr Credit card number of the customer
+	 * @param firstName First name of the customer.
+	 * @param lastName Last name of the customer.
+	 * @param address Address of the customer.
+	 * @param telephone Telephone number of the customer.
+	 * @param creditCardNr Credit card number of the customer.
 	 * 
 	 * @return The newly created customer.
 	 */
@@ -62,7 +62,7 @@ public class CustomerManager extends EntityManager{
 	/**
 	 * Gets a customer based on the passed customer Id.
 	 * 
-	 * @param customerId Id of the customer that is to be fetched.
+	 * @param customerId Id of the customer who is to be fetched.
 	 * 
 	 * @return The fetched customer.
 	 */
@@ -94,13 +94,24 @@ public class CustomerManager extends EntityManager{
 	 */
 	@SuppressWarnings("unchecked")
 	public static Set<Customer> getAllCustomers() {
-		Session session = sessionFactory.openSession();
+		List<Customer> customersList = null;
+		Set<Customer> customers = null;
 		
-		List<Customer> customersList = session.createQuery("from CUSTOMER").getResultList();
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
 		
-		Set<Customer> customers = new HashSet<Customer>(customersList);
+			customersList = session.createQuery("from CUSTOMER").getResultList();
+			
+			customers = new HashSet<Customer>(customersList);
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
 		
 		return customers;
 	}
@@ -113,14 +124,25 @@ public class CustomerManager extends EntityManager{
 	 * @return All orders belonging to the customer.
 	 */
 	public static Set<Order> getCustomerAllOrders(long customerId) {
-		Session session = sessionFactory.openSession();
+		Customer customer = null;
+		Set<Order> orders = null;
 		
-		Customer customer = session.get(Customer.class,  customerId);
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
 		
-		Set<Order> orders = customer.getOrders();
+			customer = session.get(Customer.class,  customerId);
 		
+			orders = customer.getOrders();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+				
 		return orders;
 	}
 	
@@ -196,16 +218,21 @@ public class CustomerManager extends EntityManager{
 	 * @param customerId Id which is used to delete the customer.
 	 */
 	public static void deleteCustomer(long customerId) {
-		Session session = sessionFactory.openSession();
+		Session session = null;
 		
-		Customer customer = session.get(Customer.class,  customerId);		
-		
-		session.beginTransaction();
-		
-		session.delete(customer);
-		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+		}catch(Exception ex) {
+			Customer customer = session.get(Customer.class,  customerId);		
+			
+			session.beginTransaction();
+			
+			session.delete(customer);
+			
+			session.getTransaction().commit();
+		}finally {
+			session.close();
+		}
 	}
 	
 	/**
@@ -221,21 +248,26 @@ public class CustomerManager extends EntityManager{
 	 * @return The newly created customer.
 	 */
 	public static void updateCustomer(long customerId, String firstName, String lastName, String address, String telephone, String creditCardNr) {
-		Session session = sessionFactory.openSession();
+		Session session = null;
 		
-		Customer customer = session.get(Customer.class,  customerId);		
-		customer.setFirstName(firstName);
-		customer.setLastName(lastName);
-		customer.setAddress(address);
-		customer.setTelephone(telephone);
-		customer.setCreditCardNr(creditCardNr);
-		
-		session.beginTransaction();
-		
-		session.update(customer);
-		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+		}catch(Exception ex) {
+			Customer customer = session.get(Customer.class,  customerId);		
+			customer.setFirstName(firstName);
+			customer.setLastName(lastName);
+			customer.setAddress(address);
+			customer.setTelephone(telephone);
+			customer.setCreditCardNr(creditCardNr);
+			
+			session.beginTransaction();
+			
+			session.update(customer);
+			
+			session.getTransaction().commit();
+		}finally {
+			session.close();
+		}
 	}
 	
 	/**
@@ -245,7 +277,7 @@ public class CustomerManager extends EntityManager{
 	 * 
 	 * @return Customer in XML format.
 	 */
-	protected static String customerToXML(Customer customer) {
+	public static String customerToXML(Customer customer) {
 		String xmlCustomer;
 		
 		xmlCustomer = "<Customer>"
@@ -256,7 +288,7 @@ public class CustomerManager extends EntityManager{
 				+ "<Telephone>" + customer.getTelephone() + "</Telephone>"
 				+ "<CreditCardNr>" + customer.getCreditCardNr() + "</CreditCardNr>"
 				+ "<DistrictId" + customer.getDistrict().getDistrictId() + "</DistrictId>"
-				+ "<DistrictLocation" + customer.getDistrict().getLocation() + "</DistrictLocation>"
+				+ "<DistrictName>" + customer.getDistrict().getDistrictName() + "</DistrictName>"
 				+ "</Customer>";
 		
 		return xmlCustomer;
@@ -269,7 +301,7 @@ public class CustomerManager extends EntityManager{
 	 * 
 	 * @return Customers in XML format.
 	 */
-	protected static String customersToXML(Set<Customer> customers) {
+	public static String customersToXML(Set<Customer> customers) {
 		String xmlCustomers;
 		
 		xmlCustomers = "<Customers>";

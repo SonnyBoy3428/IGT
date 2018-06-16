@@ -13,8 +13,11 @@ public class District implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long districtId;
 	
-	@Column(name = "Location")
-	private String location;
+	@Column(name = "DistrictName")
+	private String districtName;
+	
+	@Column(name = "DistrictSize")
+	private double districtSize;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "WarehouseId")
@@ -35,12 +38,20 @@ public class District implements Serializable{
 		this.districtId = districtId;
 	}
 	
-	public String getLocation() {
-		return location;
+	public String getDistrictName() {
+		return districtName;
 	}
 	
-	public void setLocation(String location) {
-		this.location = location;
+	public void setDistrictName(String districtName) {
+		this.districtName = districtName;
+	}
+	
+	public double getDistrictSize() {
+		return districtSize;
+	}
+	
+	public void setDistrictSize(double districtSize) {
+		this.districtSize = districtSize;
 	}
 	
 	public Warehouse getWarehouse() {
