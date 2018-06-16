@@ -1,3 +1,10 @@
+/**
+ * This class functions as a map to the WAREHOUSE in the database.
+ * Every Attribute is represented in the form of a member variable.
+ * 
+ * @author Dustin Noah Young
+ */
+
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
 import java.io.Serializable;

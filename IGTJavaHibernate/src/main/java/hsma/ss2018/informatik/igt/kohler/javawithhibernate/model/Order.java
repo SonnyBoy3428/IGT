@@ -1,5 +1,5 @@
 /**
- * This class functions as a map to the ORDER in the database.
+ * This class functions as a map to the CUSTOMER_ORDER in the database.
  * Every Attribute is represented in the form of a member variable.
  * 
  * @author Dustin Noah Young

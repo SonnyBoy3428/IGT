@@ -6,22 +6,57 @@ import java.util.Set;
 
 import org.hibernate.Session;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 
+/**
+ * This class functions as the API with which one can deal with items.
+ * 
+ * @author Dustin Noah Young,
+ *
+ */
 public class ItemManager extends EntityManager{
-	public static void createItem(String itemName) {
+	/**
+	 * Created a new item from the given values.
+	 * 
+	 * @param itemName Name of the item.
+	 * @param price The price of the item.
+	 * 
+	 * @return The newly created item.
+	 */
+	public static Item createItem(String itemName, double price) {
 		Item item = new Item();
 		item.setItemName(itemName);
+		item.setPrice(price);
 		
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
+		Session session = null;
 		
-		session.save(item);
+		try {
+			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			
+			session.save(item);
+			
+			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
 		
-		session.getTransaction().commit();
-		session.close();
+		return item;
 	}
 	
+	/**
+	 * Gets a item based on the passed item Id.
+	 * 
+	 * @param itemId Id of the item that is to be fetched.
+	 * 
+	 * @return The fetched item.
+	 */
 	public static Item getItem(long itemId) {
 		Item item = null;
 		
@@ -29,68 +64,129 @@ public class ItemManager extends EntityManager{
 		
 		try {
 			session = sessionFactory.openSession();
-			
+		
 			item = session.get(Item.class,  itemId);
+		
 		}catch(Exception ex) {
 			// TODO
 		}finally {
-			session.close();
+			if(session != null) {
+				session.close();
+			}
 		}
 		
 		return item;
 	}
 	
+	/**
+	 * Gets all the items.
+	 * 
+	 * @return All existing items.
+	 */
 	@SuppressWarnings("unchecked")
-	public static String getAllItems() {
-		Session session = sessionFactory.openSession();
+	public Set<Item> getAllItems() {
+		List<Item> itemsList = null;
+		Set<Item> items = null;
 		
-		List<Item> itemsList = session.createQuery("from ITEM").list();
+		Session session = null;
 		
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+			
+			itemsList = session.createQuery("from ITEM").getResultList();
+			
+			items = new HashSet<Item>(itemsList);
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();	
+			}
+		}
 		
-		Set<Item> items = new HashSet<Item>(itemsList);
-		
-		return itemsToXML(items);
+		return items;
 	}
 	
-	public static void deleteItem(long itemId) {
-		Session session = sessionFactory.openSession();
+	/**
+	 * Deletes a item.
+	 * 
+	 * @param itemId Id of the item that is to be deleted.
+	 */
+	public void deleteItem(long itemId) {
+		Session session = null;
 		
-		Item item = session.get(Item.class,  itemId);
-		
-		session.beginTransaction();
-		
-		session.delete(item);
-		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+		}catch(Exception ex) {
+			Item item = session.get(Item.class,  itemId);
+			
+			session.beginTransaction();
+			
+			session.delete(item);
+			
+			session.getTransaction().commit();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
 	}
 	
-	public static void updateItem(long itemId, String itemName) {
-		Session session = sessionFactory.openSession();
+	/**
+	 * Updated a item by it's id.
+	 * 
+	 * @param itemId Id of the item that is to be updated.
+	 * @param itemName Name of the item.
+	 * @param price Price of the item in euro.
+	 */
+	public void updateItem(long itemId, String itemName, double price) {
+		Session session = null;
 		
-		Item item = session.get(Item.class,  itemId);
-		item.setItemName(itemName);
-		
-		session.beginTransaction();
-		
-		session.update(item);
-		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			session = sessionFactory.openSession();
+		}catch(Exception ex) {
+			Item item = session.get(Item.class,  itemId);
+			item.setItemName(itemName);
+			item.setPrice(price);
+			
+			session.beginTransaction();
+			
+			session.update(item);
+			
+			session.getTransaction().commit();
+		}finally{
+			if(session != null) {
+				session.close();
+			}
+		}
 	}
 	
+	/**
+	 * Turns a item into XML.
+	 * 
+	 * @param item Item that is to be turned into XML.
+	 * 
+	 * @return XML version of the item.
+	 */
 	protected static String itemToXML(Item item) {
 		String xmlItem;
 		
 		xmlItem = "<Item>"
 				+ "<ItemId>" + item.getItemId() + "</ItemId>"
 				+ "<ItemName>" + item.getItemName() + "</ItemName>"
+				+ "<Price>" + item.getPrice() +  "</Price>"
 				+ "</Item>";
 		
 		return xmlItem;
 	}
 	
+	/**
+	 * Turns items into XML.
+	 * 
+	 * @param items Items that are to be turned into XML.
+	 * 
+	 * @return XML version of the items.
+	 */
 	protected static String itemsToXML(Set<Item> items) {
 		String xmlItems;
 		
