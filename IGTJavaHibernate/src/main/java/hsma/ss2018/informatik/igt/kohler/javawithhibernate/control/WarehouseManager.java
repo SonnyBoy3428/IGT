@@ -1,13 +1,19 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Session;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
 /**
@@ -192,6 +198,24 @@ public class WarehouseManager extends EntityManager{
 	}
 	
 	/**
+	 * Gets all the items belonging to the warehouse.
+	 * 
+	 * @param warehouseId Id of the warehouse from which the items should be fetched.
+	 * @return Set with all the items ids and quantities.
+	 */
+	public static Map<Long, Long> getAllItemsOfWarehouse(long warehouseId) {
+		Warehouse warehouse = getWarehouse(warehouseId);
+		Set<Stock> stock = warehouse.getStock();
+		Map<Long, Long> itemIdsAndQuantity = new HashMap<Long, Long>();
+		
+		for(Stock stockElement : stock) {
+			itemIdsAndQuantity.put(stockElement.getItem().getItemId(), stockElement.getQuantity());
+		}
+		
+		return itemIdsAndQuantity;
+	}
+	
+	/**
 	 * Turns a warehouse into XML.
 	 * 
 	 * @param warehouse Warehouse that is to be turned into XML.
@@ -231,5 +255,50 @@ public class WarehouseManager extends EntityManager{
 		xmlWarehouses += "</Warehouses>";
 		
 		return xmlWarehouses;
+	}
+	
+	/**
+	 * Converts a warehouse and its items into XML-format.
+	 * 
+	 * @param warehouse Warehouse that is to be converted.
+	 * @param itemIdsAndQuantity All the items and their quantity belonging to the warehouse.
+	 * 
+	 * @return Complete warehouse in XML format.
+	 */
+	public static String completeWarehouseToXML(Warehouse warehouse, Map<Long, Long> itemIdsAndQuantity) {
+		String xmlCompleteWarehouse;
+		
+		xmlCompleteWarehouse = "<CompleteWarehouse>" + warehouseToXML(warehouse);
+		
+		for(long itemId : itemIdsAndQuantity.keySet()) {
+			Item item = ItemManager.getItem(itemId);
+			xmlCompleteWarehouse += ItemManager.itemToXML(item);
+			xmlCompleteWarehouse += "<Quantity>" + itemIdsAndQuantity.get(itemId) + "</Quantity>";
+		}
+				
+		xmlCompleteWarehouse += "</CompleteWarehouse>";
+		
+		return xmlCompleteWarehouse;
+	}
+	
+	/**
+	 * Converts a set of complete warehouses into XML-format.
+	 * 
+	 * @param completeWarehouses Map of complete warehouses that are to be converted.
+	 * 
+	 * @return Complete warehouses in XML format.
+	 */
+	public static String completeWarehousesToXML(Map<Warehouse, Map<Long, Long>> completeWarehouses) {
+		String xmlCompleteWarehouses;
+		
+		xmlCompleteWarehouses = "<CompleteWarehouses>";
+		
+		for(Warehouse warehouse : completeWarehouses.keySet()) {
+			xmlCompleteWarehouses += completeWarehouseToXML(warehouse, completeWarehouses.get(warehouse)); 
+		}
+				
+		xmlCompleteWarehouses += "</CompleteWarehouses>";
+		
+		return xmlCompleteWarehouses;
 	}
 }

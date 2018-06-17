@@ -55,8 +55,12 @@ public class OrderlineManager extends EntityManager {
 			throw new NullPointerException("No customer with the Id: " + customerId + " exists.");
 		}
 		
+		double totalCost = 0.0d;
+		
 		// Here we set the relationships.
 		for(Item item : items) {
+			totalCost += (item.getPrice() * itemsAndQuantity.get(item.getItemId()));
+			
 			// The orderline needs a link to the order and the item 
 			Orderline orderline = new Orderline();
 			orderline.setOrder(newOrder);
@@ -65,7 +69,6 @@ public class OrderlineManager extends EntityManager {
 			
 			// The order needs a link to the orderline and the customer
 			newOrder.getOrderline().add(orderline);
-			newOrder.setCustomer(customer);
 			
 			// The item needs a link to the orderline.
 			item.getOrderline().add(orderline);
@@ -80,10 +83,6 @@ public class OrderlineManager extends EntityManager {
 				session.getTransaction().commit();
 				
 				session.beginTransaction();
-				session.update(newOrder);
-				session.getTransaction().commit();
-				
-				session.beginTransaction();
 				session.update(item);
 				session.getTransaction().commit();
 			}catch(Exception ex) {
@@ -91,6 +90,22 @@ public class OrderlineManager extends EntityManager {
 			}finally {
 				session.close();
 			}
+		}
+		
+		Session session = null;
+		newOrder.setTotalCost(totalCost);
+		newOrder.setCustomer(customer);
+		
+		try {
+			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			session.update(newOrder);
+			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			session.close();
 		}
 	}
 	
@@ -139,16 +154,27 @@ public class OrderlineManager extends EntityManager {
 			
 			Set<Orderline> orderline = order.getOrderline();
 			
+			double totalCost = 0.0f;
+			long oldQuantity = 0l;
+			
 			if(!updateType.equals("Insert")) {
 				for(Orderline orderlineElement : orderline) {
 					Item orderlineItem = orderlineElement.getItem();
 				
 					// Item found
-					if(orderlineItem.getItemId() == itemId) {
+					if(orderlineItem.getItemId() == itemId) {					
 						switch(updateType) {
 							case "Update":
+								oldQuantity = orderlineElement.getQuantity();
+								double oldPrice = item.getPrice() * oldQuantity;
 								orderlineElement.setQuantity(quantity);
+								
 								order.setOrderline(orderline);
+								totalCost = order.getTotalCost();
+								totalCost -= oldPrice;
+								totalCost += (item.getPrice() * quantity);
+								order.setTotalCost(totalCost);
+								
 								item.setOrderline(orderline);
 						
 								session.beginTransaction();
@@ -165,8 +191,14 @@ public class OrderlineManager extends EntityManager {
 								
 								break;
 							case "Delete":	
+								oldQuantity = orderlineElement.getQuantity();
 								orderline.remove(orderlineElement);
+								
 								order.setOrderline(orderline);
+								totalCost = order.getTotalCost();
+								totalCost -= (item.getPrice() * oldQuantity);
+								order.setTotalCost(totalCost);
+								
 								item.setOrderline(orderline);
 								
 								session.beginTransaction();
@@ -194,6 +226,9 @@ public class OrderlineManager extends EntityManager {
 				
 				// The order needs a link to the orderline.
 				order.getOrderline().add(newOrderline);
+				totalCost = order.getTotalCost();
+				totalCost += (item.getPrice() * quantity);
+				order.setTotalCost(totalCost);
 				
 				// The item needs a link to the orderline.
 				item.getOrderline().add(newOrderline);
