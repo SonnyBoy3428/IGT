@@ -233,6 +233,8 @@ public class OrderlineManager extends EntityManager {
 			
 			orderline = order.getOrderline();
 			
+			OrderManager.deleteOrder(orderId);
+			
 			for(Orderline orderlineElement : orderline) {
 				Item item = orderlineElement.getItem();
 				Set<Orderline> itemOrderline = item.getOrderline();
@@ -245,11 +247,9 @@ public class OrderlineManager extends EntityManager {
 				session.getTransaction().commit();
 				
 				session.beginTransaction();
-				session.update(orderlineElement);
+				session.delete(orderlineElement);
 				session.getTransaction().commit();
 			}
-			
-			OrderManager.deleteOrder(orderId);
 		}catch(Exception ex) {
 			// TODO
 		}finally {

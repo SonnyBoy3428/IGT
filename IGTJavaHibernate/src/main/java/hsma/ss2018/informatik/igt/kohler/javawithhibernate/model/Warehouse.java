@@ -30,7 +30,7 @@ public class Warehouse implements Serializable{
 	private Set<District> districts;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "stockId.warehouse", cascade = CascadeType.ALL)
-	private Set<Stock> stocks;
+	private Set<Stock> stock;
 	
 	public Warehouse() {
 	}
@@ -67,11 +67,11 @@ public class Warehouse implements Serializable{
 		this.districts = districts;
 	}
 	
-	public Set<Stock> getStocks(){
-		return stocks;
+	public Set<Stock> getStock(){
+		return stock;
 	}
 	
-	public void setStocks(Set<Stock> stocks) {
-		this.stocks = stocks;
+	public void setStock(Set<Stock> stock) {
+		this.stock = stock;
 	}
 }
