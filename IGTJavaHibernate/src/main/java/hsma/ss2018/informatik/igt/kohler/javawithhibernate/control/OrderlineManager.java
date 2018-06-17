@@ -93,4 +93,167 @@ public class OrderlineManager extends EntityManager {
 			}
 		}
 	}
+	
+	/**
+	 * Gets the orderline belonging to the order Id.
+	 * 
+	 * @param orderId Id of the order associated with the orderline.
+	 * 
+	 * @return The orderline of the order.
+	 */
+	public Set<Orderline> getOrderlines(long orderId){
+		Set<Orderline> orderline = null;
+		Session session = null;
+		
+		try {
+			session = sessionFactory.openSession();
+			
+			Order order = session.get(Order.class, orderId);
+			
+			orderline = order.getOrderline();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			session.close();
+		}
+		
+		return orderline;
+	}
+	
+	/**
+	 * Updates an orderline.
+	 * 
+	 * @param orderId Order associated with the orderline.
+	 * @param itemId Item associated with the orderline.
+	 * @param updateType Update type can be an insert, an update or a delete function.
+	 * @param quantity Quantity of the new item or of the item that is to be updated.
+	 */
+	public void updateOrderline(long orderId, long itemId, String updateType, long quantity) {
+		Session session = null;
+		
+		try {
+			session = sessionFactory.openSession();
+			
+			Order order = session.get(Order.class, orderId);
+			Item item = session.get(Item.class, itemId);
+			
+			Set<Orderline> orderline = order.getOrderline();
+			
+			if(!updateType.equals("Insert")) {
+				for(Orderline orderlineElement : orderline) {
+					Item orderlineItem = orderlineElement.getItem();
+				
+					// Item found
+					if(orderlineItem.getItemId() == itemId) {
+						switch(updateType) {
+							case "Update":
+								orderlineElement.setQuantity(quantity);
+								order.setOrderline(orderline);
+								item.setOrderline(orderline);
+						
+								session.beginTransaction();
+								session.update(orderlineElement);
+								session.getTransaction().commit();
+						
+								session.beginTransaction();
+								session.update(order);
+								session.getTransaction().commit();
+								
+								session.beginTransaction();
+								session.update(item);
+								session.getTransaction().commit();
+								
+								break;
+							case "Delete":	
+								orderline.remove(orderlineElement);
+								order.setOrderline(orderline);
+								item.setOrderline(orderline);
+								
+								session.beginTransaction();
+								session.delete(orderlineElement);
+								session.getTransaction().commit();
+								
+								session.beginTransaction();
+								session.update(order);
+								session.getTransaction().commit();
+								
+								session.beginTransaction();
+								session.update(item);
+								session.getTransaction().commit();
+								
+								break;
+						}
+					}
+				}
+			}else {
+				// The orderline needs a link to the order and the item 
+				Orderline newOrderline = new Orderline();
+				newOrderline.setOrder(order);
+				newOrderline.setItem(item);
+				newOrderline.setQuantity(quantity);
+				
+				// The order needs a link to the orderline.
+				order.getOrderline().add(newOrderline);
+				
+				// The item needs a link to the orderline.
+				item.getOrderline().add(newOrderline);
+					
+				session.beginTransaction();
+				session.save(newOrderline);
+				session.getTransaction().commit();
+				
+				session.beginTransaction();
+				session.update(order);
+				session.getTransaction().commit();
+					
+				session.beginTransaction();
+				session.update(item);
+				session.getTransaction().commit();
+			}
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			session.close();
+		}
+	}
+	
+	/**
+	 * Deletes an orderline and it's relationships.
+	 * 
+	 * @param orderId Order Id from order on which deletion is based.
+	 */
+	public void deleteOrderline(long orderId) {
+		Set<Orderline> orderline = null;
+		Session session = null;
+		
+		try {
+			session = sessionFactory.openSession();
+			
+			Order order = session.get(Order.class, orderId);
+			
+			orderline = order.getOrderline();
+			
+			for(Orderline orderlineElement : orderline) {
+				Item item = orderlineElement.getItem();
+				Set<Orderline> itemOrderline = item.getOrderline();
+				
+				itemOrderline.remove(orderlineElement);
+				item.setOrderline(itemOrderline);
+				
+				session.beginTransaction();
+				session.update(item);
+				session.getTransaction().commit();
+				
+				session.beginTransaction();
+				session.update(orderlineElement);
+				session.getTransaction().commit();
+			}
+			
+			OrderManager.deleteOrder(orderId);
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			session.close();
+		}
+	}
 }

@@ -7,5 +7,5 @@ package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
  *
  */
 public class StockManager {
-
+	
 }
