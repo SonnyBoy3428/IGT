@@ -13,43 +13,61 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 
+/**
+ * This class functions as the API with which one can deal with orderlines.
+ * 
+ * @author Dustin Noah Young,
+ *
+ */
 public class OrderlineManager extends EntityManager {
-	public void createOrderline(long customerId, Map<Long, Long> itemQuantity) {
+	/**
+	 * Creates an orderline and builds up the relations between all affected objects.
+	 * 
+	 * @param customerId Customer for whom the order should be created.
+	 * @param itemsAndQuantity The ordered items and their quantity.
+	 */
+	public void createOrderline(long customerId, Map<Long, Long> itemsAndQuantity) {
 		Customer customer = CustomerManager.getCustomer(customerId);
-		
+		Order newOrder = null;
 		Set<Item> items = new HashSet<Item>();
 		
-		Order newOrder = null;
-		
+		// If the customer does not exist we don't need to continue.
 		if(customer != null) {
 			newOrder = OrderManager.createOrder();
 			
+			// If the order could not be created we don't need to continue.
 			if(newOrder != null) {
-				for(long itemId : itemQuantity.keySet()) {
+				// Get each item and add it to the item list
+				for(long itemId : itemsAndQuantity.keySet()) {
 					Item item = ItemManager.getItem(itemId);
 					
+					// If the item does not exist we don't need to continue.
 					if(item != null) {
 						items.add(item);
 					}else {
-						// TODO
+						throw new NullPointerException("No item with the Id: " + itemId + " exists.");
 					}
 				}
 			}else {
-				//TODO
+				throw new NullPointerException("No new order could be created.");
 			}
 		}else {
-			// TODO
+			throw new NullPointerException("No customer with the Id: " + customerId + " exists.");
 		}
 		
+		// Here we set the relationships.
 		for(Item item : items) {
+			// The orderline needs a link to the order and the item 
 			Orderline orderline = new Orderline();
-			
 			orderline.setOrder(newOrder);
 			orderline.setItem(item);
-			orderline.setQuantity(itemQuantity.get(item.getItemId()));
+			orderline.setQuantity(itemsAndQuantity.get(item.getItemId()));
 			
+			// The order needs a link to the orderline and the customer
 			newOrder.getOrderline().add(orderline);
 			newOrder.setCustomer(customer);
+			
+			// The item needs a link to the orderline.
 			item.getOrderline().add(orderline);
 		
 			Session session = null;
@@ -74,29 +92,5 @@ public class OrderlineManager extends EntityManager {
 				session.close();
 			}
 		}
-	}
-	
-	public List<Orderline> getOrderline(long orderId) {	
-		Order order = null;
-		List<Orderline> orderline = null;
-		
-		Session session = null;
-		
-		try {
-			session = sessionFactory.openSession();
-			
-			Query<Orderline> query = session.createQuery("from Orderline where order.Id =" + orderId);
-			orderline = query.getResultList();
-		}catch(Exception ex) {
-			
-		}finally {
-			session.close();
-		}
-		
-		return orderline;
-	}
-	
-	public getOrderlineAsXML() {
-		
 	}
 }
