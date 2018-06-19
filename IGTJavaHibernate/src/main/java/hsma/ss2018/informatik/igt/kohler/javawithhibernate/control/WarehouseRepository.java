@@ -8,8 +8,10 @@ import java.util.Set;
 
 import org.hibernate.Session;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
@@ -87,7 +89,7 @@ public class WarehouseRepository extends EntityRepository{
 	 * @return All existing warehouses.
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Warehouse> getAllWarehouses() {
+	public static Set<Warehouse> getAllWarehouses() {
 		List<Warehouse> warehousesList = null;
 		Set<Warehouse> warehouses = null;
 		
@@ -117,7 +119,7 @@ public class WarehouseRepository extends EntityRepository{
 	 * 
 	 * @return All districts belonging to the warehouse.
 	 */
-	public Set<District> getWarehouseDistricts(long warehouseId) {
+	public static Set<District> getWarehouseDistricts(long warehouseId) {
 		Warehouse warehouse = null;
 		Set<District> districts = null;
 		
@@ -145,12 +147,12 @@ public class WarehouseRepository extends EntityRepository{
 	 * 
 	 * @param warehouseId Id of the warehouse that is to be deleted.
 	 */
-	public void deleteWarehouse(long warehouseId) {
+	public static void deleteWarehouse(long warehouseId) {
 		Session session = null;
 		
 		try {
 			session = sessionFactory.openSession();
-		}catch(Exception ex) {
+			
 			Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
 			
 			session.beginTransaction();
@@ -158,6 +160,8 @@ public class WarehouseRepository extends EntityRepository{
 			session.delete(warehouse);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
 		}finally {
 			if(session != null) {
 				session.close();
@@ -172,13 +176,14 @@ public class WarehouseRepository extends EntityRepository{
 	 * @param location Location of the warehouse.
 	 * @param owner Owner of the warehouse.
 	 */
-	public void updateWarehouse(long warehouseId, String location, String owner) {
+	public static Warehouse updateWarehouse(long warehouseId, String location, String owner) {
 		Session session = null;
+		Warehouse warehouse = null;
 		
 		try {
 			session = sessionFactory.openSession();
-		}catch(Exception ex) {
-			Warehouse warehouse = session.get(Warehouse.class,  warehouseId);
+			
+			warehouse = session.get(Warehouse.class,  warehouseId);
 			warehouse.setLocation(location);
 			warehouse.setOwner(owner);
 			
@@ -187,11 +192,15 @@ public class WarehouseRepository extends EntityRepository{
 			session.update(warehouse);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
 		}finally{
 			if(session != null) {
 				session.close();
 			}
 		}
+		
+		return warehouse;
 	}
 	
 	/**
@@ -297,5 +306,24 @@ public class WarehouseRepository extends EntityRepository{
 		xmlCompleteWarehouses += "</CompleteWarehouses>";
 		
 		return xmlCompleteWarehouses;
+	}
+	
+	/**
+	 * Converts a warehouse and its districts into XML-format.
+	 * 
+	 * @param customer The warehouse.
+	 * @param orders The districts of the warehouse.
+	 * 
+	 * @return Warehouse and its districts in XML-format.
+	 */
+	public static String warehouseAndDistrictsToXML(Warehouse warehouse, Set<District> districts) {
+		String xmlWarehouseAndDistricts = "<WarehouseAndDistricts>";
+		
+		xmlWarehouseAndDistricts += warehouseToXML(warehouse);
+		xmlWarehouseAndDistricts += DistrictRepository.districtsToXML(districts);
+		
+		xmlWarehouseAndDistricts += "</WarehouseAndDistricts>";
+		
+		return xmlWarehouseAndDistricts;
 	}
 }
