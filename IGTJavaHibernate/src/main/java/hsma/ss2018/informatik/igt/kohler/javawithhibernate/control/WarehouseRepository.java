@@ -8,11 +8,8 @@ import java.util.Set;
 
 import org.hibernate.Session;
 
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
@@ -22,7 +19,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
  * @author Dustin Noah Young,
  *
  */
-public class WarehouseManager extends EntityManager{
+public class WarehouseRepository extends EntityRepository{
 	/**
 	 * Created a new warehouse from the given values.
 	 * 
@@ -271,8 +268,8 @@ public class WarehouseManager extends EntityManager{
 		xmlCompleteWarehouse = "<CompleteWarehouse>" + warehouseToXML(warehouse);
 		
 		for(long itemId : itemIdsAndQuantity.keySet()) {
-			Item item = ItemManager.getItem(itemId);
-			xmlCompleteWarehouse += ItemManager.itemToXML(item);
+			Item item = ItemRepository.getItem(itemId);
+			xmlCompleteWarehouse += ItemRepository.itemToXML(item);
 			xmlCompleteWarehouse += "<Quantity>" + itemIdsAndQuantity.get(itemId) + "</Quantity>";
 		}
 				

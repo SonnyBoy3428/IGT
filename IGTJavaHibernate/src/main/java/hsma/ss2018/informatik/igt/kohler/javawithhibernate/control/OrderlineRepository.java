@@ -1,11 +1,9 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
@@ -19,7 +17,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
  * @author Dustin Noah Young,
  *
  */
-public class OrderlineManager extends EntityManager {
+public class OrderlineRepository extends EntityRepository {
 	/**
 	 * Creates an orderline and builds up the relations between all affected objects.
 	 * 
@@ -27,19 +25,19 @@ public class OrderlineManager extends EntityManager {
 	 * @param itemsAndQuantity The ordered items and their quantity.
 	 */
 	public void createOrderline(long customerId, Map<Long, Long> itemsAndQuantity) {
-		Customer customer = CustomerManager.getCustomer(customerId);
+		Customer customer = CustomerRepository.getCustomer(customerId);
 		Order newOrder = null;
 		Set<Item> items = new HashSet<Item>();
 		
 		// If the customer does not exist we don't need to continue.
 		if(customer != null) {
-			newOrder = OrderManager.createOrder();
+			newOrder = OrderRepository.createOrder();
 			
 			// If the order could not be created we don't need to continue.
 			if(newOrder != null) {
 				// Get each item and add it to the item list
 				for(long itemId : itemsAndQuantity.keySet()) {
-					Item item = ItemManager.getItem(itemId);
+					Item item = ItemRepository.getItem(itemId);
 					
 					// If the item does not exist we don't need to continue.
 					if(item != null) {
@@ -116,7 +114,7 @@ public class OrderlineManager extends EntityManager {
 	 * 
 	 * @return The orderline of the order.
 	 */
-	public Set<Orderline> getOrderlines(long orderId){
+	public static Set<Orderline> getOrderlines(long orderId){
 		Set<Orderline> orderline = null;
 		Session session = null;
 		
@@ -143,7 +141,7 @@ public class OrderlineManager extends EntityManager {
 	 * @param updateType Update type can be an insert, an update or a delete function.
 	 * @param quantity Quantity of the new item or of the item that is to be updated.
 	 */
-	public void updateOrderline(long orderId, long itemId, String updateType, long quantity) {
+	public static void updateOrderline(long orderId, long itemId, String updateType, long quantity) {
 		Session session = null;
 		
 		try {
@@ -257,7 +255,7 @@ public class OrderlineManager extends EntityManager {
 	 * 
 	 * @param orderId Order Id from order on which deletion is based.
 	 */
-	public void deleteOrderline(long orderId) {
+	public static void deleteOrderline(long orderId) {
 		Set<Orderline> orderline = null;
 		Session session = null;
 		
@@ -268,7 +266,7 @@ public class OrderlineManager extends EntityManager {
 			
 			orderline = order.getOrderline();
 			
-			OrderManager.deleteOrder(orderId);
+			OrderRepository.deleteOrder(orderId);
 			
 			for(Orderline orderlineElement : orderline) {
 				Item item = orderlineElement.getItem();

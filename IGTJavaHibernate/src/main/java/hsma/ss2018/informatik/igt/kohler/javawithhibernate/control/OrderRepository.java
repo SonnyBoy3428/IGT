@@ -8,7 +8,6 @@ import java.util.Set;
 import java.time.LocalDate;
 import org.hibernate.Session;
 
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
@@ -19,7 +18,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
  * @author Dustin Noah Young,
  *
  */
-public class OrderManager extends EntityManager{
+public class OrderRepository extends EntityRepository{
 	/**
 	 * Creates an order.
 	 * 
@@ -210,8 +209,8 @@ public class OrderManager extends EntityManager{
 		xmlCompleteOrder = "<CompleteOrder>" + orderToXML(order);
 		
 		for(long itemId : itemIdsAndQuantity.keySet()) {
-			Item item = ItemManager.getItem(itemId);
-			xmlCompleteOrder += ItemManager.itemToXML(item);
+			Item item = ItemRepository.getItem(itemId);
+			xmlCompleteOrder += ItemRepository.itemToXML(item);
 			xmlCompleteOrder += "<Quantity>" + itemIdsAndQuantity.get(itemId) + "</Quantity>";
 		}
 				

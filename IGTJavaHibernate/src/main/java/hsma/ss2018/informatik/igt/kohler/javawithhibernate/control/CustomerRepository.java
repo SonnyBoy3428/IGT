@@ -10,6 +10,7 @@ import java.util.Set;
 import org.hibernate.Session;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 
 /**
@@ -18,7 +19,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
  * @author Dustin Noah Young,
  *
  */
-public class CustomerManager extends EntityManager{	
+public class CustomerRepository extends EntityRepository{	
 	/**
 	 * Creates a new customer from the given values.
 	 * 
@@ -30,13 +31,17 @@ public class CustomerManager extends EntityManager{
 	 * 
 	 * @return The newly created customer.
 	 */
-	public static Customer createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr) {
+	public static Customer createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr, long districtId) {
 		Customer customer = new Customer();
 		customer.setFirstName(firstName);
 		customer.setLastName(lastName);
 		customer.setAddress(address);
 		customer.setTelephone(telephone);
 		customer.setCreditCardNr(creditCardNr);
+		
+		District district = DistrictRepository.getDistrict(districtId);
+		
+		customer.setDistrict(district);
 		
 		Session session = null;
 		
@@ -246,15 +251,16 @@ public class CustomerManager extends EntityManager{
 	 * @param telephone Telephone number of the customer
 	 * @param creditCardNr Credit card number of the customer
 	 * 
-	 * @return The newly created customer.
+	 * @return The newly updated customer.
 	 */
-	public static void updateCustomer(long customerId, String firstName, String lastName, String address, String telephone, String creditCardNr) {
+	public static Customer updateCustomer(long customerId, String firstName, String lastName, String address, String telephone, String creditCardNr) {
 		Session session = null;
+		Customer customer = null;
 		
 		try {
 			session = sessionFactory.openSession();
 			
-			Customer customer = session.get(Customer.class,  customerId);		
+			customer = session.get(Customer.class,  customerId);		
 			customer.setFirstName(firstName);
 			customer.setLastName(lastName);
 			customer.setAddress(address);
@@ -271,6 +277,8 @@ public class CustomerManager extends EntityManager{
 		}finally {
 			session.close();
 		}
+		
+		return customer;
 	}
 	
 	/**
@@ -290,7 +298,7 @@ public class CustomerManager extends EntityManager{
 				+ "<Address>" + customer.getAddress() + "</Address>"
 				+ "<Telephone>" + customer.getTelephone() + "</Telephone>"
 				+ "<CreditCardNr>" + customer.getCreditCardNr() + "</CreditCardNr>"
-				+ "<DistrictId" + customer.getDistrict().getDistrictId() + "</DistrictId>"
+				+ "<DistrictId>" + customer.getDistrict().getDistrictId() + "</DistrictId>"
 				+ "<DistrictName>" + customer.getDistrict().getDistrictName() + "</DistrictName>"
 				+ "</Customer>";
 		
@@ -304,19 +312,36 @@ public class CustomerManager extends EntityManager{
 	 * 
 	 * @return Customers in XML format.
 	 */
-	public static String customersToXML(Set<Customer> customers) {
-		String xmlCustomers;
-		
-		xmlCustomers = "<Customers>";
+	public static String customersToXML(Set<Customer> customers) {		
+		String xmlCustomers = "<Customers>";
 		
 		if(customers != null && customers.size() > 0) {
 			for(Customer customer : customers) {
-				xmlCustomers += CustomerManager.customerToXML(customer); 
+				xmlCustomers += CustomerRepository.customerToXML(customer); 
 			}
 		}
 		
 		xmlCustomers += "</Customers>";
 		
 		return xmlCustomers;
+	}
+	
+	/**
+	 * Converts a customer and his orders into XML-format.
+	 * 
+	 * @param customer The customer.
+	 * @param orders The orders of the customer.
+	 * 
+	 * @return Customer and his orders in XML-format.
+	 */
+	public static String customerAndOrdersToXML(Customer customer, Set<Order> orders) {
+		String xmlCustomerAndOrders = "<CustomerAndOrders>";
+		
+		xmlCustomerAndOrders += customerToXML(customer);
+		xmlCustomerAndOrders += OrderRepository.ordersToXML(orders);
+		
+		xmlCustomerAndOrders += "</CustomerAndOrders>";
+		
+		return xmlCustomerAndOrders;
 	}
 }

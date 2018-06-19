@@ -1,7 +1,5 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Session;
@@ -16,7 +14,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
  * @author Dustin Noah Young,
  *
  */
-public class StockManager extends EntityManager{
+public class StockRepository extends EntityRepository{
 	/**
 	 * Creates a stock and builds up the relations between all affected objects.
 	 * 
@@ -25,9 +23,8 @@ public class StockManager extends EntityManager{
 	 * @param quantity
 	 */
 	public void createStock(long warehouseId, long itemId, long quantity) {
-		Warehouse warehouse = WarehouseManager.getWarehouse(warehouseId);
-		Item item = ItemManager.getItem(itemId);
-		Set<Item> items = new HashSet<Item>();
+		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
+		Item item = ItemRepository.getItem(itemId);
 		
 		// If the warehouse does not exist we don't need to continue.
 		if(warehouse != null) {

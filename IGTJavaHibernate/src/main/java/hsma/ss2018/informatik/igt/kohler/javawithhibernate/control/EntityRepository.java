@@ -10,7 +10,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
  * 
  * @author Dustin Noah Young
  */
-public abstract class EntityManager {
+public abstract class EntityRepository {
 	public static SessionFactory sessionFactory;
 	
 	/**

@@ -8,6 +8,8 @@ import org.hibernate.Session;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
 /**
  * This class functions as the API with which one can deal with districts.
@@ -15,7 +17,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
  * @author Dustin Noah Young,
  *
  */
-public class DistrictManager extends EntityManager{
+public class DistrictRepository extends EntityRepository{
 	/**
 	 * Created a new district from the given values.
 	 * 
@@ -24,10 +26,14 @@ public class DistrictManager extends EntityManager{
 	 * 
 	 * @return The newly created district.
 	 */
-	public static District createDistrict(String districtName, double districtSize) {
+	public static District createDistrict(String districtName, double districtSize, long warehouseId) {
 		District district = new District();
 		district.setDistrictName(districtName);
 		district.setDistrictSize(districtSize);
+		
+		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
+		
+		district.setWarehouse(warehouse);
 		
 		Session session = null;
 		
@@ -84,7 +90,7 @@ public class DistrictManager extends EntityManager{
 	 * @return All existing districts.
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<District> getAllDistricts() {
+	public static Set<District> getAllDistricts() {
 		List<District> districtsList = null;
 		Set<District> districts = null;
 		
@@ -114,7 +120,7 @@ public class DistrictManager extends EntityManager{
 	 * 
 	 * @return All customers belonging to the districts.
 	 */
-	public Set<Customer> getDistrictCustomers(long districtId) {
+	public static Set<Customer> getDistrictCustomers(long districtId) {
 		District district = null;
 		Set<Customer> customers = null;
 		
@@ -142,7 +148,7 @@ public class DistrictManager extends EntityManager{
 	 * 
 	 * @param districtId Id of the district that is to be deleted.
 	 */
-	public void deleteDistrict(long districtId) {
+	public static void deleteDistrict(long districtId) {
 		Session session = null;
 		
 		try {
@@ -170,14 +176,17 @@ public class DistrictManager extends EntityManager{
 	 * @param districtId Id of the district that is to be updated.
 	 * @param districtName Name of the district.
 	 * @param districtSize Size of the district in km^2.
+	 * 
+	 * @return The updated district.
 	 */
-	public void updateDistrict(long districtId, String districtName, double districtSize) {
+	public static District updateDistrict(long districtId, String districtName, double districtSize) {
 		Session session = null;
+		District district = null;
 		
 		try {
 			session = sessionFactory.openSession();
 			
-			District district = session.get(District.class,  districtId);
+			district = session.get(District.class,  districtId);
 			district.setDistrictName(districtName);
 			district.setDistrictSize(districtSize);
 			
@@ -193,6 +202,8 @@ public class DistrictManager extends EntityManager{
 				session.close();
 			}
 		}
+		
+		return district;
 	}
 	
 	/**
@@ -237,5 +248,24 @@ public class DistrictManager extends EntityManager{
 		xmlDistricts += "</Districts>";
 		
 		return xmlDistricts;
+	}
+	
+	/**
+	 * Converts a district and its customers into XML-format.
+	 * 
+	 * @param district The district.
+	 * @param customers The customers of the district.
+	 * 
+	 * @return District and its customers in XML-format.
+	 */
+	public static String districtAndCustomersToXML(District district, Set<Customer> customers) {
+		String xmlDistrcitAndCustomers = "<DistrcitAndCustomers>";
+		
+		xmlDistrcitAndCustomers += districtToXML(district);
+		xmlDistrcitAndCustomers += CustomerRepository.customersToXML(customers);
+		
+		xmlDistrcitAndCustomers += "</DistrcitAndCustomers>";
+		
+		return xmlDistrcitAndCustomers;
 	}
 }

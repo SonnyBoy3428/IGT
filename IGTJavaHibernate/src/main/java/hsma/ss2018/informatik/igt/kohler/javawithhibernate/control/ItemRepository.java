@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.hibernate.Session;
 
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 
 /**
@@ -15,7 +14,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
  * @author Dustin Noah Young,
  *
  */
-public class ItemManager extends EntityManager{
+public class ItemRepository extends EntityRepository{
 	/**
 	 * Created a new item from the given values.
 	 * 
@@ -84,7 +83,7 @@ public class ItemManager extends EntityManager{
 	 * @return All existing items.
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Item> getAllItems() {
+	public static Set<Item> getAllItems() {
 		List<Item> itemsList = null;
 		Set<Item> items = null;
 		
@@ -112,7 +111,7 @@ public class ItemManager extends EntityManager{
 	 * 
 	 * @param itemId Id of the item that is to be deleted.
 	 */
-	public void deleteItem(long itemId) {
+	public static void deleteItem(long itemId) {
 		Session session = null;
 		
 		try {
@@ -138,14 +137,17 @@ public class ItemManager extends EntityManager{
 	 * @param itemId Id of the item that is to be updated.
 	 * @param itemName Name of the item.
 	 * @param price Price of the item in euro.
+	 * 
+	 * @return The newly updated item.
 	 */
-	public void updateItem(long itemId, String itemName, double price) {
+	public static Item updateItem(long itemId, String itemName, double price) {
 		Session session = null;
+		Item item = null;
 		
 		try {
 			session = sessionFactory.openSession();
 		}catch(Exception ex) {
-			Item item = session.get(Item.class,  itemId);
+			item = session.get(Item.class,  itemId);
 			item.setItemName(itemName);
 			item.setPrice(price);
 			
@@ -159,6 +161,8 @@ public class ItemManager extends EntityManager{
 				session.close();
 			}
 		}
+		
+		return item;
 	}
 	
 	/**
@@ -168,7 +172,7 @@ public class ItemManager extends EntityManager{
 	 * 
 	 * @return XML version of the item.
 	 */
-	protected static String itemToXML(Item item) {
+	public static String itemToXML(Item item) {
 		String xmlItem;
 		
 		xmlItem = "<Item>"
@@ -187,7 +191,7 @@ public class ItemManager extends EntityManager{
 	 * 
 	 * @return XML version of the items.
 	 */
-	protected static String itemsToXML(Set<Item> items) {
+	public static String itemsToXML(Set<Item> items) {
 		String xmlItems;
 		
 		xmlItems = "<Items>";

@@ -15,6 +15,9 @@ This repository is for the course IGT - Integration Technologies at the Mannheim
 * [Eclipse Oxygen](https://www.eclipse.org/downloads/)
 	* IntelliJ won't work with the Community Edition. It doesn't support Hibernate.
 	* Install the workload 'Java for Developers'
+* [Maven]()
+	* Unpack the .ZIP into a folder (for example Program Files)
+	* And add the \bin folder within the maven directory to your PATH variable
 * [JBoss Tools](http://tools.jboss.org/downloads/jbosstools/oxygen/4.5.3.Final.html)
 	* It's recommended to install this via the Eclipse Marketplace
 	* In Eclipse:
