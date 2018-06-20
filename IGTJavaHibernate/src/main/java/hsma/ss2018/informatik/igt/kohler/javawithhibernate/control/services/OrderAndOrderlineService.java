@@ -38,7 +38,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
  *
  */
 @Path("/orderAndOrderlineService")
-public class OrderlineService extends EntityService{
+public class OrderAndOrderlineService extends EntityService{
 	/**
 	 * The tag names belonging to a orderline XML object.
 	 */
@@ -166,7 +166,7 @@ public class OrderlineService extends EntityService{
 	 * @throws IOException
 	 */
 	@PUT
-	@Path("/updateOrderById={order}/{item}/{type}/{quantity}")
+	@Path("/updateOrderById={order}/item={item}/updateType={type}/quantity={quantity}")
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response updateOrder(@PathParam("order") long orderId, @PathParam("item") long itemId, @PathParam("type") String updateType, @PathParam("quantity") long quantity){		
 		OrderlineRepository.updateOrderline(orderId, itemId, updateType, quantity);

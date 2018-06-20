@@ -22,7 +22,7 @@ public class StockRepository extends EntityRepository{
 	 * @param item Item that is to be stocked
 	 * @param quantity
 	 */
-	public void createStock(long warehouseId, long itemId, long quantity) {
+	public static void createStock(long warehouseId, long itemId, long quantity) {
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		Item item = ItemRepository.getItem(itemId);
 		
@@ -77,7 +77,7 @@ public class StockRepository extends EntityRepository{
 	 * 
 	 * @return The stocks of the warehouse.
 	 */
-	public Set<Stock> getOrderlines(long warehouseId){
+	public static Set<Stock> getStocks(long warehouseId){
 		Set<Stock> stock = null;
 		Session session = null;
 		
@@ -104,7 +104,7 @@ public class StockRepository extends EntityRepository{
 	 * @param updateType Update type can be an insert, an update or a delete function.
 	 * @param quantity Quantity of the new item or of the item that is to be updated.
 	 */
-	public void updateOrderline(long warehouseId, long itemId, String updateType, long quantity) {
+	public static void updateStock(long warehouseId, long itemId, String updateType, long quantity) {
 		Session session = null;
 		
 		try {
@@ -198,7 +198,7 @@ public class StockRepository extends EntityRepository{
 	 * 
 	 * @param warehouseId Warehouse Id from warehouse on which deletion is based.
 	 */
-	public void deleteOrderline(long warehouseId) {
+	public static void deleteStock(long warehouseId) {
 		Set<Stock> stock = null;
 		Session session = null;
 		

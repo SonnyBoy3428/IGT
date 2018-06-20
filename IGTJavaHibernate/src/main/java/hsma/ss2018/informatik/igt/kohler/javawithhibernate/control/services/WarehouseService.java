@@ -2,6 +2,8 @@ package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.services;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -22,9 +24,11 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.StockRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.WarehouseRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
 
 /**
  * This class acts as the API for calls to the warehouse repository.
@@ -84,6 +88,17 @@ public class WarehouseService extends EntityService{
 		return Response.status(200).entity(warehouseXML).build();
 	}
 	
+	@POST
+	@Path("/createStockForWarehouseId={warehouseId}/itemId={itemId}/quantity={quantity}")
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response createStockForWarehouse(@PathParam("warehouseId") long warehouseId, @PathParam("itemId") long itemId, @PathParam("quantity") long quantity) {
+		StockRepository.createStock(warehouseId, itemId, quantity);
+		
+		String response = "Stock successfully added to warehouse with the id:" + warehouseId + "!";
+		
+		return Response.status(200).entity(response).build();
+	}
+	
 	/**
 	 * Receives a GET request to get all warehouses.
 	 * 
@@ -115,6 +130,43 @@ public class WarehouseService extends EntityService{
 		String warehouseAndDistrictsXML = WarehouseRepository.warehouseAndDistrictsToXML(warehouse, districts);
 		
 		return Response.status(200).entity(warehouseAndDistrictsXML).build();
+	}
+	
+	/**
+	 * Receives a GET request to get the warehouse and all its stocks. The warehouse id is located within the URL.
+	 * 
+	 * @param warehouseId The warehouse id located in the URL.
+	 * 
+	 * @return The response containing the warehouse and all its stocks.
+	 */
+	@GET
+	@Path("/getWarehouseStockByWarehouseId={param}")
+	public Response getWarehouseStock(@PathParam("param") long warehouseId) {
+		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
+		Map<Long, Long> itemIdsAndQuantity = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
+	
+		return Response.status(200).entity(WarehouseRepository.completeWarehouseToXML(warehouse, itemIdsAndQuantity)).build();
+	}
+	
+	/**
+	 * Receives a GET request to get all warehouses and all their stocks. The warehouse id is located within the URL.
+	 * 
+	 * @param warehouseId The warehouse id located in the URL.
+	 * 
+	 * @return The response containing the warehouse and all its stocks.
+	 */
+	@GET
+	@Path("/getAllWarehousesAndTheirStocks")
+	public Response getWarehouseStock() {
+		Set<Warehouse> warehouses = WarehouseRepository.getAllWarehouses();
+		Map<Warehouse, Map<Long, Long>> completeWarehouses = new HashMap<Warehouse, Map<Long, Long>>();
+		
+		for(Warehouse warehouse : warehouses) {
+			Map<Long, Long> itemIdsAndQuantity = WarehouseRepository.getAllItemsOfWarehouse(warehouse.getWarehouseId());
+			completeWarehouses.put(warehouse, itemIdsAndQuantity);
+		}
+	
+		return Response.status(200).entity(WarehouseRepository.completeWarehousesToXML(completeWarehouses)).build();
 	}
 	
 	/**
