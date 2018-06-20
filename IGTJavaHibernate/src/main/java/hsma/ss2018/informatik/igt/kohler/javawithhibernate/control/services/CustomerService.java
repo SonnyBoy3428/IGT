@@ -29,7 +29,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 /**
  * This class acts as the API for calls to the customer repository.
  * 
- * @author Dustin Noah Young, 
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 @Path("/customerService")

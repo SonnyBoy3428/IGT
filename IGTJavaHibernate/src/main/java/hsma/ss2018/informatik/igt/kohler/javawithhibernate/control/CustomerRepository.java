@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
@@ -16,7 +18,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 /**
  * This class functions as the API with which one can deal with customers.
  * 
- * @author Dustin Noah Young,
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 public class CustomerRepository extends EntityRepository{	
@@ -78,8 +80,12 @@ public class CustomerRepository extends EntityRepository{
 		
 		try {
 			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
 		
 			customer = session.get(Customer.class,  customerId);
+			
+			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
 		}finally {
@@ -106,7 +112,11 @@ public class CustomerRepository extends EntityRepository{
 		try {
 			session = sessionFactory.openSession();
 		
+			session.beginTransaction();
+			
 			customersList = session.createQuery("from CUSTOMER").getResultList();
+			
+			session.getTransaction().commit();
 			
 			customers = new HashSet<Customer>(customersList);
 		}catch(Exception ex) {
@@ -121,42 +131,26 @@ public class CustomerRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the orders beinting to the customer.
+	 * Gets all the orders belonging to the customer.
 	 * 
 	 * @param customerId Id of the customer.
 	 * 
-	 * @return All orders beinting to the customer.
+	 * @return All orders belonging to the customer.
 	 */
-	public static Set<Order> getCustomerAllOrders(int customerId) {
-		Customer customer = null;
-		Set<Order> orders = null;
-		
-		Session session = null;
-		
-		try {
-			session = sessionFactory.openSession();
-		
-			customer = session.get(Customer.class,  customerId);
-		
-			orders = customer.getOrders();
-		}catch(Exception ex) {
-			// TODO
-		}finally {
-			if(session != null) {
-				session.close();
-			}
-		}
+	public static Set<Order> getCustomerAllOrders(int customerId) {		
+		Customer customer = getCustomer(customerId);
+		Set<Order> orders = customer.getOrders();
 				
 		return orders;
 	}
 	
 	/**
-	 * Gets all the new orders beinting to the customer.
+	 * Gets all the new orders belonging to the customer.
 	 * A new order is an order which is placed in the current month.
 	 * 
 	 * @param customerId Id of the customer.
 	 * 
-	 * @return All new orders beinting to the customer.
+	 * @return All new orders belonging to the customer.
 	 */
 	public static Set<Order> getCustomerNewOrders(int customerId) {
 		Set<Order> orders = getCustomerAllOrders(customerId);
@@ -179,6 +173,7 @@ public class CustomerRepository extends EntityRepository{
 		// This represents the current year and month in the form of the date attribute -> 2018-06
 		String currentYearAndMonth = yearAsString + "-" + monthAsString;
 		
+		// Go through every order and see if they are new
 		for(Order order : orders) {
 			if(order.getOrderDate().contains(currentYearAndMonth)) {
 				newOrders.add(order);
@@ -189,12 +184,12 @@ public class CustomerRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets the order history beinting to the customer.
-	 * An order history contains all the orders from the current year.
+	 * Gets the order history belonging to the customer.
+	 * An order history contains all the orders of the current year.
 	 * 
 	 * @param customerId Id of the customer.
 	 * 
-	 * @return Order history beinting to the customer.
+	 * @return Order history belonging to the customer.
 	 */
 	public static Set<Order> getCustomerOrderHistory(int customerId) {
 		Set<Order> orders = getCustomerAllOrders(customerId);
@@ -207,6 +202,7 @@ public class CustomerRepository extends EntityRepository{
 		
 		String yearAsString = Integer.toString(year);
 		
+		// Go through every order and see if they are from this year
 		for(Order order : orders) {
 			if(order.getOrderDate().contains(yearAsString)) {
 				orderHistory.add(order);
@@ -227,7 +223,7 @@ public class CustomerRepository extends EntityRepository{
 		try {
 			session = sessionFactory.openSession();
 			
-			Customer customer = session.get(Customer.class,  customerId);		
+			Customer customer = getCustomer(customerId);	
 			
 			session.beginTransaction();
 			
@@ -253,19 +249,22 @@ public class CustomerRepository extends EntityRepository{
 	 * 
 	 * @return The newly updated customer.
 	 */
-	public static Customer updateCustomer(int customerId, String firstName, String lastName, String address, String telephone, String creditCardNr) {
+	public static Customer updateCustomer(int customerId, String firstName, String lastName, String address, String telephone, String creditCardNr, int districtId) {
 		Session session = null;
 		Customer customer = null;
 		
 		try {
 			session = sessionFactory.openSession();
 			
-			customer = session.get(Customer.class,  customerId);		
+			customer = getCustomer(customerId);
+			District district = DistrictRepository.getDistrict(districtId);
+			
 			customer.setFirstName(firstName);
 			customer.setLastName(lastName);
 			customer.setAddress(address);
 			customer.setTelephone(telephone);
 			customer.setCreditCardNr(creditCardNr);
+			customer.setDistrict(district);
 			
 			session.beginTransaction();
 			
@@ -282,66 +281,63 @@ public class CustomerRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Converts a Customer object into XML-format.
+	 * Converts a Customer object into JSON-format.
 	 * 
 	 * @param customer Customer that is to be converted.
 	 * 
-	 * @return Customer in XML format.
+	 * @return Customer in JSON format.
 	 */
-	public static String customerToXML(Customer customer) {
-		String xmlCustomer;
+	public static JSONObject customerToJSON(Customer customer) {
+		JSONObject jsonCustomer = new JSONObject().put("CustomerId", new Integer(customer.getCustomerId()));
+		jsonCustomer.put("FirstName", customer.getFirstName());
+		jsonCustomer.put("LastName", customer.getLastName());
+		jsonCustomer.put("Address", customer.getAddress());
+		jsonCustomer.put("Telephone", customer.getTelephone());
+		jsonCustomer.put("CreditCardNr", customer.getCreditCardNr());
+		jsonCustomer.put("DistrictId", new Integer(customer.getDistrict().getDistrictId()));
+		jsonCustomer.put("DistrictName", customer.getDistrict().getDistrictName());
 		
-		xmlCustomer = "<Customer>"
-				+ "<CustomerId>" + customer.getCustomerId() + "</CustomerId>"
-				+ "<FirstName>" + customer.getFirstName() + "</FirstName>"
-				+ "<LastName>" + customer.getLastName() + "</LastName>"
-				+ "<Address>" + customer.getAddress() + "</Address>"
-				+ "<Telephone>" + customer.getTelephone() + "</Telephone>"
-				+ "<CreditCardNr>" + customer.getCreditCardNr() + "</CreditCardNr>"
-				+ "<DistrictId>" + customer.getDistrict().getDistrictId() + "</DistrictId>"
-				+ "<DistrictName>" + customer.getDistrict().getDistrictName() + "</DistrictName>"
-				+ "</Customer>";
-		
-		return xmlCustomer;
+		return jsonCustomer;
 	}
 	
 	/**
-	 * Converts a set of customers into XML-format.
+	 * Converts a set of customers into JSON-format.
 	 * 
 	 * @param customers Set of customers that are to be converted.
 	 * 
-	 * @return Customers in XML format.
+	 * @return Customers in JSON format.
 	 */
-	public static String customersToXML(Set<Customer> customers) {		
-		String xmlCustomers = "<Customers>";
+	public static JSONArray customersToJSON(Set<Customer> customers) {		
+		JSONArray jsonCustomers = new JSONArray();
 		
 		if(customers != null && customers.size() > 0) {
 			for(Customer customer : customers) {
-				xmlCustomers += CustomerRepository.customerToXML(customer); 
+				JSONObject jsonCustomer = new JSONObject().put("Customer", customerToJSON(customer));
+
+				jsonCustomers.put(jsonCustomer); 
 			}
 		}
 		
-		xmlCustomers += "</Customers>";
+		//JSONObject jsonAllCustomers = new JSONObject().put("Customers", jsonCustomers)
 		
-		return xmlCustomers;
+		return jsonCustomers;
 	}
 	
 	/**
-	 * Converts a customer and his orders into XML-format.
+	 * Converts a customer and his orders into JSON-format.
 	 * 
 	 * @param customer The customer.
 	 * @param orders The orders of the customer.
 	 * 
-	 * @return Customer and his orders in XML-format.
+	 * @return Customer and his orders in JSON-format.
 	 */
-	public static String customerAndOrdersToXML(Customer customer, Set<Order> orders) {
-		String xmlCustomerAndOrders = "<CustomerAndOrders>";
+	public static JSONObject customerAndOrdersToJSON(Customer customer, Set<Order> orders) {
+		JSONObject jsonCustomerAndOrders = new JSONObject();
+		jsonCustomerAndOrders.put("Customer", customerToJSON(customer));
+		jsonCustomerAndOrders.put("Orders", OrderRepository.ordersToJSON(orders));
 		
-		xmlCustomerAndOrders += customerToXML(customer);
-		xmlCustomerAndOrders += OrderRepository.ordersToXML(orders);
+		JSONObject jsonCompleteCustomerAndOrders = new JSONObject().put("CustomerAndOrders", jsonCustomerAndOrders);
 		
-		xmlCustomerAndOrders += "</CustomerAndOrders>";
-		
-		return xmlCustomerAndOrders;
+		return jsonCustomerAndOrders;
 	}
 }
