@@ -28,10 +28,10 @@ public class OrderRepository extends EntityRepository{
 	protected static Order createOrder() {
 		Order order = new Order();
 		
-		String date = LocalDate.now().toString();
+		String orderDate = LocalDate.now().toString();
 		
-		order.setDate(date);
-		order.setOrderCarriedOut((byte) 0);
+		order.setOrderDate(orderDate);
+		order.setOrderCarriedOut(false);
 		
 		Session session = null;
 		
@@ -61,7 +61,7 @@ public class OrderRepository extends EntityRepository{
 	 * 
 	 * @return The fetched order.
 	 */
-	public static Order getOrder(long orderId) {
+	public static Order getOrder(int orderId) {
 		Order order = null;
 		
 		Session session = null;
@@ -111,14 +111,14 @@ public class OrderRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the orders belonging to a customer.
+	 * Gets all the orders beinting to a customer.
 	 * 
 	 * @param customerId Id of customer.
 	 * 
 	 * @return All existing orders.
 	 */
 	@SuppressWarnings("unchecked")
-	public static Set<Order> getAllOrdersOfCustomer(long customerId) {
+	public static Set<Order> getAllOrdersOfCustomer(int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Set<Order> orders = customer.getOrders();
 		
@@ -130,7 +130,7 @@ public class OrderRepository extends EntityRepository{
 	 * 
 	 * @param orderId Id of the order that is to be deleted.
 	 */
-	protected static void deleteOrder(long orderId) {
+	protected static void deleteOrder(int orderId) {
 		Session session = null;
 		
 		try {
@@ -151,15 +151,15 @@ public class OrderRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the items belonging to the order.
+	 * Gets all the items beinting to the order.
 	 * 
 	 * @param orderId Id of the order from which the items should be fetched.
 	 * @return Set with all the items ids and quantities.
 	 */
-	public static Map<Long, Long> getAllItemsOfOrder(long orderId) {
+	public static Map<Integer, Integer> getAllItemsOfOrder(int orderId) {
 		Order order = getOrder(orderId);
 		Set<Orderline> orderline = order.getOrderline();
-		Map<Long, Long> itemIdsAndQuantity = new HashMap<Long, Long>();
+		Map<Integer, Integer> itemIdsAndQuantity = new HashMap<Integer, Integer>();
 		
 		for(Orderline orderlineElement : orderline) {
 			itemIdsAndQuantity.put(orderlineElement.getItem().getItemId(), orderlineElement.getQuantity());
@@ -181,7 +181,7 @@ public class OrderRepository extends EntityRepository{
 		xmlOrder = "<Order>"
 				+ "<CustomerId" + order.getCustomer().getCustomerId() + "</CustomerId>"
 				+ "<OrderId>" + order.getOrderId() + "</ItemId>"
-				+ "<Date>" + order.getDate() + "</Date>"
+				+ "<OrderDate>" + order.getOrderDate() + "</OrderDate>"
 				+ "<TotalCost>" + order.getTotalCost() + "</TotalCost>"
 				+ "<OrderCarriedOut>" + order.getOrderCarriedOut() + "</OrderCarriedOut>"
 				+ "</Order>";
@@ -216,16 +216,16 @@ public class OrderRepository extends EntityRepository{
 	 * Converts an order and its items into XML-format.
 	 * 
 	 * @param order Order that is to be converted.
-	 * @param itemIdsAndQuantity All the items and their quantity belonging to the order.
+	 * @param itemIdsAndQuantity All the items and their quantity beinting to the order.
 	 * 
 	 * @return Complete order in XML format.
 	 */
-	public static String completeOrderToXML(Order order, Map<Long, Long> itemIdsAndQuantity) {
+	public static String completeOrderToXML(Order order, Map<Integer, Integer> itemIdsAndQuantity) {
 		String xmlCompleteOrder;
 		
 		xmlCompleteOrder = "<CompleteOrder>" + orderToXML(order);
 		
-		for(long itemId : itemIdsAndQuantity.keySet()) {
+		for(int itemId : itemIdsAndQuantity.keySet()) {
 			Item item = ItemRepository.getItem(itemId);
 			xmlCompleteOrder += ItemRepository.itemToXML(item);
 			xmlCompleteOrder += "<Quantity>" + itemIdsAndQuantity.get(itemId) + "</Quantity>";
@@ -243,7 +243,7 @@ public class OrderRepository extends EntityRepository{
 	 * 
 	 * @return Complete orders in XML format.
 	 */
-	public static String completeOrdersToXML(Map<Order, Map<Long, Long>> completeOrders) {
+	public static String completeOrdersToXML(Map<Order, Map<Integer, Integer>> completeOrders) {
 		String xmlCompleteOrders;
 		
 		xmlCompleteOrders = "<CompleteOrders>";

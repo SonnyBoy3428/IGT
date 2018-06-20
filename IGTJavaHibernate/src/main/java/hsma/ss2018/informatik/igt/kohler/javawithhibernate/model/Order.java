@@ -17,19 +17,19 @@ public class Order implements Serializable{
 	@Id
 	@Column(name = "OrderId", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long orderId;
+	private int orderId;
 	
-	@Column(name = "Date", nullable = false)
-	private String date;
+	@Column(name = "OrderDate", length = 10, nullable = false)
+	private String orderDate;
 	
-	@Column(name = "OrderCarriedOut", nullable = false)
-	private byte orderCarriedOut;
+	@Column(name = "OrderCarriedOut")
+	private boolean orderCarriedOut;
 	
-	@Column(name = "TotalCost", nullable = false)
+	@Column(name = "TotalCost")
 	private double totalCost;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "OrderId")
+	@JoinColumn(name = "CustomerId")
 	private Customer customer;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.order", cascade = CascadeType.ALL)
@@ -38,27 +38,27 @@ public class Order implements Serializable{
 	public Order() {
 	}
 	
-	public long getOrderId() {
+	public int getOrderId() {
 		return orderId;
 	}
 	
-	public void setOrderId(long orderId) {
+	public void setOrderId(int orderId) {
 		this.orderId = orderId;
 	}
 	
-	public String getDate() {
-		return date;
+	public String getOrderDate() {
+		return orderDate;
 	}
 	
-	public void setDate(String date) {
-		this.date = date;
+	public void setOrderDate(String orderDate) {
+		this.orderDate = orderDate;
 	}
 	
-	public byte getOrderCarriedOut() {
+	public boolean getOrderCarriedOut() {
 		return orderCarriedOut;
 	}
 	
-	public void setOrderCarriedOut(byte orderCarriedOut) {
+	public void setOrderCarriedOut(boolean orderCarriedOut) {
 		this.orderCarriedOut = orderCarriedOut;
 	}
 	

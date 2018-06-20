@@ -15,11 +15,11 @@ import java.util.Set;
 @Table(name = "DISTRICT")
 public class District implements Serializable{
 	@Id
-	@Column(name = "DistrictId")
+	@Column(name = "DistrictId", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long districtId;
+	private int districtId;
 	
-	@Column(name = "DistrictName")
+	@Column(name = "DistrictName", length = 50, nullable = false)
 	private String districtName;
 	
 	@Column(name = "DistrictSize")
@@ -36,11 +36,11 @@ public class District implements Serializable{
 	public District() {
 	}
 	
-	public long getDistrictId() {
+	public int getDistrictId() {
 		return districtId;
 	}
 	
-	public void setDistrictId(long districtId) {
+	public void setDistrictId(int districtId) {
 		this.districtId = districtId;
 	}
 	

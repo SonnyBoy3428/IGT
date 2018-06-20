@@ -17,12 +17,12 @@ public class Item implements Serializable{
 	@Id
 	@Column(name = "ItemId", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long itemId;
+	private int itemId;
 	
-	@Column(name = "ItemName", nullable = false)
+	@Column(name = "ItemName", length = 50, nullable = false)
 	private String itemName;
 	
-	@Column(name = "Price", nullable = false)
+	@Column(name = "Price")
 	private double price;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.item", cascade = CascadeType.ALL)
@@ -34,11 +34,11 @@ public class Item implements Serializable{
 	public Item() {
 	}
 	
-	public long getItemId() {
+	public int getItemId() {
 		return itemId;
 	}
 	
-	public void setItemId(long itemId) {
+	public void setItemId(int itemId) {
 		this.itemId = itemId;
 	}
 	

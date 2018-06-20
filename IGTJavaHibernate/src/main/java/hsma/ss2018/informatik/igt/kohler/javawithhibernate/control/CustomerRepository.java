@@ -31,7 +31,7 @@ public class CustomerRepository extends EntityRepository{
 	 * 
 	 * @return The newly created customer.
 	 */
-	public static Customer createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr, long districtId) {
+	public static Customer createCustomer(String firstName, String lastName, String address, String telephone, String creditCardNr, int districtId) {
 		Customer customer = new Customer();
 		customer.setFirstName(firstName);
 		customer.setLastName(lastName);
@@ -71,7 +71,7 @@ public class CustomerRepository extends EntityRepository{
 	 * 
 	 * @return The fetched customer.
 	 */
-	public static Customer getCustomer(long customerId) {
+	public static Customer getCustomer(int customerId) {
 		Customer customer = null;
 		
 		Session session = null;
@@ -121,13 +121,13 @@ public class CustomerRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the orders belonging to the customer.
+	 * Gets all the orders beinting to the customer.
 	 * 
 	 * @param customerId Id of the customer.
 	 * 
-	 * @return All orders belonging to the customer.
+	 * @return All orders beinting to the customer.
 	 */
-	public static Set<Order> getCustomerAllOrders(long customerId) {
+	public static Set<Order> getCustomerAllOrders(int customerId) {
 		Customer customer = null;
 		Set<Order> orders = null;
 		
@@ -151,14 +151,14 @@ public class CustomerRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the new orders belonging to the customer.
+	 * Gets all the new orders beinting to the customer.
 	 * A new order is an order which is placed in the current month.
 	 * 
 	 * @param customerId Id of the customer.
 	 * 
-	 * @return All new orders belonging to the customer.
+	 * @return All new orders beinting to the customer.
 	 */
-	public static Set<Order> getCustomerNewOrders(long customerId) {
+	public static Set<Order> getCustomerNewOrders(int customerId) {
 		Set<Order> orders = getCustomerAllOrders(customerId);
 		Set<Order> newOrders = new HashSet<Order>();
 		
@@ -180,7 +180,7 @@ public class CustomerRepository extends EntityRepository{
 		String currentYearAndMonth = yearAsString + "-" + monthAsString;
 		
 		for(Order order : orders) {
-			if(order.getDate().contains(currentYearAndMonth)) {
+			if(order.getOrderDate().contains(currentYearAndMonth)) {
 				newOrders.add(order);
 			}
 		}
@@ -189,14 +189,14 @@ public class CustomerRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets the order history belonging to the customer.
+	 * Gets the order history beinting to the customer.
 	 * An order history contains all the orders from the current year.
 	 * 
 	 * @param customerId Id of the customer.
 	 * 
-	 * @return Order history belonging to the customer.
+	 * @return Order history beinting to the customer.
 	 */
-	public static Set<Order> getCustomerOrderHistory(long customerId) {
+	public static Set<Order> getCustomerOrderHistory(int customerId) {
 		Set<Order> orders = getCustomerAllOrders(customerId);
 		Set<Order> orderHistory = new HashSet<Order>();
 		
@@ -208,7 +208,7 @@ public class CustomerRepository extends EntityRepository{
 		String yearAsString = Integer.toString(year);
 		
 		for(Order order : orders) {
-			if(order.getDate().contains(yearAsString)) {
+			if(order.getOrderDate().contains(yearAsString)) {
 				orderHistory.add(order);
 			}
 		}
@@ -221,7 +221,7 @@ public class CustomerRepository extends EntityRepository{
 	 * 
 	 * @param customerId Id which is used to delete the customer.
 	 */
-	public static void deleteCustomer(long customerId) {
+	public static void deleteCustomer(int customerId) {
 		Session session = null;
 		
 		try {
@@ -253,7 +253,7 @@ public class CustomerRepository extends EntityRepository{
 	 * 
 	 * @return The newly updated customer.
 	 */
-	public static Customer updateCustomer(long customerId, String firstName, String lastName, String address, String telephone, String creditCardNr) {
+	public static Customer updateCustomer(int customerId, String firstName, String lastName, String address, String telephone, String creditCardNr) {
 		Session session = null;
 		Customer customer = null;
 		

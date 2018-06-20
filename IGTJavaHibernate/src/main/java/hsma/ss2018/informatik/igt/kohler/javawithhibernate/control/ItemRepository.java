@@ -56,7 +56,7 @@ public class ItemRepository extends EntityRepository{
 	 * 
 	 * @return The fetched item.
 	 */
-	public static Item getItem(long itemId) {
+	public static Item getItem(int itemId) {
 		Item item = null;
 		
 		Session session = null;
@@ -111,7 +111,7 @@ public class ItemRepository extends EntityRepository{
 	 * 
 	 * @param itemId Id of the item that is to be deleted.
 	 */
-	public static void deleteItem(long itemId) {
+	public static void deleteItem(int itemId) {
 		Session session = null;
 		
 		try {
@@ -140,7 +140,7 @@ public class ItemRepository extends EntityRepository{
 	 * 
 	 * @return The newly updated item.
 	 */
-	public static Item updateItem(long itemId, String itemName, double price) {
+	public static Item updateItem(int itemId, String itemName, double price) {
 		Session session = null;
 		Item item = null;
 		

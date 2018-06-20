@@ -26,7 +26,7 @@ public class DistrictRepository extends EntityRepository{
 	 * 
 	 * @return The newly created district.
 	 */
-	public static District createDistrict(String districtName, double districtSize, long warehouseId) {
+	public static District createDistrict(String districtName, double districtSize, int warehouseId) {
 		District district = new District();
 		district.setDistrictName(districtName);
 		district.setDistrictSize(districtSize);
@@ -63,7 +63,7 @@ public class DistrictRepository extends EntityRepository{
 	 * 
 	 * @return The fetched district.
 	 */
-	public static District getDistrict(long districtId) {
+	public static District getDistrict(int districtId) {
 		District district = null;
 		
 		Session session = null;
@@ -114,13 +114,13 @@ public class DistrictRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the customers belonging to the district.
+	 * Gets all the customers beinting to the district.
 	 * 
 	 * @param districtId Id of the district.
 	 * 
-	 * @return All customers belonging to the districts.
+	 * @return All customers beinting to the districts.
 	 */
-	public static Set<Customer> getDistrictCustomers(long districtId) {
+	public static Set<Customer> getDistrictCustomers(int districtId) {
 		District district = null;
 		Set<Customer> customers = null;
 		
@@ -148,7 +148,7 @@ public class DistrictRepository extends EntityRepository{
 	 * 
 	 * @param districtId Id of the district that is to be deleted.
 	 */
-	public static void deleteDistrict(long districtId) {
+	public static void deleteDistrict(int districtId) {
 		Session session = null;
 		
 		try {
@@ -179,7 +179,7 @@ public class DistrictRepository extends EntityRepository{
 	 * 
 	 * @return The updated district.
 	 */
-	public static District updateDistrict(long districtId, String districtName, double districtSize) {
+	public static District updateDistrict(int districtId, String districtName, double districtSize) {
 		Session session = null;
 		District district = null;
 		

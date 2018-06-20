@@ -20,8 +20,8 @@ public class Orderline implements Serializable{
 	@EmbeddedId
 	private OrderlineId orderlineId = new OrderlineId();
 	
-	@Column(name = "Quantity", nullable = false)
-	private long quantity;
+	@Column(name = "Quantity")
+	private int quantity;
 	
 	public Orderline() {
 		
@@ -53,11 +53,11 @@ public class Orderline implements Serializable{
 		getOrderlineId().setItem(item);
 	}
 	
-	public long getQuantity() {
+	public int getQuantity() {
 		return quantity;
 	}
 	
-	public void setQuantity(long quantity) {
+	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
 }

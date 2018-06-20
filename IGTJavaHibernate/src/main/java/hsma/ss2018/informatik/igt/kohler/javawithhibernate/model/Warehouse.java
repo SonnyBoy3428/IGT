@@ -17,12 +17,12 @@ public class Warehouse implements Serializable{
 	@Id
 	@Column(name = "WarehouseId", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long warehouseId;
+	private int warehouseId;
 	
-	@Column(name = "Location", nullable = false)
+	@Column(name = "Location", length = 50, nullable = false)
 	private String location;
 	
-	@Column(name = "Owner", nullable = false)
+	@Column(name = "Owner", length = 60, nullable = false)
 	private String owner;
 	
 	@OneToMany(mappedBy = "warehouse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -35,11 +35,11 @@ public class Warehouse implements Serializable{
 	public Warehouse() {
 	}
 	
-	public long getWarehouseId() {
+	public int getWarehouseId() {
 		return warehouseId;
 	}
 	
-	public void setWarehouseId(long warehouseId) {
+	public void setWarehouseId(int warehouseId) {
 		this.warehouseId = warehouseId;
 	}
 	

@@ -34,7 +34,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 @Path("/itemService")
 public class ItemService extends EntityService{
 	/**
-	 * The tag names belonging to a item XML object.
+	 * The tag names beinting to a item XML object.
 	 */
 	static final String[] TAG_NAMES = {"Item", "ItemId", "ItemName", "Price"};
 	
@@ -75,7 +75,7 @@ public class ItemService extends EntityService{
 	 */
 	@GET
 	@Path("/getItemById={param}")
-	public Response getItemById(@PathParam("param") long itemId) {
+	public Response getItemById(@PathParam("param") int itemId) {
 		Item item = ItemRepository.getItem(itemId);
 		
 		String itemXML = ItemRepository.itemToXML(item);
@@ -107,7 +107,7 @@ public class ItemService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteItemByItemId={param}")
-	public Response deleteItem(@PathParam("param") long itemId) {
+	public Response deleteItem(@PathParam("param") int itemId) {
 		ItemRepository.deleteItem(itemId);
 		
 		String response = "Deletion of item with id: " + itemId + " was successful!";
@@ -138,7 +138,7 @@ public class ItemService extends EntityService{
 		
 		String[] itemValues = extractInformationFromXMLEntity(TAG_NAMES, 1, 3, rootElement);
 		
-		Item updatedItem = ItemRepository.updateItem(Long.parseLong(itemValues[0]), itemValues[1], Double.parseDouble(itemValues[2]));
+		Item updatedItem = ItemRepository.updateItem(Integer.parseInt(itemValues[0]), itemValues[1], Double.parseDouble(itemValues[2]));
 		
 		return Response.status(200).entity(ItemRepository.itemToXML(updatedItem)).build();
 	}

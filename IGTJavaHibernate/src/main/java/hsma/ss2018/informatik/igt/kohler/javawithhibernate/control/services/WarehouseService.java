@@ -42,7 +42,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
 @Path("/warehouseService")
 public class WarehouseService extends EntityService{
 	/**
-	 * The tag names belonging to a warehouse XML object.
+	 * The tag names beinting to a warehouse XML object.
 	 */
 	static final String[] TAG_NAMES = {"Warehouse", "WarehouseId", "Location", "Owner"};
 	
@@ -83,7 +83,7 @@ public class WarehouseService extends EntityService{
 	 */
 	@GET
 	@Path("/getWarehouseById={param}")
-	public Response getWarehouseById(@PathParam("param") long warehouseId) {
+	public Response getWarehouseById(@PathParam("param") int warehouseId) {
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		
 		String warehouseXML = WarehouseRepository.warehouseToXML(warehouse);
@@ -107,7 +107,7 @@ public class WarehouseService extends EntityService{
 	}
 	
 	/**
-	 * Receives a GET request to get all districts belonging to a warehouse. The warehouse id is located within the URL.
+	 * Receives a GET request to get all districts beinting to a warehouse. The warehouse id is located within the URL.
 	 * 
 	 * @param warehouseId The warehouse id located in the URL.
 	 * 
@@ -115,7 +115,7 @@ public class WarehouseService extends EntityService{
 	 */
 	@GET
 	@Path("/getWarehouseDistrictsByWarehouseId={param}")
-	public Response getAllWarehouseDistricts(@PathParam("param") long warehouseId) {
+	public Response getAllWarehouseDistricts(@PathParam("param") int warehouseId) {
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		Set<District> districts = WarehouseRepository.getWarehouseDistricts(warehouseId);
 		
@@ -133,7 +133,7 @@ public class WarehouseService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteWarehouseByWarehouseId={param}")
-	public Response deleteWarehouse(@PathParam("param") long warehouseId) {
+	public Response deleteWarehouse(@PathParam("param") int warehouseId) {
 		WarehouseRepository.deleteWarehouse(warehouseId);
 		
 		String response = "Deletion of warehouse with id: " + warehouseId + " was successful!";
@@ -164,7 +164,7 @@ public class WarehouseService extends EntityService{
 		
 		String[] warehouseValues = extractInformationFromXMLEntity(TAG_NAMES, 1, 3, rootElement);
 		
-		Warehouse updatedWarehouse = WarehouseRepository.updateWarehouse(Long.parseLong(warehouseValues[0]), warehouseValues[1], warehouseValues[2]);
+		Warehouse updatedWarehouse = WarehouseRepository.updateWarehouse(Integer.parseInt(warehouseValues[0]), warehouseValues[1], warehouseValues[2]);
 		
 		return Response.status(200).entity(WarehouseRepository.warehouseToXML(updatedWarehouse)).build();
 	}
@@ -172,7 +172,7 @@ public class WarehouseService extends EntityService{
 	@POST
 	@Path("/createStockForWarehouseId={warehouseId}/itemId={itemId}/quantity={quantity}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response createStockForWarehouse(@PathParam("warehouseId") long warehouseId, @PathParam("itemId") long itemId, @PathParam("quantity") long quantity) {
+	public Response createStockForWarehouse(@PathParam("warehouseId") int warehouseId, @PathParam("itemId") int itemId, @PathParam("quantity") int quantity) {
 		StockRepository.createStock(warehouseId, itemId, quantity);
 		
 		String response = "Stock successfully added to warehouse with the id:" + warehouseId + "!";
@@ -189,9 +189,9 @@ public class WarehouseService extends EntityService{
 	 */
 	@GET
 	@Path("/getWarehouseStockByWarehouseId={param}")
-	public Response getWarehouseStock(@PathParam("param") long warehouseId) {
+	public Response getWarehouseStock(@PathParam("param") int warehouseId) {
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
-		Map<Long, Long> itemIdsAndQuantity = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
+		Map<Integer, Integer> itemIdsAndQuantity = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
 	
 		return Response.status(200).entity(WarehouseRepository.completeWarehouseToXML(warehouse, itemIdsAndQuantity)).build();
 	}
@@ -207,10 +207,10 @@ public class WarehouseService extends EntityService{
 	@Path("/getAllWarehousesAndTheirStocks")
 	public Response getWarehouseStock() {
 		Set<Warehouse> warehouses = WarehouseRepository.getAllWarehouses();
-		Map<Warehouse, Map<Long, Long>> completeWarehouses = new HashMap<Warehouse, Map<Long, Long>>();
+		Map<Warehouse, Map<Integer, Integer>> completeWarehouses = new HashMap<Warehouse, Map<Integer, Integer>>();
 		
 		for(Warehouse warehouse : warehouses) {
-			Map<Long, Long> itemIdsAndQuantity = WarehouseRepository.getAllItemsOfWarehouse(warehouse.getWarehouseId());
+			Map<Integer, Integer> itemIdsAndQuantity = WarehouseRepository.getAllItemsOfWarehouse(warehouse.getWarehouseId());
 			completeWarehouses.put(warehouse, itemIdsAndQuantity);
 		}
 	
@@ -226,10 +226,10 @@ public class WarehouseService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteStockByWarehouseId={param}")
-	public Response deleteOrder(@PathParam("param") long warehouseId) {
+	public Response deleteOrder(@PathParam("param") int warehouseId) {
 		StockRepository.deleteStock(warehouseId);
 		
-		String response = "Deletion of stock belonging to warehouse with id: " + warehouseId + " was successful!";
+		String response = "Deletion of stock beinting to warehouse with id: " + warehouseId + " was successful!";
 		
 		return Response.status(200).entity(response).build();
 	}
@@ -244,11 +244,11 @@ public class WarehouseService extends EntityService{
 	@PUT
 	@Path("/updateStockByWarehouseId={warehouse}/itemId={item}/updateType={type}/quantity={quantity}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response updateWarehouseStock(@PathParam("warehouse") long warehouseId, @PathParam("item") long itemId, @PathParam("type") String updateType, @PathParam("quantity") long quantity){		
+	public Response updateWarehouseStock(@PathParam("warehouse") int warehouseId, @PathParam("item") int itemId, @PathParam("type") String updateType, @PathParam("quantity") int quantity){		
 		StockRepository.updateStock(warehouseId, itemId, updateType, quantity);
 		
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
-		Map<Long, Long> itemsAndQuantities = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
+		Map<Integer, Integer> itemsAndQuantities = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
 		
 		return Response.status(200).entity(WarehouseRepository.completeWarehouseToXML(warehouse, itemsAndQuantities)).build();
 	}

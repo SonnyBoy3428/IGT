@@ -35,7 +35,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 @Path("/customerService")
 public class CustomerService extends EntityService{
 	/**
-	 * The tag names belonging to a customer XML object.
+	 * The tag names beinting to a customer XML object.
 	 */
 	static final String[] TAG_NAMES = {"Customer", "CustomerId", "FirstName", "LastName", "Address", "Telephone", "CreditCardNr", "DistrictId"};
 	
@@ -62,7 +62,7 @@ public class CustomerService extends EntityService{
 		
 		String[] customerValues = extractInformationFromXMLEntity(TAG_NAMES, 2, 6, rootElement);
 		
-		Customer createdCustomer = CustomerRepository.createCustomer(customerValues[0], customerValues[1], customerValues[2], customerValues[3], customerValues[4], Long.parseLong(customerValues[5]));
+		Customer createdCustomer = CustomerRepository.createCustomer(customerValues[0], customerValues[1], customerValues[2], customerValues[3], customerValues[4], Integer.parseInt(customerValues[5]));
 		
 		return Response.status(200).entity(CustomerRepository.customerToXML(createdCustomer)).build();
 	}
@@ -76,7 +76,7 @@ public class CustomerService extends EntityService{
 	 */
 	@GET
 	@Path("/getCustomerById={param}")
-	public Response getCustomerById(@PathParam("param") long customerId) {
+	public Response getCustomerById(@PathParam("param") int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		
 		String customerXML = CustomerRepository.customerToXML(customer);
@@ -100,7 +100,7 @@ public class CustomerService extends EntityService{
 	}
 	
 	/**
-	 * Receives a GET request to get all orders belonging to a customer. The customer id is located within the URL.
+	 * Receives a GET request to get all orders beinting to a customer. The customer id is located within the URL.
 	 * 
 	 * @param customerId The customer id located in the URL.
 	 * 
@@ -108,7 +108,7 @@ public class CustomerService extends EntityService{
 	 */
 	@GET
 	@Path("/getAllCustomerOrdersByCustomerId={param}")
-	public Response getAllCustomerOrders(@PathParam("param") long customerId) {
+	public Response getAllCustomerOrders(@PathParam("param") int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Set<Order> orders = CustomerRepository.getCustomerAllOrders(customerId);
 		
@@ -118,7 +118,7 @@ public class CustomerService extends EntityService{
 	}
 	
 	/**
-	 * Receives a GET request to get all new orders belonging to a customer. The customer id is located within the URL.
+	 * Receives a GET request to get all new orders beinting to a customer. The customer id is located within the URL.
 	 * 
 	 * @param customerId The customer id located in the URL.
 	 * 
@@ -126,7 +126,7 @@ public class CustomerService extends EntityService{
 	 */
 	@GET
 	@Path("/getAllNewCustomerOrdersByCustomerId={param}")
-	public Response getNewCustomerOrders(@PathParam("param") long customerId) {
+	public Response getNewCustomerOrders(@PathParam("param") int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Set<Order> orders = CustomerRepository.getCustomerNewOrders(customerId);
 		
@@ -136,7 +136,7 @@ public class CustomerService extends EntityService{
 	}
 	
 	/**
-	 * Receives a GET request to the order history belonging to a customer. The customer id is located within the URL.
+	 * Receives a GET request to the order history beinting to a customer. The customer id is located within the URL.
 	 * 
 	 * @param customerId The customer id located in the URL.
 	 * 
@@ -144,7 +144,7 @@ public class CustomerService extends EntityService{
 	 */
 	@GET
 	@Path("/getCustomerOrderHistoryByCustomerId={param}")
-	public Response getCustomerOrderHistory(@PathParam("param") long customerId) {
+	public Response getCustomerOrderHistory(@PathParam("param") int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Set<Order> orders = CustomerRepository.getCustomerOrderHistory(customerId);
 		
@@ -162,7 +162,7 @@ public class CustomerService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteCustomerByCustomerId={param}")
-	public Response deleteCustomer(@PathParam("param") long customerId) {
+	public Response deleteCustomer(@PathParam("param") int customerId) {
 		CustomerRepository.deleteCustomer(customerId);
 		
 		String response = "Deletion of customer with id: " + customerId + " was successful!";
@@ -193,7 +193,7 @@ public class CustomerService extends EntityService{
 		
 		String[] customerValues = extractInformationFromXMLEntity(TAG_NAMES, 1, 6, rootElement);
 		
-		Customer updatedCustomer = CustomerRepository.updateCustomer(Long.parseLong(customerValues[0]), customerValues[1], customerValues[2], customerValues[3], customerValues[4], customerValues[5]);
+		Customer updatedCustomer = CustomerRepository.updateCustomer(Integer.parseInt(customerValues[0]), customerValues[1], customerValues[2], customerValues[3], customerValues[4], customerValues[5]);
 		
 		return Response.status(200).entity(CustomerRepository.customerToXML(updatedCustomer)).build();
 	}

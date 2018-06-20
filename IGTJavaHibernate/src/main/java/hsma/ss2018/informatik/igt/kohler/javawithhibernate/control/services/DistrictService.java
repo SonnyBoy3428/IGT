@@ -35,7 +35,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 @Path("/districtService")
 public class DistrictService extends EntityService{
 	/**
-	 * The tag names belonging to a district XML object.
+	 * The tag names beinting to a district XML object.
 	 */
 	static final String[] TAG_NAMES = {"District", "DistrictId", "DistrictName", "DistrictSize", "WarehouseId"};
 	
@@ -62,7 +62,7 @@ public class DistrictService extends EntityService{
 		
 		String[] districtValues = extractInformationFromXMLEntity(TAG_NAMES, 2, 3, rootElement);
 		
-		District createdDistrict = DistrictRepository.createDistrict(districtValues[0], Double.parseDouble(districtValues[1]), Long.parseLong(districtValues[2]));
+		District createdDistrict = DistrictRepository.createDistrict(districtValues[0], Double.parseDouble(districtValues[1]), Integer.parseInt(districtValues[2]));
 		
 		return Response.status(200).entity(DistrictRepository.districtToXML(createdDistrict)).build();
 	}
@@ -76,7 +76,7 @@ public class DistrictService extends EntityService{
 	 */
 	@GET
 	@Path("/getDistrictById={param}")
-	public Response getDistrictById(@PathParam("param") long districtId) {
+	public Response getDistrictById(@PathParam("param") int districtId) {
 		District district = DistrictRepository.getDistrict(districtId);
 		
 		String districtXML = DistrictRepository.districtToXML(district);
@@ -100,7 +100,7 @@ public class DistrictService extends EntityService{
 	}
 	
 	/**
-	 * Receives a GET request to get all customers belonging to a district. The district id is located within the URL.
+	 * Receives a GET request to get all customers beinting to a district. The district id is located within the URL.
 	 * 
 	 * @param districtId The district id located in the URL.
 	 * 
@@ -108,7 +108,7 @@ public class DistrictService extends EntityService{
 	 */
 	@GET
 	@Path("/getAllDistrictCustomersByDistrictId={param}")
-	public Response getAllDistrictCustomers(@PathParam("param") long districtId) {
+	public Response getAllDistrictCustomers(@PathParam("param") int districtId) {
 		District district = DistrictRepository.getDistrict(districtId);
 		Set<Customer> customers = DistrictRepository.getDistrictCustomers(districtId);
 		
@@ -126,7 +126,7 @@ public class DistrictService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteDistrictByDistrictId={param}")
-	public Response deleteDistrict(@PathParam("param") long districtId) {
+	public Response deleteDistrict(@PathParam("param") int districtId) {
 		DistrictRepository.deleteDistrict(districtId);
 		
 		String response = "Deletion of district with id: " + districtId + " was successful!";
@@ -157,7 +157,7 @@ public class DistrictService extends EntityService{
 		
 		String[] districtValues = extractInformationFromXMLEntity(TAG_NAMES, 1, 3, rootElement);
 		
-		District updatedDistrict = DistrictRepository.updateDistrict(Long.parseLong(districtValues[0]), districtValues[1], Double.parseDouble(districtValues[2]));
+		District updatedDistrict = DistrictRepository.updateDistrict(Integer.parseInt(districtValues[0]), districtValues[1], Double.parseDouble(districtValues[2]));
 		
 		return Response.status(200).entity(DistrictRepository.districtToXML(updatedDistrict)).build();
 	}

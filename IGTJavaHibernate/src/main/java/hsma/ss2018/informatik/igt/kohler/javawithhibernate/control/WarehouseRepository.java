@@ -62,7 +62,7 @@ public class WarehouseRepository extends EntityRepository{
 	 * 
 	 * @return The fetched warehouse.
 	 */
-	public static Warehouse getWarehouse(long warehouseId) {
+	public static Warehouse getWarehouse(int warehouseId) {
 		Warehouse warehouse = null;
 		
 		Session session = null;
@@ -113,13 +113,13 @@ public class WarehouseRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the districts belonging to the warehouse.
+	 * Gets all the districts beinting to the warehouse.
 	 * 
 	 * @param warehouseId Id of the warehouse.
 	 * 
-	 * @return All districts belonging to the warehouse.
+	 * @return All districts beinting to the warehouse.
 	 */
-	public static Set<District> getWarehouseDistricts(long warehouseId) {
+	public static Set<District> getWarehouseDistricts(int warehouseId) {
 		Warehouse warehouse = null;
 		Set<District> districts = null;
 		
@@ -147,7 +147,7 @@ public class WarehouseRepository extends EntityRepository{
 	 * 
 	 * @param warehouseId Id of the warehouse that is to be deleted.
 	 */
-	public static void deleteWarehouse(long warehouseId) {
+	public static void deleteWarehouse(int warehouseId) {
 		Session session = null;
 		
 		try {
@@ -176,7 +176,7 @@ public class WarehouseRepository extends EntityRepository{
 	 * @param location Location of the warehouse.
 	 * @param owner Owner of the warehouse.
 	 */
-	public static Warehouse updateWarehouse(long warehouseId, String location, String owner) {
+	public static Warehouse updateWarehouse(int warehouseId, String location, String owner) {
 		Session session = null;
 		Warehouse warehouse = null;
 		
@@ -204,15 +204,15 @@ public class WarehouseRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the items belonging to the warehouse.
+	 * Gets all the items beinting to the warehouse.
 	 * 
 	 * @param warehouseId Id of the warehouse from which the items should be fetched.
 	 * @return Set with all the items ids and quantities.
 	 */
-	public static Map<Long, Long> getAllItemsOfWarehouse(long warehouseId) {
+	public static Map<Integer, Integer> getAllItemsOfWarehouse(int warehouseId) {
 		Warehouse warehouse = getWarehouse(warehouseId);
 		Set<Stock> stock = warehouse.getStock();
-		Map<Long, Long> itemIdsAndQuantity = new HashMap<Long, Long>();
+		Map<Integer, Integer> itemIdsAndQuantity = new HashMap<Integer, Integer>();
 		
 		for(Stock stockElement : stock) {
 			itemIdsAndQuantity.put(stockElement.getItem().getItemId(), stockElement.getQuantity());
@@ -267,16 +267,16 @@ public class WarehouseRepository extends EntityRepository{
 	 * Converts a warehouse and its items into XML-format.
 	 * 
 	 * @param warehouse Warehouse that is to be converted.
-	 * @param itemIdsAndQuantity All the items and their quantity belonging to the warehouse.
+	 * @param itemIdsAndQuantity All the items and their quantity beinting to the warehouse.
 	 * 
 	 * @return Complete warehouse in XML format.
 	 */
-	public static String completeWarehouseToXML(Warehouse warehouse, Map<Long, Long> itemIdsAndQuantity) {
+	public static String completeWarehouseToXML(Warehouse warehouse, Map<Integer, Integer> itemIdsAndQuantity) {
 		String xmlCompleteWarehouse;
 		
 		xmlCompleteWarehouse = "<CompleteWarehouse>" + warehouseToXML(warehouse);
 		
-		for(long itemId : itemIdsAndQuantity.keySet()) {
+		for(int itemId : itemIdsAndQuantity.keySet()) {
 			Item item = ItemRepository.getItem(itemId);
 			xmlCompleteWarehouse += ItemRepository.itemToXML(item);
 			xmlCompleteWarehouse += "<Quantity>" + itemIdsAndQuantity.get(itemId) + "</Quantity>";
@@ -294,7 +294,7 @@ public class WarehouseRepository extends EntityRepository{
 	 * 
 	 * @return Complete warehouses in XML format.
 	 */
-	public static String completeWarehousesToXML(Map<Warehouse, Map<Long, Long>> completeWarehouses) {
+	public static String completeWarehousesToXML(Map<Warehouse, Map<Integer, Integer>> completeWarehouses) {
 		String xmlCompleteWarehouses;
 		
 		xmlCompleteWarehouses = "<CompleteWarehouses>";

@@ -20,8 +20,8 @@ public class Stock implements Serializable{
 	@EmbeddedId
 	private StockId stockId;
 
-	@Column(name = "Quantity", nullable = false)
-	private long quantity;
+	@Column(name = "Quantity")
+	private int quantity;
 	
 	public Stock() {
 		
@@ -53,11 +53,11 @@ public class Stock implements Serializable{
 		getStockId().setItem(item);
 	}
 	
-	public long getQuantity() {
+	public int getQuantity() {
 		return quantity;
 	}
 	
-	public void setQuantity(long quantity) {
+	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
 }

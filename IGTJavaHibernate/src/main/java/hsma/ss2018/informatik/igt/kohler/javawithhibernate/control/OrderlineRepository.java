@@ -24,7 +24,7 @@ public class OrderlineRepository extends EntityRepository {
 	 * @param customerId Customer for whom the order should be created.
 	 * @param itemsAndQuantity The ordered items and their quantity.
 	 */
-	public static void createOrderline(long customerId, Map<Long, Long> itemsAndQuantity) {
+	public static void createOrderline(int customerId, Map<Integer, Integer> itemsAndQuantity) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Order newOrder = null;
 		Set<Item> items = new HashSet<Item>();
@@ -36,7 +36,7 @@ public class OrderlineRepository extends EntityRepository {
 			// If the order could not be created we don't need to continue.
 			if(newOrder != null) {
 				// Get each item and add it to the item list
-				for(long itemId : itemsAndQuantity.keySet()) {
+				for(int itemId : itemsAndQuantity.keySet()) {
 					Item item = ItemRepository.getItem(itemId);
 					
 					// If the item does not exist we don't need to continue.
@@ -108,13 +108,13 @@ public class OrderlineRepository extends EntityRepository {
 	}
 	
 	/**
-	 * Gets the orderline belonging to the order Id.
+	 * Gets the orderline beinting to the order Id.
 	 * 
 	 * @param orderId Id of the order associated with the orderline.
 	 * 
 	 * @return The orderline of the order.
 	 */
-	protected static Set<Orderline> getOrderlines(long orderId){
+	protected static Set<Orderline> getOrderlines(int orderId){
 		Set<Orderline> orderline = null;
 		Session session = null;
 		
@@ -141,7 +141,7 @@ public class OrderlineRepository extends EntityRepository {
 	 * @param updateType Update type can be an insert, an update or a delete function.
 	 * @param quantity Quantity of the new item or of the item that is to be updated.
 	 */
-	public static void updateOrderline(long orderId, long itemId, String updateType, long quantity) {
+	public static void updateOrderline(int orderId, int itemId, String updateType, int quantity) {
 		Session session = null;
 		
 		try {
@@ -153,7 +153,7 @@ public class OrderlineRepository extends EntityRepository {
 			Set<Orderline> orderline = order.getOrderline();
 			
 			double totalCost = 0.0f;
-			long oldQuantity = 0l;
+			int oldQuantity = 0;
 			
 			if(!updateType.equals("Insert")) {
 				for(Orderline orderlineElement : orderline) {
@@ -255,7 +255,7 @@ public class OrderlineRepository extends EntityRepository {
 	 * 
 	 * @param orderId Order Id from order on which deletion is based.
 	 */
-	public static void deleteOrderline(long orderId) {
+	public static void deleteOrderline(int orderId) {
 		Set<Orderline> orderline = null;
 		Session session = null;
 		

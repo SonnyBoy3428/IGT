@@ -15,23 +15,23 @@ import javax.persistence.*;
 @Table(name = "CUSTOMER")
 public class Customer implements Serializable{
 	@Id
-	@Column(name = "CustomerId")
+	@Column(name = "CustomerId", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long customerId;
+	private int customerId;
 	
-	@Column(name = "FirstName")
+	@Column(name = "FirstName", length = 30, nullable = false)
 	private String firstName;
 	
-	@Column(name = "LastName")
+	@Column(name = "LastName", length = 30, nullable = false)
 	private String lastName;
 	
-	@Column(name = "Address")
+	@Column(name = "Address", length = 50)
 	private String address;
 	
-	@Column(name = "Telephone")
+	@Column(name = "Telephone", length = 15)
 	private String telephone;
 	
-	@Column(name = "CreditCardNr")
+	@Column(name = "CreditCardNr", length = 12, nullable = false)
 	private String creditCardNr;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -46,7 +46,7 @@ public class Customer implements Serializable{
 	public Customer() {
 	}
 	
-	public long getCustomerId() {
+	public int getCustomerId() {
 		return customerId;
 	}
 	

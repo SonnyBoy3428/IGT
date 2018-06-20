@@ -40,7 +40,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 @Path("/orderAndOrderlineService")
 public class OrderAndOrderlineService extends EntityService{
 	/**
-	 * The tag names belonging to a orderline XML object.
+	 * The tag names beinting to a orderline XML object.
 	 */
 	static final String[] TAG_NAMES = {"Orderline", "OrderlineId", "FirstName", "LastName", "Address", "Telephone", "CreditCardNr", "DistrictId"};
 	
@@ -59,14 +59,14 @@ public class OrderAndOrderlineService extends EntityService{
 	@POST
 	@Path("/createCompleteOrderForCustomerId={param}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response createCompleteOrder(@PathParam("param") long customerId, String orderlineInformation) throws ParserConfigurationException, SAXException, IOException {
+	public Response createCompleteOrder(@PathParam("param") int customerId, String orderlineInformation) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		
 		Document document = builder.parse(new InputSource(new StringReader(orderlineInformation)));
 		Element rootElement = document.getDocumentElement();
 		
-		Map<Long, Long> itemsAndQuantities = extractMultipleItemsFromXML(rootElement);
+		Map<Integer, Integer> itemsAndQuantities = extractMultipleItemsFromXML(rootElement);
 		
 		OrderlineRepository.createOrderline(customerId, itemsAndQuantities);
 		
@@ -82,8 +82,8 @@ public class OrderAndOrderlineService extends EntityService{
 	 * 
 	 * @return Returns a Map of item ids and quantities.
 	 */
-	private Map<Long, Long> extractMultipleItemsFromXML(Element element){
-		Map<Long, Long> itemsAndQuantities = new HashMap<Long, Long>();
+	private Map<Integer, Integer> extractMultipleItemsFromXML(Element element){
+		Map<Integer, Integer> itemsAndQuantities = new HashMap<Integer, Integer>();
 		
 		NodeList elementList = element.getElementsByTagName("Items");
 		NodeList itemList = elementList.item(0).getChildNodes();
@@ -91,8 +91,8 @@ public class OrderAndOrderlineService extends EntityService{
 		for(int i = 0; i < itemList.getLength(); i++) {
 			Node item = itemList.item(i);
 			
-			long itemId = Long.parseLong(item.getFirstChild().getNodeValue());
-			long itemQuantity = Long.parseLong(item.getLastChild().getNodeValue());
+			int itemId = Integer.parseInt(item.getFirstChild().getNodeValue());
+			int itemQuantity = Integer.parseInt(item.getLastChild().getNodeValue());
 			
 			itemsAndQuantities.put(itemId, itemQuantity);
 		}
@@ -110,9 +110,9 @@ public class OrderAndOrderlineService extends EntityService{
 	 */
 	@GET
 	@Path("/getCompleteOrderById={param}")
-	public Response getCompleteOrderById(@PathParam("param") long orderId) {
+	public Response getCompleteOrderById(@PathParam("param") int orderId) {
 		Order order = OrderRepository.getOrder(orderId);
-		Map<Long, Long> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
+		Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
 		
 		return Response.status(200).entity(OrderRepository.completeOrderToXML(order, itemsAndQuantities)).build();
 	}
@@ -124,12 +124,12 @@ public class OrderAndOrderlineService extends EntityService{
 	 */
 	@GET
 	@Path("/getAllOrdersOfCustomer={param}")
-	public Response getAllOrdersOfCustomer(@PathParam("param") long customerId) {
+	public Response getAllOrdersOfCustomer(@PathParam("param") int customerId) {
 		Set<Order> orders = OrderRepository.getAllOrdersOfCustomer(customerId);
-		Map<Order, Map<Long, Long>> completeOrders = new HashMap<Order, Map<Long, Long>>();
+		Map<Order, Map<Integer, Integer>> completeOrders = new HashMap<Order, Map<Integer, Integer>>();
 		
 		for(Order order : orders) {
-			Map<Long, Long> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(order.getOrderId());
+			Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(order.getOrderId());
 			
 			completeOrders.put(order, itemsAndQuantities);
 		}
@@ -146,7 +146,7 @@ public class OrderAndOrderlineService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteOrderById={param}")
-	public Response deleteOrder(@PathParam("param") long orderId) {
+	public Response deleteOrder(@PathParam("param") int orderId) {
 		OrderlineRepository.deleteOrderline(orderId);
 		
 		String response = "Deletion of order with id: " + orderId + " was successful!";
@@ -168,11 +168,11 @@ public class OrderAndOrderlineService extends EntityService{
 	@PUT
 	@Path("/updateOrderById={order}/item={item}/updateType={type}/quantity={quantity}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response updateOrder(@PathParam("order") long orderId, @PathParam("item") long itemId, @PathParam("type") String updateType, @PathParam("quantity") long quantity){		
+	public Response updateOrder(@PathParam("order") int orderId, @PathParam("item") int itemId, @PathParam("type") String updateType, @PathParam("quantity") int quantity){		
 		OrderlineRepository.updateOrderline(orderId, itemId, updateType, quantity);
 		
 		Order order = OrderRepository.getOrder(orderId);
-		Map<Long, Long> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
+		Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
 		
 		return Response.status(200).entity(OrderRepository.completeOrderToXML(order, itemsAndQuantities)).build();
 	}
