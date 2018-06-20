@@ -24,7 +24,7 @@ public class OrderlineRepository extends EntityRepository {
 	 * @param customerId Customer for whom the order should be created.
 	 * @param itemsAndQuantity The ordered items and their quantity.
 	 */
-	public void createOrderline(long customerId, Map<Long, Long> itemsAndQuantity) {
+	public static void createOrderline(long customerId, Map<Long, Long> itemsAndQuantity) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Order newOrder = null;
 		Set<Item> items = new HashSet<Item>();
@@ -114,7 +114,7 @@ public class OrderlineRepository extends EntityRepository {
 	 * 
 	 * @return The orderline of the order.
 	 */
-	public static Set<Orderline> getOrderlines(long orderId){
+	protected static Set<Orderline> getOrderlines(long orderId){
 		Set<Orderline> orderline = null;
 		Session session = null;
 		

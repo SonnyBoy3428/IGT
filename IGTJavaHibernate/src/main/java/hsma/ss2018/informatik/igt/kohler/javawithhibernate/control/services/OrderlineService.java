@@ -2,6 +2,8 @@ package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.services;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -19,20 +21,23 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.OrderRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.OrderlineRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 
 /**
- * This class acts as the API for calls to the orderline repository.
+ * This class acts as the API for calls to the order and orderline repositories.
  * 
  * @author Dustin Noah Young, 
  *
  */
-@Path("/orderlineService")
+@Path("/orderAndOrderlineService")
 public class OrderlineService extends EntityService{
 	/**
 	 * The tag names belonging to a orderline XML object.
@@ -40,161 +45,135 @@ public class OrderlineService extends EntityService{
 	static final String[] TAG_NAMES = {"Orderline", "OrderlineId", "FirstName", "LastName", "Address", "Telephone", "CreditCardNr", "DistrictId"};
 	
 	/**
-	 * Receives a POST request to create a orderline. The orderline information is located in the request body.
+	 * Receives a POST request to create an order. The order information is located in the request body.
+	 * Even though we are dealing with orderlines a user would expect an order.
 	 * 
-	 * @param orderlineInformation Request body containing orderline information.
+	 * @param orderInformation Request body containing order information.
 	 * 
-	 * @return The response containing the orderline.
+	 * @return The response containing the order.
 	 * 
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
 	 */
 	@POST
-	@Path("/createOrderlineForCustomerId={param}")
+	@Path("/createCompleteOrderForCustomerId={param}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response createOrderline(@PathParam("param") long customerId, String orderlineInformation) throws ParserConfigurationException, SAXException, IOException {
+	public Response createCompleteOrder(@PathParam("param") long customerId, String orderlineInformation) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		
 		Document document = builder.parse(new InputSource(new StringReader(orderlineInformation)));
 		Element rootElement = document.getDocumentElement();
 		
-		String[] orderlineValues = extractInformationFromXMLEntity(TAG_NAMES, 2, 6, rootElement);
+		Map<Long, Long> itemsAndQuantities = extractMultipleItemsFromXML(rootElement);
 		
-		Orderline createdOrderline = OrderlineRepository.createOrderline(customerId);
+		OrderlineRepository.createOrderline(customerId, itemsAndQuantities);
 		
-		return Response.status(200).entity(OrderlineRepository.orderlineToXML(createdOrderline)).build();
-	}
-	
-	/**
-	 * Receives a GET request to get a orderline. The orderline id is located within the URL.
-	 * 
-	 * @param orderlineId The orderline Id located in the URL.
-	 * 
-	 * @return The response containing the orderline.
-	 */
-	@GET
-	@Path("/getOrderlineById={param}")
-	public Response getOrderlineById(@PathParam("param") long orderlineId) {
-		Orderline orderline = OrderlineRepository.getOrderline(orderlineId);
-		
-		String orderlineXML = OrderlineRepository.orderlineToXML(orderline);
-		
-		return Response.status(200).entity(orderlineXML).build();
-	}
-	
-	/**
-	 * Receives a GET request to get all orderlines.
-	 * 
-	 * @return The response containing the orderlines.
-	 */
-	@GET
-	@Path("/getAllOrderlines")
-	public Response getAllOrderlines() {
-		Set<Orderline> orderlines = OrderlineRepository.getAllOrderlines();
-		
-		String orderlinesXML = OrderlineRepository.orderlinesToXML(orderlines);
-		
-		return Response.status(200).entity(orderlinesXML).build();
-	}
-	
-	/**
-	 * Receives a GET request to get all orders belonging to a orderline. The orderline id is located within the URL.
-	 * 
-	 * @param orderlineId The orderline id located in the URL.
-	 * 
-	 * @return The response containing the orderline and all his orders.
-	 */
-	@GET
-	@Path("/getAllOrderlineOrdersByOrderlineId={param}")
-	public Response getAllOrderlineOrders(@PathParam("param") long orderlineId) {
-		Orderline orderline = OrderlineRepository.getOrderline(orderlineId);
-		Set<Order> orders = OrderlineRepository.getOrderlineAllOrders(orderlineId);
-		
-		String orderlineAndOrdersXML = OrderlineRepository.orderlineAndOrdersToXML(orderline, orders);
-		
-		return Response.status(200).entity(orderlineAndOrdersXML).build();
-	}
-	
-	/**
-	 * Receives a GET request to get all new orders belonging to a orderline. The orderline id is located within the URL.
-	 * 
-	 * @param orderlineId The orderline id located in the URL.
-	 * 
-	 * @return The response containing the orderline and all his new orders.
-	 */
-	@GET
-	@Path("/getAllNewOrderlineOrdersByOrderlineId={param}")
-	public Response getNewOrderlineOrders(@PathParam("param") long orderlineId) {
-		Orderline orderline = OrderlineRepository.getOrderline(orderlineId);
-		Set<Order> orders = OrderlineRepository.getOrderlineNewOrders(orderlineId);
-		
-		String orderlineAndOrdersXML = OrderlineRepository.orderlineAndOrdersToXML(orderline, orders);
-		
-		return Response.status(200).entity(orderlineAndOrdersXML).build();
-	}
-	
-	/**
-	 * Receives a GET request to the order history belonging to a orderline. The orderline id is located within the URL.
-	 * 
-	 * @param orderlineId The orderline id located in the URL.
-	 * 
-	 * @return The response containing the orderline and his order history.
-	 */
-	@GET
-	@Path("/getOrderlineOrderHistoryByOrderlineId={param}")
-	public Response getOrderlineOrderHistory(@PathParam("param") long orderlineId) {
-		Orderline orderline = OrderlineRepository.getOrderline(orderlineId);
-		Set<Order> orders = OrderlineRepository.getOrderlineOrderHistory(orderlineId);
-		
-		String orderlineAndOrdersXML = OrderlineRepository.orderlineAndOrdersToXML(orderline, orders);
-		
-		return Response.status(200).entity(orderlineAndOrdersXML).build();
-	}
-	
-	/**
-	 * Receives a DELETE request to delete a orderline. The orderline id is located within the URL.
-	 * 
-	 * @param orderlineId The orderline id located inside the URL.
-	 * 
-	 * @return The response.
-	 */
-	@DELETE
-	@Path("/deleteOrderlineByOrderlineId={param}")
-	public Response deleteOrderline(@PathParam("param") long orderlineId) {
-		OrderlineRepository.deleteOrderline(orderlineId);
-		
-		String response = "Deletion of orderline with id: " + orderlineId + " was successful!";
+		String response = "Order and order successfully created!";
 		
 		return Response.status(200).entity(response).build();
 	}
 	
 	/**
-	 * Receives a PUT request to update a orderline. The orderline information is located within the request body.
+	 * Converts Items and their quantities from XML into a Map.
 	 * 
-	 * @param orderlineInformation The orderline information inside the request body.
+	 * @param element XML element.
 	 * 
-	 * @return The response containing the updated orderline.
+	 * @return Returns a Map of item ids and quantities.
+	 */
+	private Map<Long, Long> extractMultipleItemsFromXML(Element element){
+		Map<Long, Long> itemsAndQuantities = new HashMap<Long, Long>();
+		
+		NodeList elementList = element.getElementsByTagName("Items");
+		NodeList itemList = elementList.item(0).getChildNodes();
+		
+		for(int i = 0; i < itemList.getLength(); i++) {
+			Node item = itemList.item(i);
+			
+			long itemId = Long.parseLong(item.getFirstChild().getNodeValue());
+			long itemQuantity = Long.parseLong(item.getLastChild().getNodeValue());
+			
+			itemsAndQuantities.put(itemId, itemQuantity);
+		}
+		
+		return itemsAndQuantities;
+	}
+	
+	/**
+	 * Receives a GET request to get an order. The order id is located within the URL.
+	 * We are getting an order and all its items.
+	 * 
+	 * @param orderlineId The order Id located in the URL.
+	 * 
+	 * @return The response containing the order.
+	 */
+	@GET
+	@Path("/getCompleteOrderById={param}")
+	public Response getCompleteOrderById(@PathParam("param") long orderId) {
+		Order order = OrderRepository.getOrder(orderId);
+		Map<Long, Long> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
+		
+		return Response.status(200).entity(OrderRepository.completeOrderToXML(order, itemsAndQuantities)).build();
+	}
+	
+	/**
+	 * Receives a GET request to get all orders.
+	 * 
+	 * @return The response containing the orders.
+	 */
+	@GET
+	@Path("/getAllOrdersOfCustomer={param}")
+	public Response getAllOrdersOfCustomer(@PathParam("param") long customerId) {
+		Set<Order> orders = OrderRepository.getAllOrdersOfCustomer(customerId);
+		Map<Order, Map<Long, Long>> completeOrders = new HashMap<Order, Map<Long, Long>>();
+		
+		for(Order order : orders) {
+			Map<Long, Long> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(order.getOrderId());
+			
+			completeOrders.put(order, itemsAndQuantities);
+		}
+		
+		return Response.status(200).entity(OrderRepository.completeOrdersToXML(completeOrders)).build();
+	}
+	
+	/**
+	 * Receives a DELETE request to delete an order. The order id is located within the URL.
+	 * 
+	 * @param orderId The order id located inside the URL.
+	 * 
+	 * @return The response.
+	 */
+	@DELETE
+	@Path("/deleteOrderById={param}")
+	public Response deleteOrder(@PathParam("param") long orderId) {
+		OrderlineRepository.deleteOrderline(orderId);
+		
+		String response = "Deletion of order with id: " + orderId + " was successful!";
+		
+		return Response.status(200).entity(response).build();
+	}
+	
+	/**
+	 * Receives a PUT request to update an order. The order information is located within the URL.
+	 * 
+	 * @param orderInformation The order information inside the request body.
+	 * 
+	 * @return The response containing the updated order.
 	 * 
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
 	 */
 	@PUT
-	@Path("/updateOrderline")
+	@Path("/updateOrderById={order}/{item}/{type}/{quantity}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response updateOrderline(String orderlineInformation) throws ParserConfigurationException, SAXException, IOException{
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
+	public Response updateOrder(@PathParam("order") long orderId, @PathParam("item") long itemId, @PathParam("type") String updateType, @PathParam("quantity") long quantity){		
+		OrderlineRepository.updateOrderline(orderId, itemId, updateType, quantity);
 		
-		Document document = builder.parse(new InputSource(new StringReader(orderlineInformation)));
-		Element rootElement = document.getDocumentElement();
+		Order order = OrderRepository.getOrder(orderId);
+		Map<Long, Long> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
 		
-		String[] orderlineValues = extractInformationFromXMLEntity(TAG_NAMES, 1, 6, rootElement);
-		
-		Orderline updatedOrderline = OrderlineRepository.updateOrderline(Long.parseLong(orderlineValues[0]), orderlineValues[1], orderlineValues[2], orderlineValues[3], orderlineValues[4], orderlineValues[5]);
-		
-		return Response.status(200).entity(OrderlineRepository.orderlineToXML(updatedOrderline)).build();
+		return Response.status(200).entity(OrderRepository.completeOrderToXML(order, itemsAndQuantities)).build();
 	}
 }

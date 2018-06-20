@@ -8,6 +8,7 @@ import java.util.Set;
 import java.time.LocalDate;
 import org.hibernate.Session;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
@@ -60,7 +61,7 @@ public class OrderRepository extends EntityRepository{
 	 * 
 	 * @return The fetched order.
 	 */
-	protected static Order getOrder(long orderId) {
+	public static Order getOrder(long orderId) {
 		Order order = null;
 		
 		Session session = null;
@@ -105,6 +106,21 @@ public class OrderRepository extends EntityRepository{
 				session.close();
 			}
 		}
+		
+		return orders;
+	}
+	
+	/**
+	 * Gets all the orders belonging to a customer.
+	 * 
+	 * @param customerId Id of customer.
+	 * 
+	 * @return All existing orders.
+	 */
+	@SuppressWarnings("unchecked")
+	public static Set<Order> getAllOrdersOfCustomer(long customerId) {
+		Customer customer = CustomerRepository.getCustomer(customerId);
+		Set<Order> orders = customer.getOrders();
 		
 		return orders;
 	}
@@ -163,9 +179,10 @@ public class OrderRepository extends EntityRepository{
 		String xmlOrder;
 		
 		xmlOrder = "<Order>"
+				+ "<CustomerId" + order.getCustomer().getCustomerId() + "</CustomerId>"
 				+ "<OrderId>" + order.getOrderId() + "</ItemId>"
 				+ "<Date>" + order.getDate() + "</Date>"
-				+ "<TotalCost" + order.getTotalCost() + "</TotalCost>"
+				+ "<TotalCost>" + order.getTotalCost() + "</TotalCost>"
 				+ "<OrderCarriedOut>" + order.getOrderCarriedOut() + "</OrderCarriedOut>"
 				+ "</Order>";
 		
