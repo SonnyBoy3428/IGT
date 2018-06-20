@@ -216,9 +216,13 @@ public class CustomerRepository extends EntityRepository{
 	 * Deletes a customer based on the Id.
 	 * 
 	 * @param customerId Id which is used to delete the customer.
+	 * 
+	 * @return Returns true if deleted.
 	 */
-	public static void deleteCustomer(int customerId) {
+	public static boolean deleteCustomer(int customerId) {
 		Session session = null;
+		
+		boolean customerDeleted = true;
 		
 		try {
 			session = sessionFactory.openSession();
@@ -232,9 +236,13 @@ public class CustomerRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			customerDeleted = false;
 		}finally {
 			session.close();
 		}
+		
+		return customerDeleted;
 	}
 	
 	/**
@@ -277,7 +285,7 @@ public class CustomerRepository extends EntityRepository{
 			session.close();
 		}
 		
-		return customer;
+		return getCustomer(customerId);
 	}
 	
 	/**
@@ -338,6 +346,6 @@ public class CustomerRepository extends EntityRepository{
 		
 		JSONObject jsonCompleteCustomerAndOrders = new JSONObject().put("CustomerAndOrders", jsonCustomerAndOrders);
 		
-		return jsonCustomerAndOrders;
+		return jsonCompleteCustomerAndOrders;
 	}
 }

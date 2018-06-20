@@ -5,13 +5,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 
 /**
  * This class functions as the API with which one can deal with items.
  * 
- * @author Dustin Noah Young,
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 public class ItemRepository extends EntityRepository{
@@ -63,9 +66,12 @@ public class ItemRepository extends EntityRepository{
 		
 		try {
 			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
 		
 			item = session.get(Item.class,  itemId);
 		
+			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
 		}finally {
@@ -92,7 +98,11 @@ public class ItemRepository extends EntityRepository{
 		try {
 			session = sessionFactory.openSession();
 			
+			session.beginTransaction();
+
 			itemsList = session.createQuery("from ITEM").getResultList();
+			
+			session.getTransaction().commit();
 			
 			items = new HashSet<Item>(itemsList);
 		}catch(Exception ex) {
@@ -110,25 +120,35 @@ public class ItemRepository extends EntityRepository{
 	 * Deletes a item.
 	 * 
 	 * @param itemId Id of the item that is to be deleted.
+	 * 
+	 * @return Returns true if deletion successful.
 	 */
-	public static void deleteItem(int itemId) {
+	public static boolean deleteItem(int itemId) {
 		Session session = null;
 		
-		try {
+		boolean itemDeleted = true;
+		
+		try {			
+			Item item = getItem(itemId);
+			
 			session = sessionFactory.openSession();
-		}catch(Exception ex) {
-			Item item = session.get(Item.class,  itemId);
 			
 			session.beginTransaction();
 			
 			session.delete(item);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
+			
+			itemDeleted = false;
 		}finally {
 			if(session != null) {
 				session.close();
 			}
 		}
+		
+		return itemDeleted;
 	}
 	
 	/**
@@ -145,65 +165,63 @@ public class ItemRepository extends EntityRepository{
 		Item item = null;
 		
 		try {
-			session = sessionFactory.openSession();
-		}catch(Exception ex) {
-			item = session.get(Item.class,  itemId);
+			item = getItem(itemId);
 			item.setItemName(itemName);
 			item.setPrice(price);
+			
+			session = sessionFactory.openSession();
 			
 			session.beginTransaction();
 			
 			session.update(item);
 			
 			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
 		}finally{
 			if(session != null) {
 				session.close();
 			}
 		}
 		
-		return item;
+		return getItem(itemId);
 	}
 	
 	/**
-	 * Turns a item into XML.
+	 * Turns a item into JSON.
 	 * 
-	 * @param item Item that is to be turned into XML.
+	 * @param item Item that is to be turned into JSON.
 	 * 
-	 * @return XML version of the item.
+	 * @return JSON version of the item.
 	 */
-	public static String itemToXML(Item item) {
-		String xmlItem;
+	public static JSONObject itemToJSON(Item item) {
+		JSONObject jsonItem = new JSONObject().put("ItemId", new Integer(item.getItemId()));
+		jsonItem.put("ItemName", item.getItemName());
+		jsonItem.put("Price", new Double(item.getPrice()));
 		
-		xmlItem = "<Item>"
-				+ "<ItemId>" + item.getItemId() + "</ItemId>"
-				+ "<ItemName>" + item.getItemName() + "</ItemName>"
-				+ "<Price>" + item.getPrice() +  "</Price>"
-				+ "</Item>";
-		
-		return xmlItem;
+		return jsonItem;
 	}
 	
 	/**
-	 * Turns items into XML.
+	 * Turns items into JSON.
 	 * 
-	 * @param items Items that are to be turned into XML.
+	 * @param items Items that are to be turned into JSON.
 	 * 
-	 * @return XML version of the items.
+	 * @return JSON version of the items.
 	 */
-	public static String itemsToXML(Set<Item> items) {
-		String xmlItems;
-		
-		xmlItems = "<Items>";
+	public static JSONArray itemsToJSON(Set<Item> items) {
+		JSONArray jsonItems = new JSONArray();
 		
 		if(items != null && items.size() > 0) {
 			for(Item item : items) {
-				xmlItems += itemToXML(item); 
+				JSONObject jsonItem = new JSONObject().put("Item", itemToJSON(item));
+
+				jsonItems.put(jsonItem); 
 			}
 		}
-				
-		xmlItems += "</Items>";
 		
-		return xmlItems;
+		//JSONObject jsonAllItems = new JSONObject().put("Items", jsonItems)
+		
+		return jsonItems;
 	}
 }

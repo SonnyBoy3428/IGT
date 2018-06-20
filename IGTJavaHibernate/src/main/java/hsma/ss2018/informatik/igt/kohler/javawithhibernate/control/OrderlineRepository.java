@@ -121,7 +121,11 @@ public class OrderlineRepository extends EntityRepository {
 		try {
 			session = sessionFactory.openSession();
 			
+			session.beginTransaction();
+			
 			Order order = session.get(Order.class, orderId);
+			
+			session.getTransaction().commit();
 			
 			orderline = order.getOrderline();
 		}catch(Exception ex) {
@@ -140,21 +144,23 @@ public class OrderlineRepository extends EntityRepository {
 	 * @param itemId Item associated with the orderline.
 	 * @param updateType Update type can be an insert, an update or a delete function.
 	 * @param quantity Quantity of the new item or of the item that is to be updated.
+	 * 
+	 * @return The updated order.
 	 */
-	public static void updateOrderline(int orderId, int itemId, String updateType, int quantity) {
+	public static Order updateOrderline(int orderId, int itemId, String updateType, int quantity) {
 		Session session = null;
 		
-		try {
-			session = sessionFactory.openSession();
-			
-			Order order = session.get(Order.class, orderId);
-			Item item = session.get(Item.class, itemId);
+		try {			
+			Order order = OrderRepository.getOrder(orderId);
+			Item item = ItemRepository.getItem(itemId);
 			
 			Set<Orderline> orderline = order.getOrderline();
 			
 			double totalCost = 0.0f;
 			int oldQuantity = 0;
 			
+			session = sessionFactory.openSession();
+
 			if(!updateType.equals("Insert")) {
 				for(Orderline orderlineElement : orderline) {
 					Item orderlineItem = orderlineElement.getItem();
@@ -248,25 +254,29 @@ public class OrderlineRepository extends EntityRepository {
 		}finally {
 			session.close();
 		}
+		
+		return OrderRepository.getOrder(orderId);
 	}
 	
 	/**
 	 * Deletes an orderline and it's relationships.
 	 * 
 	 * @param orderId Order Id from order on which deletion is based.
+	 * 
+	 * @return Returns true if deletion successful.
 	 */
-	public static void deleteOrderline(int orderId) {
-		Set<Orderline> orderline = null;
+	public static boolean deleteOrderline(int orderId) {
 		Session session = null;
 		
+		boolean orderlineDeleted = true;
+		
 		try {
-			session = sessionFactory.openSession();
-			
-			Order order = session.get(Order.class, orderId);
-			
-			orderline = order.getOrderline();
-			
+			Order order = OrderRepository.getOrder(orderId);
+			Set<Orderline> orderline = order.getOrderline();
+
 			OrderRepository.deleteOrder(orderId);
+			
+			session = sessionFactory.openSession();			
 			
 			for(Orderline orderlineElement : orderline) {
 				Item item = orderlineElement.getItem();
@@ -285,8 +295,12 @@ public class OrderlineRepository extends EntityRepository {
 			}
 		}catch(Exception ex) {
 			// TODO
+			
+			orderlineDeleted = false;
 		}finally {
 			session.close();
 		}
+		
+		return orderlineDeleted;
 	}
 }
