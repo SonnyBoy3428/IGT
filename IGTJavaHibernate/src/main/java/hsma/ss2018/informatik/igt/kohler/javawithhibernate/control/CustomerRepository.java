@@ -43,6 +43,7 @@ public class CustomerRepository extends EntityRepository{
 		
 		District district = DistrictRepository.getDistrict(districtId);
 		
+		
 		customer.setDistrict(district);
 		
 		Session session = null;
