@@ -4,6 +4,8 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
+const HOST = '';
+
 const state = {
     hello: 'hello world',
     Items: [
@@ -28,8 +30,15 @@ const getters = {
 
 const mutations = {
     addPseudoQuantity(state) {
-        state.Items.forEach(s => s.quantity = 0);
-        state.Items.push({});
+        state.Items = [];
+        axios.get(HOST + '/itemService/getAllItems').then(function(items) {
+            items.Items.forEach(s => {
+                s.quantity = 0;
+                state.Items.push(s);
+            });
+        });
+        // state.Items.forEach(s => s.quantity = 0);
+        // state.Items.push({});
     },
     increaseQuantity(state, id) {
         state.Items.find(function(e) {
@@ -46,6 +55,9 @@ const mutations = {
     },
     sendOrder(items, customerId) {
         
+    },
+    createUser(user) {
+        axios.post(HOST + '/')
     }
 }
 

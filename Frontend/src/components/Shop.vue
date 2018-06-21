@@ -1,10 +1,7 @@
 <template>
   <div class="container-fluid shop">
-    <!-- <h1 class="mb80">Shop</h1> -->
     <div class="row mb80">
       <div class="item col-sm-3" v-for="item in items" :key="item.ItemId" v-if="item.ItemId">
-        <!-- <img class="card-img-top" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22286%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20286%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_1641e081fcc%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A14pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_1641e081fcc%22%3E%3Crect%20width%3D%22286%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22106.3984375%22%20y%3D%2296.3%22%3E286x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" -->
-        <!-- alt="Card image cap"> -->
         <div class="card-body">
           <h5 class="card-title">{{ item.ItemName }}</h5>
           <p class="card-text">Preis: {{ item.Price }} €</p>
@@ -15,11 +12,34 @@
         </div>
       </div>
     </div>
-    <div><button class="btn btn-primary" @click="showModal()">Jetzt bestellen</button></div>
-    <b-modal v-model="show" @ok="sendOrder()">
-      Customer ID:
-      <b-form-input type="text" v-model="customerId"></b-form-input>
-  
+    <div><button class="btn btn-primary" @click="sendOrder()">Jetzt bestellen</button></div>
+    <b-modal v-model="show" :ok-only="true" ok-title="Close">
+      <b-container fluid>
+        <b-row>
+          <b-col>
+            <span>
+                Login
+              </span>
+            <b-form-input id="customerID" placeholder="customer ID" v-model="customerId">
+            </b-form-input>
+            <b-button @click="toggleModal()">Login</b-button>
+          </b-col>
+          <b-col>
+            <span>
+                Sign up
+              </span>
+            <b-form-group>
+              <b-form-input placeholder="Vorname" id="FirstName" v-model="newCustomer.FirstName"></b-form-input>
+              <b-form-input placeholder="Nachname" id="LastName" v-model="newCustomer.LastName"></b-form-input>
+              <b-form-input placeholder="Adresse" id="Address" v-model="newCustomer.Address"></b-form-input>
+              <b-form-input placeholder="Telefon" id="Telephone" v-model="newCustomer.Telephone"></b-form-input>
+              <b-form-input placeholder="Kreditkartennummer" id="CreditCardNr" v-model="newCustomer.CreditCardNr"></b-form-input>
+              <b-form-input placeholder="District ID" id="DistrictId" v-model="newCustomer.DistrictId"></b-form-input>
+              <b-button @click="createUser()">Sign up</b-button>
+            </b-form-group>
+          </b-col>
+        </b-row>
+      </b-container>
     </b-modal>
   </div>
 </template>
@@ -30,7 +50,15 @@
     data() {
       return {
         show: false,
-        customerId: undefined
+        customerId: undefined,
+        newCustomer: {
+          FirstName: undefined,
+          LastName: undefined,
+          Address: undefined,
+          Telephone: undefined,
+          CreditCardNr: undefined,
+          DistrictId: undefined
+        }
       }
     },
     computed: {
@@ -46,18 +74,21 @@
         this.$store.commit('decreaseQuantity', id);
       },
       sendOrder() {
+        if (!this.customerId) return this.toggleModal();
+  
         let items = this.$store.state.Items.filter(s => s.ItemId && s.quantity > 0);
+        console.log(items, this.customerId);
         this.$store.commit('sendOrder', items, this.customerId);
       },
-      showModal() {
-        this.show = true;
+      toggleModal() {
+        this.show = !this.show;
       },
+      createUser() {
+        this.$store.commit('createUser', this.newCustomer)
+      }
     },
     mounted() {
       this.$store.commit('addPseudoQuantity');
-      fetch('https://jsonplaceholder.typicode.com/posts/1')
-        .then(response => response.json())
-        .then(json => console.log(json))
     }
   };
 </script>
@@ -75,5 +106,9 @@
   .card-body {
     border: 2px solid lightgrey;
     border-radius: 5px;
+  }
+  
+  input {
+    margin: 10px auto;
   }
 </style>
