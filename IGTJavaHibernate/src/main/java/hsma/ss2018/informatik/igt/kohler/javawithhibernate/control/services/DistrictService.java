@@ -1,7 +1,5 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.services;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -14,20 +12,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.CustomerRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.DistrictRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 
 /**
@@ -39,11 +28,6 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 @Path("/districtService")
 public class DistrictService extends EntityService{
 	/**
-	 * The tag names belonging to a district XML object.
-	 */
-	static final String[] TAG_NAMES = {"District", "DistrictId", "DistrictName", "DistrictSize", "WarehouseId"};
-	
-	/**
 	 * Receives a POST request to create a district. The district information is located in the request body.
 	 * 
 	 * @param districtInformation Request body containing district information.
@@ -52,7 +36,7 @@ public class DistrictService extends EntityService{
 	 */
 	@POST
 	@Path("/createDistrict")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response createDistrict(String districtInformation){
 		JSONObject newDistrict = new JSONObject(districtInformation);
@@ -188,16 +172,12 @@ public class DistrictService extends EntityService{
 	 * @param districtInformation The district information inside the request body.
 	 * 
 	 * @return The response containing the updated district.
-	 * 
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	@PUT
 	@Path("/updateDistrict")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
-	public Response updateDistrict(String districtInformation) throws ParserConfigurationException, SAXException, IOException{
+	public Response updateDistrict(String districtInformation){
 		JSONObject district = new JSONObject(districtInformation);
 		
 		District updatedDistrict = DistrictRepository.updateDistrict(Integer.parseInt(district.getString("DistrictId")), district.getString("DistrictName"), Double.parseDouble(district.getString("DistrictSize")), Integer.parseInt(district.getString("WarehouseId")));

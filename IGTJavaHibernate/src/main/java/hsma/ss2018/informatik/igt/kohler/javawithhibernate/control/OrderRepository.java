@@ -94,7 +94,6 @@ public class OrderRepository extends EntityRepository{
 	 */
 	@SuppressWarnings("unchecked")
 	protected static Set<Order> getAllOrders() {
-		List<Order> ordersList = null;
 		Set<Order> orders = null;
 		
 		Session session = null;
@@ -104,7 +103,7 @@ public class OrderRepository extends EntityRepository{
 			
 			session.beginTransaction();
 		
-			ordersList = session.createQuery("from CUSTOMER_ORDER").getResultList();
+			List<Order> ordersList = session.createQuery("from CUSTOMER_ORDER").getResultList();
 			
 			session.getTransaction().commit();
 			

@@ -90,7 +90,6 @@ public class ItemRepository extends EntityRepository{
 	 */
 	@SuppressWarnings("unchecked")
 	public static Set<Item> getAllItems() {
-		List<Item> itemsList = null;
 		Set<Item> items = null;
 		
 		Session session = null;
@@ -100,7 +99,7 @@ public class ItemRepository extends EntityRepository{
 			
 			session.beginTransaction();
 
-			itemsList = session.createQuery("from ITEM").getResultList();
+			List<Item> itemsList = session.createQuery("from ITEM").getResultList();
 			
 			session.getTransaction().commit();
 			
@@ -184,7 +183,9 @@ public class ItemRepository extends EntityRepository{
 			}
 		}
 		
-		return getItem(itemId);
+		Item updatedItem = getItem(itemId);
+		
+		return updatedItem;
 	}
 	
 	/**

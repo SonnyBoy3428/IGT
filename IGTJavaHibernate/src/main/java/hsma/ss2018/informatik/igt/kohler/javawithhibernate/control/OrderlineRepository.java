@@ -14,7 +14,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 /**
  * This class functions as the API with which one can deal with orderlines.
  * 
- * @author Dustin Noah Young,
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 public class OrderlineRepository extends EntityRepository {
@@ -23,8 +23,10 @@ public class OrderlineRepository extends EntityRepository {
 	 * 
 	 * @param customerId Customer for whom the order should be created.
 	 * @param itemsAndQuantity The ordered items and their quantity.
+	 * 
+	 * @return Returns the newly created order.
 	 */
-	public static void createOrderline(int customerId, Map<Integer, Integer> itemsAndQuantity) {
+	public static Order createOrderline(int customerId, Map<Integer, Integer> itemsAndQuantity) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Order newOrder = null;
 		Set<Item> items = new HashSet<Item>();
@@ -43,14 +45,14 @@ public class OrderlineRepository extends EntityRepository {
 					if(item != null) {
 						items.add(item);
 					}else {
-						throw new NullPointerException("No item with the Id: " + itemId + " exists.");
+						// TODO
 					}
 				}
 			}else {
-				throw new NullPointerException("No new order could be created.");
+				// TODO
 			}
 		}else {
-			throw new NullPointerException("No customer with the Id: " + customerId + " exists.");
+			// TODO
 		}
 		
 		double totalCost = 0.0d;
@@ -105,10 +107,12 @@ public class OrderlineRepository extends EntityRepository {
 		}finally {
 			session.close();
 		}
+		
+		return newOrder;
 	}
 	
 	/**
-	 * Gets the orderline beinting to the order Id.
+	 * Gets the orderline belonging to the order Id.
 	 * 
 	 * @param orderId Id of the order associated with the orderline.
 	 * 
@@ -150,6 +154,8 @@ public class OrderlineRepository extends EntityRepository {
 	public static Order updateOrderline(int orderId, int itemId, String updateType, int quantity) {
 		Session session = null;
 		
+		boolean itemIsPartOfOrder = false;
+		
 		try {			
 			Order order = OrderRepository.getOrder(orderId);
 			Item item = ItemRepository.getItem(itemId);
@@ -166,7 +172,8 @@ public class OrderlineRepository extends EntityRepository {
 					Item orderlineItem = orderlineElement.getItem();
 				
 					// Item found
-					if(orderlineItem.getItemId() == itemId) {					
+					if(orderlineItem.getItemId() == itemId) {	
+						itemIsPartOfOrder = true;
 						switch(updateType) {
 							case "Update":
 								oldQuantity = orderlineElement.getQuantity();
@@ -255,7 +262,13 @@ public class OrderlineRepository extends EntityRepository {
 			session.close();
 		}
 		
-		return OrderRepository.getOrder(orderId);
+		Order updatedOrder = null;
+		
+		if(itemIsPartOfOrder) {
+			updatedOrder = OrderRepository.getOrder(orderId);
+		}
+		
+		return updatedOrder;
 	}
 	
 	/**
@@ -273,10 +286,15 @@ public class OrderlineRepository extends EntityRepository {
 		try {
 			Order order = OrderRepository.getOrder(orderId);
 			Set<Orderline> orderline = order.getOrderline();
-
-			OrderRepository.deleteOrder(orderId);
 			
-			session = sessionFactory.openSession();			
+			order.setCustomer(null);
+			order.setOrderline(null);
+			
+			session = sessionFactory.openSession();	
+			
+			session.beginTransaction();
+			session.update(order);
+			session.getTransaction().commit();
 			
 			for(Orderline orderlineElement : orderline) {
 				Item item = orderlineElement.getItem();
@@ -293,6 +311,7 @@ public class OrderlineRepository extends EntityRepository {
 				session.delete(orderlineElement);
 				session.getTransaction().commit();
 			}
+			OrderRepository.deleteOrder(orderId);
 		}catch(Exception ex) {
 			// TODO
 			

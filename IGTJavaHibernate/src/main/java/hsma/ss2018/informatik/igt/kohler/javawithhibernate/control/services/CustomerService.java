@@ -28,11 +28,6 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 @Path("/customerService")
 public class CustomerService extends EntityService{
 	/**
-	 * The tag names belonging to a customer XML object.
-	 */
-	static final String[] TAG_NAMES = {"Customer", "CustomerId", "FirstName", "LastName", "Address", "Telephone", "CreditCardNr", "DistrictId"};
-	
-	/**
 	 * Receives a POST request to create a customer. The customer information is located in the request body.
 	 * 
 	 * @param customerInformation Request body containing customer information.
@@ -46,7 +41,7 @@ public class CustomerService extends EntityService{
 	public Response createCustomer(String customerInformation) {
 		JSONObject newCustomer = new JSONObject(customerInformation);
 		
-		Customer createdCustomer = CustomerRepository.createCustomer(newCustomer.getString("FirstName"), newCustomer.getString("LastName"), newCustomer.getString("Address"), newCustomer.getString("Telephone"), newCustomer.getString("CreditCardNr"), Integer.parseInt(newCustomer.getString("DistrictId")));
+		Customer createdCustomer = CustomerRepository.createCustomer(newCustomer.getString("FirstName"), newCustomer.getString("LastName"), newCustomer.getString("Address"), newCustomer.getString("Telephone"), newCustomer.getString("CreditCardNr"), newCustomer.getInt("DistrictId"));
 		
 		JSONObject response = new JSONObject();
 		
@@ -248,12 +243,12 @@ public class CustomerService extends EntityService{
 	 */
 	@PUT
 	@Path("/updateCustomer")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response updateCustomer(String customerInformation){
 		JSONObject customer = new JSONObject(customerInformation);
 		
-		Customer updatedCustomer = CustomerRepository.updateCustomer(Integer.parseInt(customer.getString("CustomerId")), customer.getString("FirstName"), customer.getString("LastName"), customer.getString("Address"), customer.getString("Telephone"), customer.getString("CreditCardNr"), Integer.parseInt(customer.getString("DistrictId")));
+		Customer updatedCustomer = CustomerRepository.updateCustomer(customer.getInt("CustomerId"), customer.getString("FirstName"), customer.getString("LastName"), customer.getString("Address"), customer.getString("Telephone"), customer.getString("CreditCardNr"), customer.getInt("DistrictId"));
 		
 		JSONObject response = new JSONObject();
 		

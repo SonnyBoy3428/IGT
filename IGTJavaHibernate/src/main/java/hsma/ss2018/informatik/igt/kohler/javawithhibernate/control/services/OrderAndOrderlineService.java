@@ -13,12 +13,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,7 +37,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 /**
  * This class acts as the API for calls to the order and orderline repositories.
  * 
- * @author Dustin Noah Young, 
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 @Path("/orderAndOrderlineService")
@@ -59,12 +62,19 @@ public class OrderAndOrderlineService extends EntityService{
 	@POST
 	@Path("/createCompleteOrderForCustomerId={param}")
 	@Consumes(MediaType.APPLICATION_XML)
+	@Produces("application/json")
 	public Response createCompleteOrder(@PathParam("param") int customerId, String orderlineInformation) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
+		JSONObject newOrderline = new JSONObject(orderlineInformation);
 		
-		Document document = builder.parse(new InputSource(new StringReader(orderlineInformation)));
-		Element rootElement = document.getDocumentElement();
+		JSONArray items = newOrderline.getJSONArray("Items");
+		
+		for(int i = 0; i < items.length(); i++) {
+			JSONObject item = items.getJSONObject(i);
+			JSONObject itemInformation = item.getJSONObject("Item");
+			
+			int itemId = itemInformation.getInt("ItemId");
+			int itemQuantity = Integer.parseInt(item.getLastChild().getNodeValue());
+		}
 		
 		Map<Integer, Integer> itemsAndQuantities = extractMultipleItemsFromXML(rootElement);
 		
