@@ -48,9 +48,17 @@ public class CustomerService extends EntityService{
 		
 		Customer createdCustomer = CustomerRepository.createCustomer(newCustomer.getString("FirstName"), newCustomer.getString("LastName"), newCustomer.getString("Address"), newCustomer.getString("Telephone"), newCustomer.getString("CreditCardNr"), Integer.parseInt(newCustomer.getString("DistrictId")));
 		
-		JSONObject createdCustomerJSON = CustomerRepository.customerToJSON(createdCustomer);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(createdCustomerJSON.toString()).build();
+		if(createdCustomer != null) {
+			response = CustomerRepository.customerToJSON(createdCustomer);
+			
+			return Response.status(201).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Creation of customer failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -66,9 +74,17 @@ public class CustomerService extends EntityService{
 	public Response getCustomerById(@PathParam("param") int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		
-		JSONObject customerJSON = CustomerRepository.customerToJSON(customer);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(customerJSON.toString()).build();
+		if(customer != null) {
+			response = CustomerRepository.customerToJSON(customer);
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -82,9 +98,17 @@ public class CustomerService extends EntityService{
 	public Response getAllCustomers() {
 		Set<Customer> customers = CustomerRepository.getAllCustomers();
 		
-		JSONObject customersJSON = new JSONObject().put("Customers", CustomerRepository.customersToJSON(customers));
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(customersJSON.toString()).build();
+		if(customers != null) {
+			response.put("Customers", CustomerRepository.customersToJSON(customers));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Fetching of customers failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -99,11 +123,26 @@ public class CustomerService extends EntityService{
 	@Produces("application/json")
 	public Response getAllCustomerOrders(@PathParam("param") int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
-		Set<Order> orders = CustomerRepository.getCustomerAllOrders(customerId);
 		
-		JSONObject customerAndOrdersJSON = CustomerRepository.customerAndOrdersToJSON(customer, orders);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(customerAndOrdersJSON.toString()).build();
+		if(customer != null) {
+			Set<Order> orders = CustomerRepository.getCustomerAllOrders(customerId);
+			
+			if(orders != null) {
+				response = CustomerRepository.customerAndOrdersToJSON(customer, orders);
+				
+				return Response.status(200).entity(response.toString()).build();
+			}else {
+				response.put("Message", "Customer with id " + customerId + " does not have any orders!");
+				
+				return Response.status(204).entity(response.toString()).build();
+			}
+		}else {
+			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -118,11 +157,26 @@ public class CustomerService extends EntityService{
 	@Produces("application/json")
 	public Response getNewCustomerOrders(@PathParam("param") int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
-		Set<Order> orders = CustomerRepository.getCustomerNewOrders(customerId);
 		
-		JSONObject customerAndOrdersJSON = CustomerRepository.customerAndOrdersToJSON(customer, orders);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(customerAndOrdersJSON.toString()).build();
+		if(customer != null) {
+			Set<Order> orders = CustomerRepository.getCustomerNewOrders(customerId);
+			
+			if(orders != null) {
+				response = CustomerRepository.customerAndOrdersToJSON(customer, orders);
+				
+				return Response.status(200).entity(response.toString()).build();
+			}else {
+				response.put("Message", "Customer with id " + customerId + " does not have any new orders!");
+				
+				return Response.status(204).entity(response.toString()).build();
+			}
+		}else {
+			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -137,11 +191,26 @@ public class CustomerService extends EntityService{
 	@Produces("application/json")
 	public Response getCustomerOrderHistory(@PathParam("param") int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
-		Set<Order> orders = CustomerRepository.getCustomerOrderHistory(customerId);
 		
-		JSONObject customerAndOrdersJSON = CustomerRepository.customerAndOrdersToJSON(customer, orders);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(customerAndOrdersJSON.toString()).build();
+		if(customer != null) {
+			Set<Order> orders = CustomerRepository.getCustomerOrderHistory(customerId);
+			
+			if(orders != null) {
+				response = CustomerRepository.customerAndOrdersToJSON(customer, orders);
+				
+				return Response.status(200).entity(response.toString()).build();
+			}else {
+				response.put("Message", "Customer with id " + customerId + " does not have an order history!");
+				
+				return Response.status(204).entity(response.toString()).build();
+			}
+		}else {
+			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -156,15 +225,17 @@ public class CustomerService extends EntityService{
 	public Response deleteCustomer(@PathParam("param") int customerId) {
 		boolean customerDeleted = CustomerRepository.deleteCustomer(customerId);
 		
-		String response = "";
+		JSONObject response = new JSONObject();
 		
 		if(customerDeleted) {
-			response = "Deletion of customer with id: " + customerId + " successful!";
+			response.put("Message", "Deletion of customer with id: " + customerId + " successful!");
+			
+			return Response.status(200).entity(response.toString()).build();
 		}else {
-			response = "Deletion of customer with id: " + customerId + " failed!";
+			response.put("Message", "Deletion of customer with id: " + customerId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
 		}
-		
-		return Response.status(200).entity(response).build();
 	}
 	
 	/**
@@ -182,8 +253,16 @@ public class CustomerService extends EntityService{
 		
 		Customer updatedCustomer = CustomerRepository.updateCustomer(Integer.parseInt(customer.getString("CustomerId")), customer.getString("FirstName"), customer.getString("LastName"), customer.getString("Address"), customer.getString("Telephone"), customer.getString("CreditCardNr"), Integer.parseInt(customer.getString("DistrictId")));
 		
-		JSONObject updatedCustomerJSON = CustomerRepository.customerToJSON(updatedCustomer);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(updatedCustomerJSON.toString()).build();
+		if(updatedCustomer != null) {
+			response = CustomerRepository.customerToJSON(updatedCustomer);
+			
+			return Response.status(202).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Update of customer with id: " + Integer.parseInt(customer.getString("CustomerId")) + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 }

@@ -10,3 +10,9 @@
 		"DistrictName" : "Musterstadt"
 	}
 }
+
+ODER
+
+{
+	"Message" : "Creation of customer failed!"
+}

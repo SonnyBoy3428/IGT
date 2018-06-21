@@ -10,3 +10,9 @@
 		"DistrictName" : "Musterstadt"
 	}
 }
+
+ODER
+
+{
+	"Message" : "Update of customer with id 1 failed!"
+}

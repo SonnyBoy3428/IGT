@@ -1,9 +1,9 @@
 {
-	"Message" : "Deletion of customer with id: 1 successful!"
+	"Message" : "Deletion of customer with id 1 successful!"
 }
 
 ODER
 
 {
-	"Message" : "Deletion of customer with id: 1 failed!"
+	"Message" : "Deletion of customer with id 1 failed!"
 }
