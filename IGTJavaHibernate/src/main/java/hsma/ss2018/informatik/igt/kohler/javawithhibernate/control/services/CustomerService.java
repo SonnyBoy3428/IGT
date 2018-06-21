@@ -48,7 +48,7 @@ public class CustomerService extends EntityService{
 		if(createdCustomer != null) {
 			response.put("Customer", CustomerRepository.customerToJSON(createdCustomer));
 			
-			return Response.status(201).entity(response.toString()).build();
+			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Creation of customer failed!");
 			
@@ -131,7 +131,7 @@ public class CustomerService extends EntityService{
 			}else {
 				response.put("Message", "Customer with id " + customerId + " does not have any orders!");
 				
-				return Response.status(204).entity(response.toString()).build();
+				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
@@ -165,7 +165,7 @@ public class CustomerService extends EntityService{
 			}else {
 				response.put("Message", "Customer with id " + customerId + " does not have any new orders!");
 				
-				return Response.status(204).entity(response.toString()).build();
+				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
@@ -199,7 +199,7 @@ public class CustomerService extends EntityService{
 			}else {
 				response.put("Message", "Customer with id " + customerId + " does not have an order history!");
 				
-				return Response.status(204).entity(response.toString()).build();
+				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
@@ -255,9 +255,9 @@ public class CustomerService extends EntityService{
 		if(updatedCustomer != null) {
 			response.put("Customer", CustomerRepository.customerToJSON(updatedCustomer));
 			
-			return Response.status(202).entity(response.toString()).build();
+			return Response.status(200).entity(response.toString()).build();
 		}else {
-			response.put("Message", "Update of customer with id: " + Integer.parseInt(customer.getString("CustomerId")) + " failed!");
+			response.put("Message", "Update of customer with id " + Integer.parseInt(customer.getString("CustomerId")) + " failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

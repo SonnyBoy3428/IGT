@@ -1,0 +1,103 @@
+{
+	"CompleteOrders" : [
+		{
+			"Order" : {
+				"OrderId" : 1,
+				"CustomerId" : 1,
+				"OrderDate" : "2018-06-01",
+				"TotalCost" : 20.0,
+				"OrderCarriedOut" : false
+			},
+			"Items" : [
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				},
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				},
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				}
+			]
+		},
+		{
+			"Order" : {
+				"OrderId" : 1,
+				"CustomerId" : 1,
+				"OrderDate" : "2018-06-01",
+				"TotalCost" : 20.0,
+				"OrderCarriedOut" : false
+			},
+			"Items" : [
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				},
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				},
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				}
+			]
+		},
+		{
+			"Order" : {
+				"OrderId" : 1,
+				"CustomerId" : 1,
+				"OrderDate" : "2018-06-01",
+				"TotalCost" : 20.0,
+				"OrderCarriedOut" : false
+			},
+			"Items" : [
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				},
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				},
+				{
+					"ItemId" : 1,
+					"ItemName" : "MusterMonitor",
+					"Price" : 10.0,
+					"Quantity" : 1
+				}
+			]
+		}
+	]
+}
+
+ODER 
+
+{
+	"Message" : "Order id 1 does not have any items!"
+}
+
+ODER 
+
+{
+	"Message" : "The customer with the id 1 does not have any orders!"
+}

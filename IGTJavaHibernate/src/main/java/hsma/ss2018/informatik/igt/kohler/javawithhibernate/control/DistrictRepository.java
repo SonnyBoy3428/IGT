@@ -10,8 +10,6 @@ import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
 /**
@@ -238,7 +236,7 @@ public class DistrictRepository extends EntityRepository{
 		
 		if(districts != null && districts.size() > 0) {
 			for(District district : districts) {
-				JSONObject jsonDistrict = new JSONObject().put("District", districtToJSON(district));
+				JSONObject jsonDistrict = districtToJSON(district);
 
 				jsonDistricts.put(jsonDistrict); 
 			}
@@ -260,7 +258,7 @@ public class DistrictRepository extends EntityRepository{
 		jsonDistrictsAndCustomers.put("District", districtToJSON(district));
 		jsonDistrictsAndCustomers.put("Customers", CustomerRepository.customersToJSON(customers));
 		
-		JSONObject jsonCompleteDistrictsAndCustomers = new JSONObject().put("DistrcitAndCustomers", jsonDistrictsAndCustomers);
+		JSONObject jsonCompleteDistrictsAndCustomers = new JSONObject().put("DistrictAndCustomers", jsonDistrictsAndCustomers);
 		
 		return jsonCompleteDistrictsAndCustomers;
 	}

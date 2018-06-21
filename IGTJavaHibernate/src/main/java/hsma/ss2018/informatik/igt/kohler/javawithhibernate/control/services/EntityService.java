@@ -6,7 +6,7 @@ import org.w3c.dom.NodeList;
 /**
  * This abstract class acts as the parent of all other service classes. 
  * 
- * @author Dustin Noah Young
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 public abstract class EntityService {

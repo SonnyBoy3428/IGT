@@ -11,7 +11,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
 /**
  * This class functions as the API with which one can deal with stocks.
  * 
- * @author Dustin Noah Young,
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 public class StockRepository extends EntityRepository{
@@ -22,56 +22,73 @@ public class StockRepository extends EntityRepository{
 	 * @param item Item that is to be stocked
 	 * @param quantity
 	 */
-	public static void createStock(int warehouseId, int itemId, int quantity) {
+	public static Warehouse createStock(int warehouseId, int itemId, int quantity) {
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		Item item = ItemRepository.getItem(itemId);
+		
+		boolean warehouseCreated = true;
 		
 		// If the warehouse does not exist we don't need to continue.
 		if(warehouse != null) {
 			// If the item could not be created we don't need to continue.
-			if(item == null) {
-				throw new NullPointerException("No item with the Id: " + itemId + " exists.");
+			if(item != null) {
+				// The stock needs a link to the warehouse and the item 
+				Stock stock = new Stock();
+				stock.setWarehouse(warehouse);
+				stock.setItem(item);
+				stock.setQuantity(quantity);
+				
+				// The order needs a link to the stock
+				warehouse.getStock().add(stock);
+				
+				// The item needs a link to the stock.
+				item.getStock().add(stock);
+			
+				Session session = null;
+				
+				try {
+					session = sessionFactory.openSession();
+					
+					session.beginTransaction();
+					session.save(stock);
+					session.getTransaction().commit();
+					
+					session.beginTransaction();
+					session.update(warehouse);
+					session.getTransaction().commit();
+					
+					session.beginTransaction();
+					session.update(item);
+					session.getTransaction().commit();
+				}catch(Exception ex) {
+					// TODO
+					
+					warehouseCreated = false;
+				}finally {
+					if(session != null) {
+						session.close();
+					}
+				}
+			}else {
+				// TODO
+				
+				warehouseCreated = false;
 			}
 		}else {
-			throw new NullPointerException("No warehouse with the Id: " + warehouseId + " exists.");
-		}
-		
-		// The stock needs a link to the warehouse and the item 
-		Stock stock = new Stock();
-		stock.setWarehouse(warehouse);
-		stock.setItem(item);
-		
-		// The order needs a link to the stock
-		warehouse.getStock().add(stock);
-		
-		// The item needs a link to the stock.
-		item.getStock().add(stock);
-	
-		Session session = null;
-		
-		try {
-			session = sessionFactory.openSession();
-			
-			session.beginTransaction();
-			session.save(stock);
-			session.getTransaction().commit();
-			
-			session.beginTransaction();
-			session.update(warehouse);
-			session.getTransaction().commit();
-			
-			session.beginTransaction();
-			session.update(item);
-			session.getTransaction().commit();
-		}catch(Exception ex) {
 			// TODO
-		}finally {
-			session.close();
+			
+			warehouseCreated = false;
 		}
+		
+		if(!warehouseCreated) {
+			warehouse = null;
+		}
+		
+		return warehouse;
 	}
 	
 	/**
-	 * Gets the stocks beinting to the warehouse Id.
+	 * Gets the stocks belonging to the warehouse Id.
 	 * 
 	 * @param warehouseId Id of the order associated with the warehouse.
 	 * 
@@ -82,15 +99,21 @@ public class StockRepository extends EntityRepository{
 		Session session = null;
 		
 		try {
+			Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
+			
 			session = sessionFactory.openSession();
 			
-			Warehouse warehouse = session.get(Warehouse.class, warehouseId);
+			session.beginTransaction();
 			
 			stock = warehouse.getStock();
+			
+			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
 		}finally {
-			session.close();
+			if(session != null) {
+				session.close();
+			}
 		}
 		
 		return stock;
@@ -104,13 +127,13 @@ public class StockRepository extends EntityRepository{
 	 * @param updateType Update type can be an insert, an update or a delete function.
 	 * @param quantity Quantity of the new item or of the item that is to be updated.
 	 */
-	public static void updateStock(int warehouseId, int itemId, String updateType, int quantity) {
+	public static Warehouse updateStock(int warehouseId, int itemId, String updateType, int quantity) {
 		Session session = null;
+		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		
 		try {
 			session = sessionFactory.openSession();
-			
-			Warehouse warehouse = session.get(Warehouse.class, warehouseId);
+		
 			Item item = session.get(Item.class, itemId);
 			
 			Set<Stock> stock = warehouse.getStock();
@@ -189,8 +212,14 @@ public class StockRepository extends EntityRepository{
 		}catch(Exception ex) {
 			// TODO
 		}finally {
-			session.close();
+			if(session != null) {
+				session.close();
+			}
 		}
+		
+		warehouse = WarehouseRepository.getWarehouse(warehouseId);
+		
+		return warehouse;
 	}
 	
 	/**
@@ -198,14 +227,16 @@ public class StockRepository extends EntityRepository{
 	 * 
 	 * @param warehouseId Warehouse Id from warehouse on which deletion is based.
 	 */
-	public static void deleteStock(int warehouseId) {
+	public static boolean deleteStock(int warehouseId) {
 		Set<Stock> stock = null;
 		Session session = null;
 		
+		boolean stockDeleted = true;
+		
 		try {
-			session = sessionFactory.openSession();
+			Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 			
-			Warehouse warehouse = session.get(Warehouse.class, warehouseId);
+			session = sessionFactory.openSession();
 			
 			stock = warehouse.getStock();
 			
@@ -228,8 +259,14 @@ public class StockRepository extends EntityRepository{
 			}
 		}catch(Exception ex) {
 			// TODO
+			
+			stockDeleted = false;
 		}finally {
-			session.close();
+			if(session != null) {
+				session.close();
+			}
 		}
+		
+		return stockDeleted;
 	}
 }

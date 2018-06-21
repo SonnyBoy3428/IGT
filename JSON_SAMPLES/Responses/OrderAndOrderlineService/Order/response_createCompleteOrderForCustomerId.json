@@ -1,19 +1,35 @@
 {
+	"Order" : {
+		"OrderId" : 1,
+		"CustomerId" : 1,
+		"OrderDate" : "2018-06-01",
+		"TotalCost" : 20.0,
+		"OrderCarriedOut" : false
+	},
 	"Items" : [
 		{
 			"ItemId" : 1,
 			"ItemName" : "MusterMonitor",
 			"Price" : 10.0,
+			"Quantity" : 1
 		},
 		{
 			"ItemId" : 1,
 			"ItemName" : "MusterMonitor",
 			"Price" : 10.0,
+			"Quantity" : 1
 		},
 		{
 			"ItemId" : 1,
 			"ItemName" : "MusterMonitor",
 			"Price" : 10.0,
+			"Quantity" : 1
 		}
 	]
+}
+
+ODER 
+
+{
+	"Message" : "Creation of order failed!"
 }

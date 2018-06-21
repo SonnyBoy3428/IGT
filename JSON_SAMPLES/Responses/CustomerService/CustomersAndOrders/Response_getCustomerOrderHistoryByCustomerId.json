@@ -11,21 +11,21 @@
 			"DistrictName" : "Musterstadt"
 		},
 		"Orders" : [
-			"Order" : {
+			{
 				"OrderId" : 1,
 				"CustomerId" : Id,
 				"OrderDate" : "2018-06-01",
 				"TotalCost" : 20.0,
 				"OrderCarriedOut" : false
 			},
-			"Order" : {
+			{
 				"OrderId" : 1,
 				"CustomerId" : Id,
 				"OrderDate" : "2018-06-01",
 				"TotalCost" : 20.0,
 				"OrderCarriedOut" : false
 			},
-			"Order" : {
+			{
 				"OrderId" : 1,
 				"CustomerId" : Id,
 				"OrderDate" : "2018-06-01",

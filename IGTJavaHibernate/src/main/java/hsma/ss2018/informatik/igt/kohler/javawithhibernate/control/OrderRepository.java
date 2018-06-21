@@ -214,14 +214,12 @@ public class OrderRepository extends EntityRepository{
 		
 		if(orders != null && orders.size() > 0) {
 			for(Order order : orders) {
-				JSONObject jsonOrder = new JSONObject().put("Order", orderToJSON(order));
+				JSONObject jsonOrder = orderToJSON(order);
 
 				jsonOrders.put(jsonOrder); 
 			}
 		}
-		
-		//JSONObject jsonAllOrders = new JSONObject().put("Orders", jsonOrders)
-		
+				
 		return jsonOrders;
 	}
 	
@@ -241,7 +239,7 @@ public class OrderRepository extends EntityRepository{
 		
 		for(int itemId : itemIdsAndQuantity.keySet()) {
 			Item item = ItemRepository.getItem(itemId);
-			JSONObject jsonItem = new JSONObject().put("Item", ItemRepository.itemToJSON(item));
+			JSONObject jsonItem = ItemRepository.itemToJSON(item);
 			jsonItem.put("Quantity", new Integer(itemIdsAndQuantity.get(itemId)));
 			
 			jsonItems.put(jsonItem);
@@ -263,7 +261,7 @@ public class OrderRepository extends EntityRepository{
 		JSONArray orderAndItemsArray = new JSONArray();
 				
 		for(Order order : completeOrders.keySet()) {
-			JSONObject orderAndItems = new JSONObject().put("CompleteOrder", completeOrderToJSON(order, completeOrders.get(order))); 
+			JSONObject orderAndItems = completeOrderToJSON(order, completeOrders.get(order)); 
 			orderAndItemsArray.put(orderAndItems);
 		}
 				

@@ -1,7 +1,6 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.services;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,22 +15,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.OrderRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.OrderlineRepository;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 
 /**
@@ -43,71 +34,45 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 @Path("/orderAndOrderlineService")
 public class OrderAndOrderlineService extends EntityService{
 	/**
-	 * The tag names beinting to a orderline XML object.
-	 */
-	static final String[] TAG_NAMES = {"Orderline", "OrderlineId", "FirstName", "LastName", "Address", "Telephone", "CreditCardNr", "DistrictId"};
-	
-	/**
 	 * Receives a POST request to create an order. The order information is located in the request body.
 	 * Even though we are dealing with orderlines a user would expect an order.
 	 * 
 	 * @param orderInformation Request body containing order information.
 	 * 
 	 * @return The response containing the order.
-	 * 
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	@POST
 	@Path("/createCompleteOrderForCustomerId={param}")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
-	public Response createCompleteOrder(@PathParam("param") int customerId, String orderlineInformation) throws ParserConfigurationException, SAXException, IOException {
+	public Response createCompleteOrder(@PathParam("param") int customerId, String orderlineInformation){
 		JSONObject newOrderline = new JSONObject(orderlineInformation);
+		JSONArray items = newOrderline.getJSONArray("ItemsAndQuantities");
 		
-		JSONArray items = newOrderline.getJSONArray("Items");
+		Map<Integer, Integer> itemsAndQuantities = new HashMap<Integer, Integer>();
 		
 		for(int i = 0; i < items.length(); i++) {
 			JSONObject item = items.getJSONObject(i);
-			JSONObject itemInformation = item.getJSONObject("Item");
 			
-			int itemId = itemInformation.getInt("ItemId");
-			int itemQuantity = Integer.parseInt(item.getLastChild().getNodeValue());
-		}
-		
-		Map<Integer, Integer> itemsAndQuantities = extractMultipleItemsFromXML(rootElement);
-		
-		OrderlineRepository.createOrderline(customerId, itemsAndQuantities);
-		
-		String response = "Order and order successfully created!";
-		
-		return Response.status(200).entity(response).build();
-	}
-	
-	/**
-	 * Converts Items and their quantities from XML into a Map.
-	 * 
-	 * @param element XML element.
-	 * 
-	 * @return Returns a Map of item ids and quantities.
-	 */
-	private Map<Integer, Integer> extractMultipleItemsFromXML(Element element){
-		Map<Integer, Integer> itemsAndQuantities = new HashMap<Integer, Integer>();
-		
-		NodeList elementList = element.getElementsByTagName("Items");
-		NodeList itemList = elementList.item(0).getChildNodes();
-		
-		for(int i = 0; i < itemList.getLength(); i++) {
-			Node item = itemList.item(i);
-			
-			int itemId = Integer.parseInt(item.getFirstChild().getNodeValue());
-			int itemQuantity = Integer.parseInt(item.getLastChild().getNodeValue());
+			int itemId = item.getInt("ItemId");
+			int itemQuantity = item.getInt("ItemQuantity");
 			
 			itemsAndQuantities.put(itemId, itemQuantity);
 		}
+				
+		Order createdOrder = OrderlineRepository.createOrderline(customerId, itemsAndQuantities);
 		
-		return itemsAndQuantities;
+		JSONObject response = new JSONObject();
+		
+		if(createdOrder != null) {
+			response = OrderRepository.completeOrderToJSON(createdOrder, itemsAndQuantities);
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Creation of order failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -120,11 +85,29 @@ public class OrderAndOrderlineService extends EntityService{
 	 */
 	@GET
 	@Path("/getCompleteOrderById={param}")
+	@Produces("application/json")
 	public Response getCompleteOrderById(@PathParam("param") int orderId) {
 		Order order = OrderRepository.getOrder(orderId);
-		Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
 		
-		return Response.status(200).entity(OrderRepository.completeOrderToXML(order, itemsAndQuantities)).build();
+		JSONObject response = new JSONObject();
+		
+		if(order != null) {
+			Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
+			
+			if(itemsAndQuantities.size() > 0) {
+				response = OrderRepository.completeOrderToJSON(order, itemsAndQuantities);
+				
+				return Response.status(200).entity(response.toString()).build();
+			}else {
+				response.put("Message", "Order id " + orderId + " does not have any items!");
+				
+				return Response.status(500).entity(response.toString()).build();
+			}
+		}else {
+			response.put("Message", "Fetching of order with id " + orderId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -134,17 +117,33 @@ public class OrderAndOrderlineService extends EntityService{
 	 */
 	@GET
 	@Path("/getAllOrdersOfCustomer={param}")
+	@Produces("application/json")
 	public Response getAllOrdersOfCustomer(@PathParam("param") int customerId) {
 		Set<Order> orders = OrderRepository.getAllOrdersOfCustomer(customerId);
+		
 		Map<Order, Map<Integer, Integer>> completeOrders = new HashMap<Order, Map<Integer, Integer>>();
 		
-		for(Order order : orders) {
-			Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(order.getOrderId());
+		JSONObject response = new JSONObject();
+		
+		if(orders != null) {			
+			for(Order order : orders) {
+				Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(order.getOrderId());
+				
+				if(itemsAndQuantities.size() > 0) {
+					completeOrders.put(order, itemsAndQuantities);
+				}else {
+					response.put("Message", "The order with the id " + order.getOrderId() + " does not have any items!");
+					
+					return Response.status(500).entity(response.toString()).build();
+				}
+			}
+		}else {
+			response.put("Message", "The customer with the id " + customerId + " does not have any orders!");
 			
-			completeOrders.put(order, itemsAndQuantities);
+			return Response.status(500).entity(response.toString()).build();
 		}
 		
-		return Response.status(200).entity(OrderRepository.completeOrdersToXML(completeOrders)).build();
+		return Response.status(200).entity(OrderRepository.completeOrdersToJSON(completeOrders)).build();
 	}
 	
 	/**
@@ -156,12 +155,21 @@ public class OrderAndOrderlineService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteOrderById={param}")
+	@Produces("application/json")
 	public Response deleteOrder(@PathParam("param") int orderId) {
-		OrderlineRepository.deleteOrderline(orderId);
+		boolean orderlineDeleted = OrderlineRepository.deleteOrderline(orderId);
 		
-		String response = "Deletion of order with id: " + orderId + " was successful!";
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(response).build();
+		if(orderlineDeleted) {
+			response.put("Message", "Deletion of order with id: " + orderId + " successful!");
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Deletion of order with id: " + orderId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -177,13 +185,30 @@ public class OrderAndOrderlineService extends EntityService{
 	 */
 	@PUT
 	@Path("/updateOrderById={order}/item={item}/updateType={type}/quantity={quantity}")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
 	public Response updateOrder(@PathParam("order") int orderId, @PathParam("item") int itemId, @PathParam("type") String updateType, @PathParam("quantity") int quantity){		
-		OrderlineRepository.updateOrderline(orderId, itemId, updateType, quantity);
+		Order order = OrderlineRepository.updateOrderline(orderId, itemId, updateType, quantity);
 		
-		Order order = OrderRepository.getOrder(orderId);
-		Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(OrderRepository.completeOrderToXML(order, itemsAndQuantities)).build();
+		if(order == null) {
+			response.put("Message", "Update of order with id: " + orderId + " failed!");
+		
+			return Response.status(500).entity(response.toString()).build();
+		}
+		
+		Map<Integer, Integer> itemsAndQuantities = new HashMap<Integer, Integer>();
+		itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
+		
+		if(itemsAndQuantities.size() > 0) {
+			response = OrderRepository.completeOrderToJSON(order, itemsAndQuantities);
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Order id " + orderId + " does not have any items!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 }
