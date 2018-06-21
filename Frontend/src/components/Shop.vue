@@ -15,7 +15,12 @@
         </div>
       </div>
     </div>
-    <div><button class="btn btn-primary" @click="sendOrder()">Jetzt bestellen</button></div>
+    <div><button class="btn btn-primary" @click="showModal()">Jetzt bestellen</button></div>
+    <b-modal v-model="show" @ok="sendOrder()">
+      Customer ID:
+      <b-form-input type="text" v-model="customerId"></b-form-input>
+  
+    </b-modal>
   </div>
 </template>
 
@@ -23,7 +28,10 @@
   export default {
     name: 'Shop',
     data() {
-      return {}
+      return {
+        show: false,
+        customerId: undefined
+      }
     },
     computed: {
       items: function() {
@@ -39,11 +47,17 @@
       },
       sendOrder() {
         let items = this.$store.state.Items.filter(s => s.ItemId && s.quantity > 0);
-        console.log(items);
-      }
+        this.$store.commit('sendOrder', items, this.customerId);
+      },
+      showModal() {
+        this.show = true;
+      },
     },
     mounted() {
       this.$store.commit('addPseudoQuantity');
+      fetch('https://jsonplaceholder.typicode.com/posts/1')
+        .then(response => response.json())
+        .then(json => console.log(json))
     }
   };
 </script>

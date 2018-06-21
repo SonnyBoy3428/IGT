@@ -43,6 +43,9 @@ const mutations = {
             return e.ItemId == id;
         }).quantity--;
         state.Items.push({});
+    },
+    sendOrder(items, customerId) {
+        
     }
 }
 
