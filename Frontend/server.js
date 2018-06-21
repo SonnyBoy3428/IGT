@@ -9,7 +9,7 @@ const app = express();
 app.use('/static', express.static('./dist/static/'));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, './dist/index.html'));
+  res.sendFile(path.join(__dirname, './dist/index.html'));
 });
 
 app.listen(PORT, HOST);
