@@ -320,7 +320,7 @@ public class CustomerRepository extends EntityRepository{
 		
 		if(customers != null && customers.size() > 0) {
 			for(Customer customer : customers) {
-				JSONObject jsonCustomer = new JSONObject().put("Customer", customerToJSON(customer));
+				JSONObject jsonCustomer = customerToJSON(customer);
 
 				jsonCustomers.put(jsonCustomer); 
 			}

@@ -46,7 +46,7 @@ public class DistrictService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(createdDistrict != null) {
-			response.put("Customer", DistrictRepository.districtToJSON(createdDistrict));
+			response.put("District", DistrictRepository.districtToJSON(createdDistrict));
 			
 			return Response.status(201).entity(response.toString()).build();
 		}else {
@@ -189,7 +189,7 @@ public class DistrictService extends EntityService{
 			
 			return Response.status(202).entity(response.toString()).build();
 		}else {
-			response.put("Message", "Creation of district failed!");
+			response.put("Message", "Update of district failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

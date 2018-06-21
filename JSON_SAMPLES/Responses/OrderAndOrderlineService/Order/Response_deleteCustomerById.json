@@ -1,0 +1,9 @@
+{
+	"Message" : "Deletion of order with id 1 successful!"
+}
+
+ODER
+
+{
+	"Message" : "Deletion of order with id 1 failed!"
+}

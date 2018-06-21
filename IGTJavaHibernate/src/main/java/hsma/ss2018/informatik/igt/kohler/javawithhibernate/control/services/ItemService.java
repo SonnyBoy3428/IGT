@@ -1,7 +1,5 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.services;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -11,16 +9,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.ItemRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
@@ -28,42 +21,38 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 /**
  * This class acts as the API for calls to the item repository.
  * 
- * @author Dustin Noah Young, 
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 @Path("/itemService")
-public class ItemService extends EntityService{
-	/**
-	 * The tag names beinting to a item XML object.
-	 */
-	static final String[] TAG_NAMES = {"Item", "ItemId", "ItemName", "Price"};
-	
+public class ItemService extends EntityService{	
 	/**
 	 * Receives a POST request to create a item. The item information is located in the request body.
 	 * 
 	 * @param itemInformation Request body containing item information.
 	 * 
 	 * @return The response containing the item.
-	 * 
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	@POST
 	@Path("/createItem")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response createItem(String itemInformation) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
+	public Response createItem(String itemInformation) {
+		JSONObject newItem = new JSONObject(itemInformation);
 		
-		Document document = builder.parse(new InputSource(new StringReader(itemInformation)));
-		Element rootElement = document.getDocumentElement();
+		Item createdItem = ItemRepository.createItem(newItem.getString("ItemName"), newItem.getDouble("Price"));
 		
-		String[] itemValues = extractInformationFromXMLEntity(TAG_NAMES, 2, 2, rootElement);
+		JSONObject response = new JSONObject();
 		
-		Item createdItem = ItemRepository.createItem(itemValues[0], Double.parseDouble(itemValues[1]));
-		
-		return Response.status(200).entity(ItemRepository.itemToXML(createdItem)).build();
+		if(createdItem != null) {
+			response.put("Item", ItemRepository.itemToJSON(createdItem));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Creation of item failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -75,12 +64,21 @@ public class ItemService extends EntityService{
 	 */
 	@GET
 	@Path("/getItemById={param}")
+	@Produces("application/json")
 	public Response getItemById(@PathParam("param") int itemId) {
 		Item item = ItemRepository.getItem(itemId);
 		
-		String itemXML = ItemRepository.itemToXML(item);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(itemXML).build();
+		if(item != null) {
+			response.put("Item", ItemRepository.itemToJSON(item));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Fetching of item with id " + itemId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -90,12 +88,21 @@ public class ItemService extends EntityService{
 	 */
 	@GET
 	@Path("/getAllItems")
+	@Produces("application/json")
 	public Response getAllItems() {
 		Set<Item> items = ItemRepository.getAllItems();
 		
-		String itemsXML = ItemRepository.itemsToXML(items);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(itemsXML).build();
+		if(items != null) {
+			response = new JSONObject().put("Items", ItemRepository.itemsToJSON(items));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Fetching of items failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -107,12 +114,21 @@ public class ItemService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteItemByItemId={param}")
+	@Produces("application/json")
 	public Response deleteItem(@PathParam("param") int itemId) {
-		ItemRepository.deleteItem(itemId);
+		boolean itemDeleted = ItemRepository.deleteItem(itemId);
 		
-		String response = "Deletion of item with id: " + itemId + " was successful!";
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(response).build();
+		if(itemDeleted) {
+			response.put("Message", "Deletion of item with id: " + itemId + " successful!");
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Deletion of item with id: " + itemId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -121,25 +137,26 @@ public class ItemService extends EntityService{
 	 * @param itemInformation The item information inside the request body.
 	 * 
 	 * @return The response containing the updated item.
-	 * 
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	@PUT
 	@Path("/updateItem")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response updateItem(String itemInformation) throws ParserConfigurationException, SAXException, IOException{
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
+	public Response updateItem(String itemInformation){
+		JSONObject item = new JSONObject(itemInformation);
 		
-		Document document = builder.parse(new InputSource(new StringReader(itemInformation)));
-		Element rootElement = document.getDocumentElement();
+		Item updatedItem = ItemRepository.updateItem(item.getInt("ItemId"), item.getString("ItemName"), item.getDouble("Price"));
 		
-		String[] itemValues = extractInformationFromXMLEntity(TAG_NAMES, 1, 3, rootElement);
+		JSONObject response = new JSONObject();
 		
-		Item updatedItem = ItemRepository.updateItem(Integer.parseInt(itemValues[0]), itemValues[1], Double.parseDouble(itemValues[2]));
-		
-		return Response.status(200).entity(ItemRepository.itemToXML(updatedItem)).build();
+		if(updatedItem != null) {
+			response.put("Item", ItemRepository.itemToJSON(updatedItem));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Update of item with id: " + item.getInt("ItemId") + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 }

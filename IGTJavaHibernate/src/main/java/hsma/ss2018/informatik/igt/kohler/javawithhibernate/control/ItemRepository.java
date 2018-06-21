@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 
 /**
@@ -215,13 +214,11 @@ public class ItemRepository extends EntityRepository{
 		
 		if(items != null && items.size() > 0) {
 			for(Item item : items) {
-				JSONObject jsonItem = new JSONObject().put("Item", itemToJSON(item));
+				JSONObject jsonItem = itemToJSON(item);
 
 				jsonItems.put(jsonItem); 
 			}
 		}
-		
-		//JSONObject jsonAllItems = new JSONObject().put("Items", jsonItems)
 		
 		return jsonItems;
 	}

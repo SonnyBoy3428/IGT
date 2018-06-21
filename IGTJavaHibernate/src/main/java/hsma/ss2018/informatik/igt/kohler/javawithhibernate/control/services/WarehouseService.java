@@ -1,7 +1,5 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.services;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -13,25 +11,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.json.JSONObject;
 
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.OrderRepository;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.OrderlineRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.StockRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.WarehouseRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
 
 /**
  * This class acts as the API for calls to the warehouse repository.
@@ -40,38 +29,34 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
  *
  */
 @Path("/warehouseService")
-public class WarehouseService extends EntityService{
-	/**
-	 * The tag names beinting to a warehouse XML object.
-	 */
-	static final String[] TAG_NAMES = {"Warehouse", "WarehouseId", "Location", "Owner"};
-	
+public class WarehouseService extends EntityService{	
 	/**
 	 * Receives a POST request to create a warehouse. The warehouse information is located in the request body.
 	 * 
 	 * @param warehouseInformation Request body containing warehouse information.
 	 * 
 	 * @return The response containing the warehouse.
-	 * 
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	@POST
 	@Path("/createWarehouse")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response createWarehouse(String warehouseInformation) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
+	public Response createWarehouse(String warehouseInformation){
+		JSONObject newWarehouse = new JSONObject(warehouseInformation);
 		
-		Document document = builder.parse(new InputSource(new StringReader(warehouseInformation)));
-		Element rootElement = document.getDocumentElement();
+		Warehouse createdWarehouse = WarehouseRepository.createWarehouse(newWarehouse.getString("Location"), newWarehouse.getString("WarehouseOwner"));
 		
-		String[] warehouseValues = extractInformationFromXMLEntity(TAG_NAMES, 2, 2, rootElement);
+		JSONObject response = new JSONObject();
 		
-		Warehouse createdWarehouse = WarehouseRepository.createWarehouse(warehouseValues[0], warehouseValues[1]);
-		
-		return Response.status(200).entity(WarehouseRepository.warehouseToXML(createdWarehouse)).build();
+		if(createdWarehouse != null) {
+			response.put("Warehouse", WarehouseRepository.warehouseToJSON(createdWarehouse));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Creation of warehouse failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -83,12 +68,21 @@ public class WarehouseService extends EntityService{
 	 */
 	@GET
 	@Path("/getWarehouseById={param}")
+	@Produces("application/json")
 	public Response getWarehouseById(@PathParam("param") int warehouseId) {
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		
-		String warehouseXML = WarehouseRepository.warehouseToXML(warehouse);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(warehouseXML).build();
+		if(warehouse != null) {
+			response.put("Warehouse", WarehouseRepository.warehouseToJSON(warehouse));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Fetching of warehouse with id " + warehouseId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -98,12 +92,21 @@ public class WarehouseService extends EntityService{
 	 */
 	@GET
 	@Path("/getAllWarehouses")
+	@Produces("application/json")
 	public Response getAllWarehouses() {
 		Set<Warehouse> warehouses = WarehouseRepository.getAllWarehouses();
 		
-		String warehousesXML = WarehouseRepository.warehousesToXML(warehouses);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(warehousesXML).build();
+		if(warehouses != null) {
+			response = new JSONObject().put("Warehouses", WarehouseRepository.warehousesToJSON(warehouses));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Fetching of warehouses failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -115,13 +118,29 @@ public class WarehouseService extends EntityService{
 	 */
 	@GET
 	@Path("/getWarehouseDistrictsByWarehouseId={param}")
+	@Produces("application/json")
 	public Response getAllWarehouseDistricts(@PathParam("param") int warehouseId) {
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
-		Set<District> districts = WarehouseRepository.getWarehouseDistricts(warehouseId);
 		
-		String warehouseAndDistrictsXML = WarehouseRepository.warehouseAndDistrictsToXML(warehouse, districts);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(warehouseAndDistrictsXML).build();
+		if(warehouse != null) {
+			Set<District> districts = WarehouseRepository.getWarehouseDistricts(warehouseId);
+			
+			if(districts != null) {
+				response = WarehouseRepository.warehouseAndDistrictsToJSON(warehouse, districts);
+				
+				return Response.status(200).entity(response.toString()).build();
+			}else {
+				response.put("Message", "Warehouse with id " + warehouseId + " does not have any districts!");
+				
+				return Response.status(204).entity(response.toString()).build();
+			}
+		}else {
+			response.put("Message", "Fetching of warehouse with id " + warehouseId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -133,12 +152,21 @@ public class WarehouseService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteWarehouseByWarehouseId={param}")
+	@Produces("application/json")
 	public Response deleteWarehouse(@PathParam("param") int warehouseId) {
-		WarehouseRepository.deleteWarehouse(warehouseId);
+		boolean districtDeleted = WarehouseRepository.deleteWarehouse(warehouseId);
 		
-		String response = "Deletion of warehouse with id: " + warehouseId + " was successful!";
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(response).build();
+		if(districtDeleted) {
+			response.put("Message", "Deletion of warehouse with id: " + warehouseId + " successful!");
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Deletion of warehouse with id: " + warehouseId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -147,37 +175,48 @@ public class WarehouseService extends EntityService{
 	 * @param warehouseInformation The warehouse information inside the request body.
 	 * 
 	 * @return The response containing the updated warehouse.
-	 * 
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	@PUT
 	@Path("/updateWarehouse")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response updateWarehouse(String warehouseInformation) throws ParserConfigurationException, SAXException, IOException{
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
+	public Response updateWarehouse(String warehouseInformation){
+		JSONObject warehouse = new JSONObject(warehouseInformation);
 		
-		Document document = builder.parse(new InputSource(new StringReader(warehouseInformation)));
-		Element rootElement = document.getDocumentElement();
+		Warehouse updatedWarehouse = WarehouseRepository.updateWarehouse(warehouse.getInt("WarehouseId"), warehouse.getString("Location"), warehouse.getString("Owner"));
 		
-		String[] warehouseValues = extractInformationFromXMLEntity(TAG_NAMES, 1, 3, rootElement);
+		JSONObject response = new JSONObject();
 		
-		Warehouse updatedWarehouse = WarehouseRepository.updateWarehouse(Integer.parseInt(warehouseValues[0]), warehouseValues[1], warehouseValues[2]);
-		
-		return Response.status(200).entity(WarehouseRepository.warehouseToXML(updatedWarehouse)).build();
+		if(updatedWarehouse != null) {
+			response.put("Warehouse", WarehouseRepository.warehouseToJSON(updatedWarehouse));
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Update of warehouse failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	@POST
 	@Path("/createStockForWarehouseId={warehouseId}/itemId={itemId}/quantity={quantity}")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
 	public Response createStockForWarehouse(@PathParam("warehouseId") int warehouseId, @PathParam("itemId") int itemId, @PathParam("quantity") int quantity) {
-		StockRepository.createStock(warehouseId, itemId, quantity);
+		Warehouse warehouse = StockRepository.createStock(warehouseId, itemId, quantity);
+		Map<Integer, Integer> itemsAndQuantities = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
 		
-		String response = "Stock successfully added to warehouse with the id:" + warehouseId + "!";
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(response).build();
+		if(warehouse != null) {
+			response = WarehouseRepository.completeWarehouseToJSON(warehouse, itemsAndQuantities);
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Creation of stock failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -189,11 +228,29 @@ public class WarehouseService extends EntityService{
 	 */
 	@GET
 	@Path("/getWarehouseStockByWarehouseId={param}")
+	@Produces("application/json")
 	public Response getWarehouseStock(@PathParam("param") int warehouseId) {
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
-		Map<Integer, Integer> itemIdsAndQuantity = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
-	
-		return Response.status(200).entity(WarehouseRepository.completeWarehouseToXML(warehouse, itemIdsAndQuantity)).build();
+		
+		JSONObject response = new JSONObject();
+		
+		if(warehouse != null) {
+			Map<Integer, Integer> itemsAndQuantities = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
+			
+			if(itemsAndQuantities.size() > 0) {
+				response = WarehouseRepository.completeWarehouseToJSON(warehouse, itemsAndQuantities);
+				
+				return Response.status(200).entity(response.toString()).build();
+			}else {
+				response.put("Message", "Warehosue id " + warehouseId + " does not have any items!");
+				
+				return Response.status(500).entity(response.toString()).build();
+			}
+		}else {
+			response.put("Message", "Fetching of warehouse with id " + warehouseId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -205,16 +262,33 @@ public class WarehouseService extends EntityService{
 	 */
 	@GET
 	@Path("/getAllWarehousesAndTheirStocks")
+	@Produces("application/json")
 	public Response getWarehouseStock() {
 		Set<Warehouse> warehouses = WarehouseRepository.getAllWarehouses();
+		
 		Map<Warehouse, Map<Integer, Integer>> completeWarehouses = new HashMap<Warehouse, Map<Integer, Integer>>();
 		
-		for(Warehouse warehouse : warehouses) {
-			Map<Integer, Integer> itemIdsAndQuantity = WarehouseRepository.getAllItemsOfWarehouse(warehouse.getWarehouseId());
-			completeWarehouses.put(warehouse, itemIdsAndQuantity);
+		JSONObject response = new JSONObject();
+		
+		if(warehouses != null) {			
+			for(Warehouse warehouse : warehouses) {
+				Map<Integer, Integer> itemsAndQuantities = WarehouseRepository.getAllItemsOfWarehouse(warehouse.getWarehouseId());
+				
+				if(itemsAndQuantities.size() > 0) {
+					completeWarehouses.put(warehouse, itemsAndQuantities);
+				}else {
+					response.put("Message", "The order with the id " + warehouse.getWarehouseId() + " does not have any items!");
+					
+					return Response.status(500).entity(response.toString()).build();
+				}
+			}
+		}else {
+			response.put("Message", "Fetching of districts failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
 		}
-	
-		return Response.status(200).entity(WarehouseRepository.completeWarehousesToXML(completeWarehouses)).build();
+		
+		return Response.status(200).entity(WarehouseRepository.completeWarehousesToJSON(completeWarehouses)).build();
 	}
 	
 	/**
@@ -226,12 +300,21 @@ public class WarehouseService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteStockByWarehouseId={param}")
+	@Produces("application/json")
 	public Response deleteOrder(@PathParam("param") int warehouseId) {
-		StockRepository.deleteStock(warehouseId);
+		boolean stockDeleted = StockRepository.deleteStock(warehouseId);
 		
-		String response = "Deletion of stock beinting to warehouse with id: " + warehouseId + " was successful!";
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(response).build();
+		if(stockDeleted) {
+			response.put("Message", "Deletion of stock of warehouse with id: " + warehouseId + " successful!");
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Deletion of stock of warehouse with id: " + warehouseId + " failed!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 	
 	/**
@@ -243,13 +326,30 @@ public class WarehouseService extends EntityService{
 	 */
 	@PUT
 	@Path("/updateStockByWarehouseId={warehouse}/itemId={item}/updateType={type}/quantity={quantity}")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/json")
 	public Response updateWarehouseStock(@PathParam("warehouse") int warehouseId, @PathParam("item") int itemId, @PathParam("type") String updateType, @PathParam("quantity") int quantity){		
-		StockRepository.updateStock(warehouseId, itemId, updateType, quantity);
+		Warehouse warehouse = StockRepository.updateStock(warehouseId, itemId, updateType, quantity);
 		
-		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
-		Map<Integer, Integer> itemsAndQuantities = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
+		JSONObject response = new JSONObject();
 		
-		return Response.status(200).entity(WarehouseRepository.completeWarehouseToXML(warehouse, itemsAndQuantities)).build();
+		if(warehouse == null) {
+			response.put("Message", "Update of warehouse with id: " + warehouseId + " failed!");
+		
+			return Response.status(500).entity(response.toString()).build();
+		}
+		
+		Map<Integer, Integer> itemsAndQuantities = new HashMap<Integer, Integer>();
+		itemsAndQuantities = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
+		
+		if(itemsAndQuantities.size() > 0) {
+			response = WarehouseRepository.completeWarehouseToJSON(warehouse, itemsAndQuantities);
+			
+			return Response.status(200).entity(response.toString()).build();
+		}else {
+			response.put("Message", "Warehouse id " + warehouseId + " does not have any items!");
+			
+			return Response.status(500).entity(response.toString()).build();
+		}
 	}
 }

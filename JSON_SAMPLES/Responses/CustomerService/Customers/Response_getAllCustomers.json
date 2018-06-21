@@ -1,6 +1,6 @@
 {
 	"Customers" : [
-		"Customer" : {
+		{
 			"CustomerId" : 1,
 			"FirstName" : "Max",
 			"LastName" : "Mustermann",
@@ -10,7 +10,7 @@
 			"DistrictId" : 1
 			"DistrictName" : "Musterstadt"
 		},
-		"Customer" : {
+		{
 			"CustomerId" : 1,
 			"FirstName" : "Max",
 			"LastName" : "Mustermann",
@@ -20,7 +20,7 @@
 			"DistrictId" : 1
 			"DistrictName" : "Musterstadt"
 		},
-		"Customer" : {
+		{
 			"CustomerId" : 1,
 			"FirstName" : "Max",
 			"LastName" : "Mustermann",

@@ -153,9 +153,7 @@ public class OrderlineRepository extends EntityRepository {
 	 */
 	public static Order updateOrderline(int orderId, int itemId, String updateType, int quantity) {
 		Session session = null;
-		
-		boolean itemIsPartOfOrder = false;
-		
+				
 		try {			
 			Order order = OrderRepository.getOrder(orderId);
 			Item item = ItemRepository.getItem(itemId);
@@ -173,7 +171,6 @@ public class OrderlineRepository extends EntityRepository {
 				
 					// Item found
 					if(orderlineItem.getItemId() == itemId) {	
-						itemIsPartOfOrder = true;
 						switch(updateType) {
 							case "Update":
 								oldQuantity = orderlineElement.getQuantity();
@@ -262,11 +259,7 @@ public class OrderlineRepository extends EntityRepository {
 			session.close();
 		}
 		
-		Order updatedOrder = null;
-		
-		if(itemIsPartOfOrder) {
-			updatedOrder = OrderRepository.getOrder(orderId);
-		}
+		Order updatedOrder = OrderRepository.getOrder(orderId);
 		
 		return updatedOrder;
 	}
