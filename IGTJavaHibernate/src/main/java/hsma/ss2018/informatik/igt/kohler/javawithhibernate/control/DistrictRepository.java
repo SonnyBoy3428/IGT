@@ -5,16 +5,19 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
 /**
  * This class functions as the API with which one can deal with districts.
  * 
- * @author Dustin Noah Young,
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 public class DistrictRepository extends EntityRepository{
@@ -70,9 +73,12 @@ public class DistrictRepository extends EntityRepository{
 		
 		try {
 			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
 		
 			district = session.get(District.class,  districtId);
 		
+			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
 		}finally {
@@ -91,7 +97,6 @@ public class DistrictRepository extends EntityRepository{
 	 */
 	@SuppressWarnings("unchecked")
 	public static Set<District> getAllDistricts() {
-		List<District> districtsList = null;
 		Set<District> districts = null;
 		
 		Session session = null;
@@ -99,7 +104,11 @@ public class DistrictRepository extends EntityRepository{
 		try {
 			session = sessionFactory.openSession();
 			
-			districtsList = session.createQuery("from DISTRICT").getResultList();
+			session.beginTransaction();
+			
+			List<District> districtsList = session.createQuery("from DISTRICT").getResultList();
+			
+			session.getTransaction().commit();
 			
 			districts = new HashSet<District>(districtsList);
 		}catch(Exception ex) {
@@ -114,31 +123,15 @@ public class DistrictRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the customers beinting to the district.
+	 * Gets all the customers belonging to the district.
 	 * 
 	 * @param districtId Id of the district.
 	 * 
-	 * @return All customers beinting to the districts.
+	 * @return All customers belonging to the districts.
 	 */
 	public static Set<Customer> getDistrictCustomers(int districtId) {
-		District district = null;
-		Set<Customer> customers = null;
-		
-		Session session = null;
-		
-		try {
-			session = sessionFactory.openSession();
-			
-			district = session.get(District.class,  districtId);
-			
-			customers = district.getCustomers();
-		}catch(Exception ex) {
-			// TODO
-		}finally {
-			if(session != null) {
-				session.close();	
-			}
-		}
+		District district = getDistrict(districtId);	
+		Set<Customer> customers = district.getCustomers();
 						
 		return customers;
 	}
@@ -148,13 +141,15 @@ public class DistrictRepository extends EntityRepository{
 	 * 
 	 * @param districtId Id of the district that is to be deleted.
 	 */
-	public static void deleteDistrict(int districtId) {
+	public static boolean deleteDistrict(int districtId) {
 		Session session = null;
+		
+		boolean districtDeleted = true;
 		
 		try {
 			session = sessionFactory.openSession();
 			
-			District district = session.get(District.class,  districtId);
+			District district = getDistrict(districtId);
 			
 			session.beginTransaction();
 			
@@ -163,11 +158,15 @@ public class DistrictRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			districtDeleted = false;
 		}finally {
 			if(session != null) {
 				session.close();
 			}
 		}
+		
+		return districtDeleted;
 	}
 	
 	/**
@@ -179,16 +178,18 @@ public class DistrictRepository extends EntityRepository{
 	 * 
 	 * @return The updated district.
 	 */
-	public static District updateDistrict(int districtId, String districtName, double districtSize) {
+	public static District updateDistrict(int districtId, String districtName, double districtSize, int warehouseId) {
 		Session session = null;
-		District district = null;
 		
 		try {
-			session = sessionFactory.openSession();
+			District district = getDistrict(districtId);
+			Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 			
-			district = session.get(District.class,  districtId);
 			district.setDistrictName(districtName);
 			district.setDistrictSize(districtSize);
+			district.setWarehouse(warehouse);
+			
+			session = sessionFactory.openSession();
 			
 			session.beginTransaction();
 			
@@ -203,69 +204,64 @@ public class DistrictRepository extends EntityRepository{
 			}
 		}
 		
-		return district;
+		District updatedDistrict = getDistrict(districtId);
+		
+		return updatedDistrict;
 	}
 	
 	/**
-	 * Turns a district into XML.
+	 * Turns a district into JSON.
 	 * 
-	 * @param district District that is to be turned into XML.
+	 * @param district District that is to be turned into JSON.
 	 * 
-	 * @return XML version of the district.
+	 * @return JSON version of the district.
 	 */
-	public static String districtToXML(District district) {
-		String xmlDistrict;
+	public static JSONObject districtToJSON(District district) {
+		JSONObject jsonDistrict = new JSONObject().put("DistrictId", new Integer(district.getDistrictId()));
+		jsonDistrict.put("DistrictName", district.getDistrictName());
+		jsonDistrict.put("WarehouseId", district.getWarehouse().getWarehouseId());
+		jsonDistrict.put("WarehouseLocation", district.getWarehouse().getLocation());
+		jsonDistrict.put("WarehouseOwner", district.getWarehouse().getOwner());
 		
-		xmlDistrict = "<District>"
-				+ "<DistrictId>" + district.getDistrictId() + "</DistrictId>"
-				+ "<DistrictName>" + district.getDistrictName() + "</DistrictName>"
-				+ "<WarehouseId>" + district.getWarehouse().getWarehouseId() + "</WarehouseId>"
-				+ "<WarehouseLocation>" + district.getWarehouse().getLocation() + "</WarehouseLocation>"
-				+ "<WarehouseOwner>" + district.getWarehouse().getOwner() + "</WarehouseOwner>"
-				+ "</District>";
-		
-		return xmlDistrict;
+		return jsonDistrict;
 	}
 	
 	/**
-	 * Turns districts into XML.
+	 * Turns districts into JSON.
 	 * 
-	 * @param districts Districts that are to be turned into XML.
+	 * @param districts Districts that are to be turned into JSON.
 	 * 
-	 * @return XML version of the districts.
+	 * @return JSON version of the districts.
 	 */
-	public static String districtsToXML(Set<District> districts) {
-		String xmlDistricts;
-		
-		xmlDistricts = "<Districts>";
+	public static JSONArray districtsToJSON(Set<District> districts) {
+		JSONArray jsonDistricts = new JSONArray();
 		
 		if(districts != null && districts.size() > 0) {
 			for(District district : districts) {
-				xmlDistricts += districtToXML(district); 
+				JSONObject jsonDistrict = new JSONObject().put("District", districtToJSON(district));
+
+				jsonDistricts.put(jsonDistrict); 
 			}
 		}
 				
-		xmlDistricts += "</Districts>";
-		
-		return xmlDistricts;
+		return jsonDistricts;
 	}
 	
 	/**
-	 * Converts a district and its customers into XML-format.
+	 * Converts a district and its customers into JSON-format.
 	 * 
 	 * @param district The district.
 	 * @param customers The customers of the district.
 	 * 
-	 * @return District and its customers in XML-format.
+	 * @return District and its customers in JSON-format.
 	 */
-	public static String districtAndCustomersToXML(District district, Set<Customer> customers) {
-		String xmlDistrcitAndCustomers = "<DistrcitAndCustomers>";
+	public static JSONObject districtAndCustomersToJSON(District district, Set<Customer> customers) {
+		JSONObject jsonDistrictsAndCustomers = new JSONObject();
+		jsonDistrictsAndCustomers.put("District", districtToJSON(district));
+		jsonDistrictsAndCustomers.put("Customers", CustomerRepository.customersToJSON(customers));
 		
-		xmlDistrcitAndCustomers += districtToXML(district);
-		xmlDistrcitAndCustomers += CustomerRepository.customersToXML(customers);
+		JSONObject jsonCompleteDistrictsAndCustomers = new JSONObject().put("DistrcitAndCustomers", jsonDistrictsAndCustomers);
 		
-		xmlDistrcitAndCustomers += "</DistrcitAndCustomers>";
-		
-		return xmlDistrcitAndCustomers;
+		return jsonCompleteDistrictsAndCustomers;
 	}
 }

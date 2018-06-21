@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.time.LocalDate;
 import org.hibernate.Session;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
@@ -16,7 +18,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 /**
  * This class functions as the API with which one can deal with orders.
  * 
- * @author Dustin Noah Young,
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  *
  */
 public class OrderRepository extends EntityRepository{
@@ -69,7 +71,11 @@ public class OrderRepository extends EntityRepository{
 		try {
 			session = sessionFactory.openSession();
 			
+			session.beginTransaction();
+			
 			order = session.get(Order.class,  orderId);
+			
+			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
 		}finally {
@@ -88,15 +94,18 @@ public class OrderRepository extends EntityRepository{
 	 */
 	@SuppressWarnings("unchecked")
 	protected static Set<Order> getAllOrders() {
-		List<Order> ordersList = null;
 		Set<Order> orders = null;
 		
 		Session session = null;
 		
 		try {
 			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
 		
-			ordersList = session.createQuery("from CUSTOMER_ORDER").getResultList();
+			List<Order> ordersList = session.createQuery("from CUSTOMER_ORDER").getResultList();
+			
+			session.getTransaction().commit();
 			
 			orders = new HashSet<Order>(ordersList);
 		}catch(Exception ex) {
@@ -111,13 +120,12 @@ public class OrderRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Gets all the orders beinting to a customer.
+	 * Gets all the orders belonging to a customer.
 	 * 
 	 * @param customerId Id of customer.
 	 * 
 	 * @return All existing orders.
 	 */
-	@SuppressWarnings("unchecked")
 	public static Set<Order> getAllOrdersOfCustomer(int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Set<Order> orders = customer.getOrders();
@@ -129,14 +137,18 @@ public class OrderRepository extends EntityRepository{
 	 * Deletes an order based on its Id.
 	 * 
 	 * @param orderId Id of the order that is to be deleted.
+	 * 
+	 * @return Returns true if deleted.
 	 */
-	protected static void deleteOrder(int orderId) {
+	protected static boolean deleteOrder(int orderId) {
 		Session session = null;
 		
+		boolean orderDeleted = true;
+		
 		try {
-			session = sessionFactory.openSession();
+			Order order = getOrder(orderId);
 			
-			Order order = session.get(Order.class,  orderId);		
+			session = sessionFactory.openSession();
 			
 			session.beginTransaction();
 			
@@ -145,15 +157,20 @@ public class OrderRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			orderDeleted = false;
 		}finally {
 			session.close();
 		}
+		
+		return orderDeleted;
 	}
 	
 	/**
-	 * Gets all the items beinting to the order.
+	 * Gets all the items belonging to the order.
 	 * 
 	 * @param orderId Id of the order from which the items should be fetched.
+	 * 
 	 * @return Set with all the items ids and quantities.
 	 */
 	public static Map<Integer, Integer> getAllItemsOfOrder(int orderId) {
@@ -169,91 +186,89 @@ public class OrderRepository extends EntityRepository{
 	}
 	
 	/**
-	 * Converts an order object into XML-format.
+	 * Converts an order object into JSON-format.
 	 * 
 	 * @param order Order that is to be converted.
 	 * 
-	 * @return Order in XML format.
+	 * @return Order in JSON format.
 	 */
-	public static String orderToXML(Order order) {
-		String xmlOrder;
+	public static JSONObject orderToJSON(Order order) {
+		JSONObject jsonOrder = new JSONObject().put("OrderId", new Integer(order.getOrderId()));
+		jsonOrder.put("CustomerId", new Integer(order.getCustomer().getCustomerId()));
+		jsonOrder.put("OrderDate", order.getOrderDate());
+		jsonOrder.put("TotalCost", new Double(order.getTotalCost()));
+		jsonOrder.put("OrderCarriedOut", new Boolean(order.getOrderCarriedOut()));
 		
-		xmlOrder = "<Order>"
-				+ "<CustomerId" + order.getCustomer().getCustomerId() + "</CustomerId>"
-				+ "<OrderId>" + order.getOrderId() + "</ItemId>"
-				+ "<OrderDate>" + order.getOrderDate() + "</OrderDate>"
-				+ "<TotalCost>" + order.getTotalCost() + "</TotalCost>"
-				+ "<OrderCarriedOut>" + order.getOrderCarriedOut() + "</OrderCarriedOut>"
-				+ "</Order>";
-		
-		return xmlOrder;
+		return jsonOrder;
 	}
 	
 	/**
-	 * Converts a set of orders into XML-format.
+	 * Converts a set of orders into JSON-format.
 	 * 
 	 * @param orders Set of orders that are to be converted.
 	 * 
-	 * @return orders in XML format.
+	 * @return orders in JSON format.
 	 */
-	public static String ordersToXML(Set<Order> orders) {
-		String xmlOrders;
-		
-		xmlOrders = "<Orders>";
+	public static JSONArray ordersToJSON(Set<Order> orders) {
+		JSONArray jsonOrders = new JSONArray();
 		
 		if(orders != null && orders.size() > 0) {
 			for(Order order : orders) {
-				xmlOrders += orderToXML(order); 
+				JSONObject jsonOrder = new JSONObject().put("Order", orderToJSON(order));
+
+				jsonOrders.put(jsonOrder); 
 			}
 		}
-				
-		xmlOrders += "</Orders>";
 		
-		return xmlOrders;
+		//JSONObject jsonAllOrders = new JSONObject().put("Orders", jsonOrders)
+		
+		return jsonOrders;
 	}
 	
 	/**
-	 * Converts an order and its items into XML-format.
+	 * Converts an order and its items into JSON-format.
 	 * 
 	 * @param order Order that is to be converted.
-	 * @param itemIdsAndQuantity All the items and their quantity beinting to the order.
+	 * @param itemIdsAndQuantity All the items and their quantity belonging to the order.
 	 * 
-	 * @return Complete order in XML format.
+	 * @return Complete order in JSON format.
 	 */
-	public static String completeOrderToXML(Order order, Map<Integer, Integer> itemIdsAndQuantity) {
-		String xmlCompleteOrder;
+	public static JSONObject completeOrderToJSON(Order order, Map<Integer, Integer> itemIdsAndQuantity) {
+		JSONObject jsonOrderAndItems = new JSONObject();
+		jsonOrderAndItems.put("Order", orderToJSON(order));
 		
-		xmlCompleteOrder = "<CompleteOrder>" + orderToXML(order);
+		JSONArray jsonItems = new JSONArray();
 		
 		for(int itemId : itemIdsAndQuantity.keySet()) {
 			Item item = ItemRepository.getItem(itemId);
-			xmlCompleteOrder += ItemRepository.itemToXML(item);
-			xmlCompleteOrder += "<Quantity>" + itemIdsAndQuantity.get(itemId) + "</Quantity>";
+			JSONObject jsonItem = new JSONObject().put("Item", ItemRepository.itemToJSON(item));
+			jsonItem.put("Quantity", new Integer(itemIdsAndQuantity.get(itemId)));
+			
+			jsonItems.put(jsonItem);
 		}
-				
-		xmlCompleteOrder += "</CompleteOrder>";
 		
-		return xmlCompleteOrder;
+		jsonOrderAndItems.put("Items", jsonItems);
+		
+		return jsonOrderAndItems;
 	}
 	
 	/**
-	 * Converts a set of complete orders into XML-format.
+	 * Converts a set of complete orders into JSON-format.
 	 * 
 	 * @param completeOrders Map of complete orders that are to be converted.
 	 * 
-	 * @return Complete orders in XML format.
+	 * @return Complete orders in JSON format.
 	 */
-	public static String completeOrdersToXML(Map<Order, Map<Integer, Integer>> completeOrders) {
-		String xmlCompleteOrders;
-		
-		xmlCompleteOrders = "<CompleteOrders>";
-		
+	public static JSONObject completeOrdersToJSON(Map<Order, Map<Integer, Integer>> completeOrders) {
+		JSONArray orderAndItemsArray = new JSONArray();
+				
 		for(Order order : completeOrders.keySet()) {
-			xmlCompleteOrders += completeOrderToXML(order, completeOrders.get(order)); 
+			JSONObject orderAndItems = new JSONObject().put("CompleteOrder", completeOrderToJSON(order, completeOrders.get(order))); 
+			orderAndItemsArray.put(orderAndItems);
 		}
 				
-		xmlCompleteOrders += "</CompleteOrders>";
+		JSONObject jsonCompleteOrders = new JSONObject().put("CompleteOrders", orderAndItemsArray);
 		
-		return xmlCompleteOrders;
+		return jsonCompleteOrders;
 	}
 }

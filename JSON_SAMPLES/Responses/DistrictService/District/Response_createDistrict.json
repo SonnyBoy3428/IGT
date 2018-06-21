@@ -1,0 +1,15 @@
+{
+	"District" : {
+		"DistrictId" : 1,
+		"DistrictName" : "MusterDistrict",
+		"WarehouseId" : 1,
+		"WarehouseLocation" : "MusterLocation",
+		"WarehouseOwner" : "MusterOwner"
+	}
+}
+
+ODER
+
+{
+	"Message" : "Creation of district failed!"
+}

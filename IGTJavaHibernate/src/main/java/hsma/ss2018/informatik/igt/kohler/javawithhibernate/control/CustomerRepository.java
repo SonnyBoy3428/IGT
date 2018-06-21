@@ -104,7 +104,6 @@ public class CustomerRepository extends EntityRepository{
 	 */
 	@SuppressWarnings("unchecked")
 	public static Set<Customer> getAllCustomers() {
-		List<Customer> customersList = null;
 		Set<Customer> customers = null;
 		
 		Session session = null;
@@ -114,7 +113,7 @@ public class CustomerRepository extends EntityRepository{
 		
 			session.beginTransaction();
 			
-			customersList = session.createQuery("from CUSTOMER").getResultList();
+			List<Customer>  customersList = session.createQuery("from CUSTOMER").getResultList();
 			
 			session.getTransaction().commit();
 			
@@ -216,9 +215,13 @@ public class CustomerRepository extends EntityRepository{
 	 * Deletes a customer based on the Id.
 	 * 
 	 * @param customerId Id which is used to delete the customer.
+	 * 
+	 * @return Returns true if deleted.
 	 */
-	public static void deleteCustomer(int customerId) {
+	public static boolean deleteCustomer(int customerId) {
 		Session session = null;
+		
+		boolean customerDeleted = true;
 		
 		try {
 			session = sessionFactory.openSession();
@@ -232,9 +235,13 @@ public class CustomerRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			customerDeleted = false;
 		}finally {
 			session.close();
 		}
+		
+		return customerDeleted;
 	}
 	
 	/**
@@ -251,12 +258,9 @@ public class CustomerRepository extends EntityRepository{
 	 */
 	public static Customer updateCustomer(int customerId, String firstName, String lastName, String address, String telephone, String creditCardNr, int districtId) {
 		Session session = null;
-		Customer customer = null;
 		
-		try {
-			session = sessionFactory.openSession();
-			
-			customer = getCustomer(customerId);
+		try {			
+			Customer customer = getCustomer(customerId);
 			District district = DistrictRepository.getDistrict(districtId);
 			
 			customer.setFirstName(firstName);
@@ -265,6 +269,8 @@ public class CustomerRepository extends EntityRepository{
 			customer.setTelephone(telephone);
 			customer.setCreditCardNr(creditCardNr);
 			customer.setDistrict(district);
+			
+			session = sessionFactory.openSession();
 			
 			session.beginTransaction();
 			
@@ -277,7 +283,9 @@ public class CustomerRepository extends EntityRepository{
 			session.close();
 		}
 		
-		return customer;
+		Customer updatedCustomer = getCustomer(customerId);
+		
+		return updatedCustomer;
 	}
 	
 	/**
@@ -318,8 +326,6 @@ public class CustomerRepository extends EntityRepository{
 			}
 		}
 		
-		//JSONObject jsonAllCustomers = new JSONObject().put("Customers", jsonCustomers)
-		
 		return jsonCustomers;
 	}
 	
@@ -338,6 +344,6 @@ public class CustomerRepository extends EntityRepository{
 		
 		JSONObject jsonCompleteCustomerAndOrders = new JSONObject().put("CustomerAndOrders", jsonCustomerAndOrders);
 		
-		return jsonCustomerAndOrders;
+		return jsonCompleteCustomerAndOrders;
 	}
 }
