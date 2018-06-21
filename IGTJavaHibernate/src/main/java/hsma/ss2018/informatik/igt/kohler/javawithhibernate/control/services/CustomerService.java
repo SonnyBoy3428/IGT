@@ -51,7 +51,7 @@ public class CustomerService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(createdCustomer != null) {
-			response = CustomerRepository.customerToJSON(createdCustomer);
+			response.put("Customer", CustomerRepository.customerToJSON(createdCustomer));
 			
 			return Response.status(201).entity(response.toString()).build();
 		}else {
@@ -77,7 +77,7 @@ public class CustomerService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(customer != null) {
-			response = CustomerRepository.customerToJSON(customer);
+			response.put("Customer", CustomerRepository.customerToJSON(customer));
 			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
@@ -222,6 +222,7 @@ public class CustomerService extends EntityService{
 	 */
 	@DELETE
 	@Path("/deleteCustomerByCustomerId={param}")
+	@Produces("application/json")
 	public Response deleteCustomer(@PathParam("param") int customerId) {
 		boolean customerDeleted = CustomerRepository.deleteCustomer(customerId);
 		
@@ -248,6 +249,7 @@ public class CustomerService extends EntityService{
 	@PUT
 	@Path("/updateCustomer")
 	@Consumes(MediaType.APPLICATION_XML)
+	@Produces("application/json")
 	public Response updateCustomer(String customerInformation){
 		JSONObject customer = new JSONObject(customerInformation);
 		
@@ -256,7 +258,7 @@ public class CustomerService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(updatedCustomer != null) {
-			response = CustomerRepository.customerToJSON(updatedCustomer);
+			response.put("Customer", CustomerRepository.customerToJSON(updatedCustomer));
 			
 			return Response.status(202).entity(response.toString()).build();
 		}else {

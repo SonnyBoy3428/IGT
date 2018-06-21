@@ -178,13 +178,16 @@ public class DistrictRepository extends EntityRepository{
 	 * 
 	 * @return The updated district.
 	 */
-	public static District updateDistrict(int districtId, String districtName, double districtSize) {
+	public static District updateDistrict(int districtId, String districtName, double districtSize, int warehouseId) {
 		Session session = null;
 		
 		try {
 			District district = getDistrict(districtId);
+			Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
+			
 			district.setDistrictName(districtName);
 			district.setDistrictSize(districtSize);
+			district.setWarehouse(warehouse);
 			
 			session = sessionFactory.openSession();
 			
@@ -230,7 +233,7 @@ public class DistrictRepository extends EntityRepository{
 	 * 
 	 * @return JSON version of the districts.
 	 */
-	public static JSONArray districtsToXML(Set<District> districts) {
+	public static JSONArray districtsToJSON(Set<District> districts) {
 		JSONArray jsonDistricts = new JSONArray();
 		
 		if(districts != null && districts.size() > 0) {
@@ -240,9 +243,7 @@ public class DistrictRepository extends EntityRepository{
 				jsonDistricts.put(jsonDistrict); 
 			}
 		}
-		
-		//JSONObject jsonAllDistricts = new JSONObject().put("Districts", jsonDistricts)
-		
+				
 		return jsonDistricts;
 	}
 	

@@ -259,9 +259,7 @@ public class CustomerRepository extends EntityRepository{
 	public static Customer updateCustomer(int customerId, String firstName, String lastName, String address, String telephone, String creditCardNr, int districtId) {
 		Session session = null;
 		
-		try {
-			session = sessionFactory.openSession();
-			
+		try {			
 			Customer customer = getCustomer(customerId);
 			District district = DistrictRepository.getDistrict(districtId);
 			
@@ -271,6 +269,8 @@ public class CustomerRepository extends EntityRepository{
 			customer.setTelephone(telephone);
 			customer.setCreditCardNr(creditCardNr);
 			customer.setDistrict(district);
+			
+			session = sessionFactory.openSession();
 			
 			session.beginTransaction();
 			

@@ -1,0 +1,9 @@
+{
+	"Message" : "Deletion of district with id 1 successful!"
+}
+
+ODER
+
+{
+	"Message" : "Deletion of district with id 1 failed!"
+}

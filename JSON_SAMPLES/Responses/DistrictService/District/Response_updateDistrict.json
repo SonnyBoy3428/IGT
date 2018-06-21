@@ -7,3 +7,9 @@
 		"WarehouseOwner" : "MusterOwner"
 	}
 }
+
+ODER
+
+{
+	"Message" : "Update of district with id 1 failed!"
+}
