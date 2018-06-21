@@ -27,7 +27,7 @@ public class OrderRepository extends EntityRepository{
 	 * 
 	 * @return The newly created order.
 	 */
-	protected static Order createOrder() {
+	public static Order createOrder() {
 		Order order = new Order();
 		
 		String orderDate = LocalDate.now().toString();
@@ -93,7 +93,7 @@ public class OrderRepository extends EntityRepository{
 	 * @return All existing orders.
 	 */
 	@SuppressWarnings("unchecked")
-	protected static Set<Order> getAllOrders() {
+	public static Set<Order> getAllOrders() {
 		Set<Order> orders = null;
 		
 		Session session = null;
@@ -140,7 +140,7 @@ public class OrderRepository extends EntityRepository{
 	 * 
 	 * @return Returns true if deleted.
 	 */
-	protected static boolean deleteOrder(int orderId) {
+	public static boolean deleteOrder(int orderId) {
 		Session session = null;
 		
 		boolean orderDeleted = true;
