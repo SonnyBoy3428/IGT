@@ -7,7 +7,7 @@ Vue.use(Vuex)
 const HOST = '';
 
 const state = {
-    hello: 'hello world',
+    user: undefined,
     Items: [
         {
             ItemId: 1,
@@ -19,7 +19,8 @@ const state = {
             ItemName: "MusterMaus",
             Price: 20.0,
         },
-    ]
+    ],
+    order_history: []
 }
 
 const getters = {
@@ -37,27 +38,45 @@ const mutations = {
                 state.Items.push(s);
             });
         });
+
+        // In case of the static data from above:
+
         // state.Items.forEach(s => s.quantity = 0);
         // state.Items.push({});
     },
     increaseQuantity(state, id) {
         state.Items.find(function(e) {
             return e.ItemId == id;
-        }).quantity++;
+        }).ItemQuantity++;
         state.Items.push({});
 
     },
     decreaseQuantity(state, id) {
         state.Items.find(function(e) {
             return e.ItemId == id;
-        }).quantity--;
+        }).ItemQuantity--;
         state.Items.push({});
     },
-    sendOrder(items, customerId) {
-        
+    sendOrder(state, items, customerId) {
+        axios.post(`${HOST}/orderAndOrderlineService/createCompleteOrderForCustomerId=${customerId}`, items).then(order => state.order_history = [...order.Order, ...state.order_history])
     },
-    createUser(user) {
-        axios.post(HOST + '/')
+    createUser(state, user) {
+        axios.post(HOST + '/customerService/createCustomer', user).then(user => state.user = user.Customer);
+    },
+    alterUser(state, user) {
+        axios.post(HOST + '/customerService/updateCustomer', user).then(user => state.user = user.Customer);
+    },
+    deleteUser(state, userId) {
+        axios.delete(`${HOST}/customerService/deleteCustomerByCustomerId=${userId}`).then(user => { 
+            state.user = undefined;
+        });
+    },
+    getUser(state, userId) {
+        // axios.get(`${HOST}/customerService/getCustomerById=${userId}`).then(user => state.user = user.Customer);
+        axios.get(`${HOST}/customerService/getAllCustomerOrdersByCustomerId=${userId}`).then(obj => {
+            state.user = obj.Customer;
+            state.order_history = obj.Orders;
+        });
     }
 }
 
