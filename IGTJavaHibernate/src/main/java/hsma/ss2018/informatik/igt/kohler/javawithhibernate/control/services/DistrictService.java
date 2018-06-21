@@ -41,14 +41,14 @@ public class DistrictService extends EntityService{
 	public Response createDistrict(String districtInformation){
 		JSONObject newDistrict = new JSONObject(districtInformation);
 		
-		District createdDistrict = DistrictRepository.createDistrict(newDistrict.getString("DistrictName"), Double.parseDouble(newDistrict.getString("DistrictSize")), Integer.parseInt(newDistrict.getString("WarehouseId")));
+		District createdDistrict = DistrictRepository.createDistrict(newDistrict.getString("DistrictName"),newDistrict.getDouble("DistrictSize"), newDistrict.getInt("WarehouseId"));
 		
 		JSONObject response = new JSONObject();
 		
 		if(createdDistrict != null) {
 			response.put("District", DistrictRepository.districtToJSON(createdDistrict));
 			
-			return Response.status(201).entity(response.toString()).build();
+			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Creation of district failed!");
 			
@@ -72,7 +72,7 @@ public class DistrictService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(district != null) {
-			response.put("Customer", DistrictRepository.districtToJSON(district));
+			response.put("District", DistrictRepository.districtToJSON(district));
 			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
@@ -131,7 +131,7 @@ public class DistrictService extends EntityService{
 			}else {
 				response.put("Message", "District with id " + districtId + " does not have any customers!");
 				
-				return Response.status(204).entity(response.toString()).build();
+				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of district with id " + districtId + " failed!");
@@ -180,14 +180,14 @@ public class DistrictService extends EntityService{
 	public Response updateDistrict(String districtInformation){
 		JSONObject district = new JSONObject(districtInformation);
 		
-		District updatedDistrict = DistrictRepository.updateDistrict(Integer.parseInt(district.getString("DistrictId")), district.getString("DistrictName"), Double.parseDouble(district.getString("DistrictSize")), Integer.parseInt(district.getString("WarehouseId")));
+		District updatedDistrict = DistrictRepository.updateDistrict(district.getInt("DistrictId"), district.getString("DistrictName"), district.getDouble("DistrictSize"), district.getInt("WarehouseId"));
 		
 		JSONObject response = new JSONObject();
 		
 		if(updatedDistrict != null) {
 			response.put("District", DistrictRepository.districtToJSON(updatedDistrict));
 			
-			return Response.status(202).entity(response.toString()).build();
+			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Update of district failed!");
 			

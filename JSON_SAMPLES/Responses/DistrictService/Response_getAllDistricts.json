@@ -1,0 +1,31 @@
+{
+	"Districts" : [
+		{
+			"DistrictId" : 1,
+			"DistrictName" : "ABC",
+			"WarehouseId" : 1,
+			"WarehouseLocation" : "ABC",
+			"WarehouseOwner" : "ABC"
+		},
+		{
+			"DistrictId" : 1,
+			"DistrictName" : "ABC",
+			"WarehouseId" : 1,
+			"WarehouseLocation" : "ABC",
+			"WarehouseOwner" : "ABC"
+		},
+		{
+			"DistrictId" : 1,
+			"DistrictName" : "ABC",
+			"WarehouseId" : 1,
+			"WarehouseLocation" : "ABC",
+			"WarehouseOwner" : "ABC"
+		}
+	]
+}
+
+OR 
+
+{
+	"Message" : "Fetching of districts failed!"
+}

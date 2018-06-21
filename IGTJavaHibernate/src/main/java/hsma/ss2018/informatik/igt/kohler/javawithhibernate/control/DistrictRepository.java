@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
 /**
@@ -149,6 +150,24 @@ public class DistrictRepository extends EntityRepository{
 			
 			District district = getDistrict(districtId);
 			
+			// Remove the warehouse from the District
+			Warehouse warehouse = district.getWarehouse();
+			warehouse.getDistricts().remove(district);
+			
+			session.beginTransaction();
+			session.update(warehouse);
+			session.getTransaction().commit();
+			
+			// Delete all the references from the customers to the district
+			Set<Customer> customers = district.getCustomers();
+			for(Customer customer : customers) {
+				customer.setDistrict(null);
+				
+				session.beginTransaction();
+				session.update(customer);
+				session.getTransaction().commit();
+			}
+			
 			session.beginTransaction();
 			
 			session.delete(district);
@@ -257,9 +276,7 @@ public class DistrictRepository extends EntityRepository{
 		JSONObject jsonDistrictsAndCustomers = new JSONObject();
 		jsonDistrictsAndCustomers.put("District", districtToJSON(district));
 		jsonDistrictsAndCustomers.put("Customers", CustomerRepository.customersToJSON(customers));
-		
-		JSONObject jsonCompleteDistrictsAndCustomers = new JSONObject().put("DistrictAndCustomers", jsonDistrictsAndCustomers);
-		
-		return jsonCompleteDistrictsAndCustomers;
+				
+		return jsonDistrictsAndCustomers;
 	}
 }
