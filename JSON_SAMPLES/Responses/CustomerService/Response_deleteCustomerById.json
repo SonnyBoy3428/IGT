@@ -2,8 +2,8 @@
 	"Message" : "Deletion of customer with id 1 successful!"
 }
 
-ODER
+OR 
 
 {
-	"Message" : "Deletion of customer with id 1 failed!"
+	"Message" : "Fetching of customer with id 1 failed!"
 }

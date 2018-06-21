@@ -1,0 +1,53 @@
+{
+	"District" : {
+		"DistrictId" : 1,
+		"DistrictName" : "ABC",
+		"WarehouseId" : 1,
+		"WarehouseLocation" : "ABC",
+		"WarehouseOwner" : "ABC"
+	},
+	"Customers" : [
+		{
+			"CustomerId" : 1,
+			"FirstName" : "Max",
+			"LastName" : "Max",
+			"Address" : "Max",
+			"Telephone" : "123",
+			"CreditCardNr" : "123",
+			"DistrictId" : 1,
+			"DistrictName" : "ABC"
+		},
+		{
+			"CustomerId" : 1,
+			"FirstName" : "Max",
+			"LastName" : "Max",
+			"Address" : "Max",
+			"Telephone" : "123",
+			"CreditCardNr" : "123",
+			"DistrictId" : 1,
+			"DistrictName" : "ABC"
+		},
+		{
+			"CustomerId" : 1,
+			"FirstName" : "Max",
+			"LastName" : "Max",
+			"Address" : "Max",
+			"Telephone" : "123",
+			"CreditCardNr" : "123",
+			"DistrictId" : 1,
+			"DistrictName" : "ABC"
+		}
+	]
+}
+
+OR 
+
+{
+	"Message" : "District with id 1 does not have any customers!"
+}
+
+OR 
+
+{
+	"Message" : "Fetching of district with id 1 failed!"
+}

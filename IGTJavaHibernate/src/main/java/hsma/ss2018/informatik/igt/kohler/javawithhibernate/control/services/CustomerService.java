@@ -224,11 +224,11 @@ public class CustomerService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(customerDeleted) {
-			response.put("Message", "Deletion of customer with id: " + customerId + " successful!");
+			response.put("Message", "Deletion of customer with id " + customerId + " successful!");
 			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
-			response.put("Message", "Deletion of customer with id: " + customerId + " failed!");
+			response.put("Message", "Deletion of customer with id " + customerId + " failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -257,7 +257,7 @@ public class CustomerService extends EntityService{
 			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
-			response.put("Message", "Update of customer with id " + Integer.parseInt(customer.getString("CustomerId")) + " failed!");
+			response.put("Message", "Update of customer with id " + customer.getInt("CustomerId") + " failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

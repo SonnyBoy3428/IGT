@@ -226,7 +226,21 @@ public class CustomerRepository extends EntityRepository{
 		try {
 			session = sessionFactory.openSession();
 			
-			Customer customer = getCustomer(customerId);	
+			Customer customer = getCustomer(customerId);
+			
+			// Remove the customer from the District
+			District district = customer.getDistrict();
+			district.getCustomers().remove(customer);
+			
+			session.beginTransaction();
+			session.update(district);
+			session.getTransaction().commit();
+			
+			// Delete all the orders belonging to the customer
+			Set<Order> orders = customer.getOrders();
+			for(Order order : orders) {
+				OrderRepository.deleteOrder(order.getOrderId());
+			}
 			
 			session.beginTransaction();
 			
@@ -342,8 +356,6 @@ public class CustomerRepository extends EntityRepository{
 		jsonCustomerAndOrders.put("Customer", customerToJSON(customer));
 		jsonCustomerAndOrders.put("Orders", OrderRepository.ordersToJSON(orders));
 		
-		JSONObject jsonCompleteCustomerAndOrders = new JSONObject().put("CustomerAndOrders", jsonCustomerAndOrders);
-		
-		return jsonCompleteCustomerAndOrders;
+		return jsonCustomerAndOrders;
 	}
 }
