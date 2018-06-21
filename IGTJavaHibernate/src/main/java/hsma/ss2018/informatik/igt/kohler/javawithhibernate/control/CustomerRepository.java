@@ -43,7 +43,6 @@ public class CustomerRepository extends EntityRepository{
 		
 		District district = DistrictRepository.getDistrict(districtId);
 		
-		
 		customer.setDistrict(district);
 		
 		Session session = null;
@@ -105,7 +104,6 @@ public class CustomerRepository extends EntityRepository{
 	 */
 	@SuppressWarnings("unchecked")
 	public static Set<Customer> getAllCustomers() {
-		List<Customer> customersList = null;
 		Set<Customer> customers = null;
 		
 		Session session = null;
@@ -115,7 +113,7 @@ public class CustomerRepository extends EntityRepository{
 		
 			session.beginTransaction();
 			
-			customersList = session.createQuery("from CUSTOMER").getResultList();
+			List<Customer>  customersList = session.createQuery("from CUSTOMER").getResultList();
 			
 			session.getTransaction().commit();
 			
@@ -260,12 +258,11 @@ public class CustomerRepository extends EntityRepository{
 	 */
 	public static Customer updateCustomer(int customerId, String firstName, String lastName, String address, String telephone, String creditCardNr, int districtId) {
 		Session session = null;
-		Customer customer = null;
 		
 		try {
 			session = sessionFactory.openSession();
 			
-			customer = getCustomer(customerId);
+			Customer customer = getCustomer(customerId);
 			District district = DistrictRepository.getDistrict(districtId);
 			
 			customer.setFirstName(firstName);
@@ -286,7 +283,9 @@ public class CustomerRepository extends EntityRepository{
 			session.close();
 		}
 		
-		return getCustomer(customerId);
+		Customer updatedCustomer = getCustomer(customerId);
+		
+		return updatedCustomer;
 	}
 	
 	/**
@@ -326,8 +325,6 @@ public class CustomerRepository extends EntityRepository{
 				jsonCustomers.put(jsonCustomer); 
 			}
 		}
-		
-		//JSONObject jsonAllCustomers = new JSONObject().put("Customers", jsonCustomers)
 		
 		return jsonCustomers;
 	}

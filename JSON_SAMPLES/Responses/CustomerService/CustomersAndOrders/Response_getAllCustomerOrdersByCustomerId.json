@@ -1,0 +1,37 @@
+{
+	"CustomerAndOrders" : {
+		"Customer" : {
+			"CustomerId" : 1,
+			"FirstName" : "Max",
+			"LastName" : "Mustermann",
+			"Address" : "Musterstrasse 4",
+			"Telephone" : "123456789101112",
+			"CreditCardNr" : "123456789101"
+			"DistrictId" : 1
+			"DistrictName" : "Musterstadt"
+		},
+		"Orders" : [
+			"Order" : {
+				"OrderId" : 1,
+				"CustomerId" : Id,
+				"OrderDate" : "2018-06-01",
+				"TotalCost" : 20.0,
+				"OrderCarriedOut" : false
+			},
+			"Order" : {
+				"OrderId" : 1,
+				"CustomerId" : Id,
+				"OrderDate" : "2018-06-01",
+				"TotalCost" : 20.0,
+				"OrderCarriedOut" : false
+			},
+			"Order" : {
+				"OrderId" : 1,
+				"CustomerId" : Id,
+				"OrderDate" : "2018-06-01",
+				"TotalCost" : 20.0,
+				"OrderCarriedOut" : false
+			}
+		]
+	}
+}

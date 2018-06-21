@@ -201,7 +201,9 @@ public class DistrictRepository extends EntityRepository{
 			}
 		}
 		
-		return getDistrict(districtId);
+		District updatedDistrict = getDistrict(districtId);
+		
+		return updatedDistrict;
 	}
 	
 	/**

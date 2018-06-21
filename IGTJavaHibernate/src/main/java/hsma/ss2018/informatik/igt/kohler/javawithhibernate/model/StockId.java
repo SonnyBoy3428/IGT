@@ -2,7 +2,7 @@
  * This class functions as the id for stocks.
  * Every Attribute is represented in the form of a member variable.
  * 
- * @author Dustin Noah Young
+ * @author Dustin Noah Young (1412293), Erica Paradis Boudjio Dongmeza (1424532) Patrick Wolf (1429439)
  */
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.model;
 
