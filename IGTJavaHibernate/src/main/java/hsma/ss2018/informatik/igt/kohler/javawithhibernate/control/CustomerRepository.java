@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 
 /**
  * This class functions as the API with which one can deal with customers.
@@ -226,7 +227,17 @@ public class CustomerRepository extends EntityRepository{
 		try {
 			session = sessionFactory.openSession();
 			
-			Customer customer = getCustomer(customerId);	
+			Customer customer = getCustomer(customerId);
+			
+			// Remove the customer from the District
+			District district = customer.getDistrict();
+			district.getCustomers().remove(customer);
+			
+			// Delete all the orders belonging to the customer
+			Set<Order> orders = customer.getOrders();
+			for(Order order : orders) {
+				OrderRepository.deleteOrder(order.getOrderId());
+			}
 			
 			session.beginTransaction();
 			
@@ -342,8 +353,6 @@ public class CustomerRepository extends EntityRepository{
 		jsonCustomerAndOrders.put("Customer", customerToJSON(customer));
 		jsonCustomerAndOrders.put("Orders", OrderRepository.ordersToJSON(orders));
 		
-		JSONObject jsonCompleteCustomerAndOrders = new JSONObject().put("CustomerAndOrders", jsonCustomerAndOrders);
-		
-		return jsonCompleteCustomerAndOrders;
+		return jsonCustomerAndOrders;
 	}
 }

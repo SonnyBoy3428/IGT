@@ -1,0 +1,18 @@
+{
+	"Customer" : {
+		"CustomerId" : 1,
+		"FirstName" : "Max",
+		"LastName" : "Max",
+		"Address" : "Max",
+		"Telephone" : "123",
+		"CreditCardNr" : "123",
+		"DistrictId" : 1,
+		"DistrictName" : "ABC"
+	}
+}
+
+OR 
+
+{
+	"Message" : "Fetching of customer with id 1 failed!"
+}
