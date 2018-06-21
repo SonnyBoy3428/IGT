@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 
 import BootstrapVue from 'bootstrap-vue'
+import store from './store'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -17,5 +18,6 @@ new Vue({
   components: {
     App
   },
-  template: '<App/>'
+  template: '<App/>',
+  store 
 })
