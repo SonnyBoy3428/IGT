@@ -1,25 +1,35 @@
 {
-	"CompleteOrder" : {
-		"Order" : {
-			"OrderId" : 1,
-			"CustomerId" : Id,
-			"OrderDate" : "2018-06-01",
-			"TotalCost" : 20.0,
-			"OrderCarriedOut" : false
+	"Order" : {
+		"OrderId" : 1,
+		"CustomerId" : 1,
+		"OrderDate" : "2018-06-01",
+		"TotalCost" : 20.0,
+		"OrderCarriedOut" : false
+	},
+	"ItemsAndQuantities" : [
+		{
+			"ItemId" : 1,
+			"ItemName" : "ABC",
+			"Price" : 10.0,
+			"ItemQuantity": 1
 		},
-		"ItemsAndQuantities" : [
-			{
-				"ItemId" : 1,
-				"ItemQuantity": 1
-			},
-			{
-				"ItemId" : 1,
-				"ItemQuantity": 1
-			},
-			{
-				"ItemId" : 1,
-				"ItemQuantity": 1
-			}
-		]
-	}
+		{
+			"ItemId" : 1,
+			"ItemName" : "ABC",
+			"Price" : 10.0,
+			"ItemQuantity": 1
+		},
+		{
+			"ItemId" : 1,
+			"ItemName" : "ABC",
+			"Price" : 10.0,
+			"ItemQuantity": 1
+		}
+	]
+}
+
+OR
+
+{
+	"Message" : "Creation of order failed!"
 }

@@ -121,11 +121,11 @@ public class ItemService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(itemDeleted) {
-			response.put("Message", "Deletion of item with id: " + itemId + " successful!");
+			response.put("Message", "Deletion of item with id " + itemId + " successful!");
 			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
-			response.put("Message", "Deletion of item with id: " + itemId + " failed!");
+			response.put("Message", "Deletion of item with id " + itemId + " failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -154,7 +154,7 @@ public class ItemService extends EntityService{
 			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
-			response.put("Message", "Update of item with id: " + item.getInt("ItemId") + " failed!");
+			response.put("Message", "Update of item with id " + item.getInt("ItemId") + " failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

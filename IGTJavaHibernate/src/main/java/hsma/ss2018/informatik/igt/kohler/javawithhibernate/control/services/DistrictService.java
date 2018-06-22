@@ -156,11 +156,11 @@ public class DistrictService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(districtDeleted) {
-			response.put("Message", "Deletion of district with id: " + districtId + " successful!");
+			response.put("Message", "Deletion of district with id " + districtId + " successful!");
 			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
-			response.put("Message", "Deletion of district with id: " + districtId + " failed!");
+			response.put("Message", "Deletion of district with id " + districtId + " failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

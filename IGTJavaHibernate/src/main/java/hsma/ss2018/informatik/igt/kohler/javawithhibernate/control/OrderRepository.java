@@ -27,13 +27,16 @@ public class OrderRepository extends EntityRepository{
 	 * 
 	 * @return The newly created order.
 	 */
-	public static Order createOrder() {
+	public static Order createOrder(int customerId) {
 		Order order = new Order();
+		
+		Customer customer = CustomerRepository.getCustomer(customerId);
 		
 		String orderDate = LocalDate.now().toString();
 		
 		order.setOrderDate(orderDate);
 		order.setOrderCarriedOut(false);
+		order.setCustomer(customer);
 		
 		Session session = null;
 		
@@ -46,7 +49,9 @@ public class OrderRepository extends EntityRepository{
 			
 			session.getTransaction().commit();
 		}catch(Exception ex) {
-			throw new NullPointerException(ex.getMessage());
+			// TODO
+			
+			order = null;
 		}finally {
 			if(session != null) {
 				session.close();
@@ -240,7 +245,7 @@ public class OrderRepository extends EntityRepository{
 		for(int itemId : itemIdsAndQuantity.keySet()) {
 			Item item = ItemRepository.getItem(itemId);
 			JSONObject jsonItem = ItemRepository.itemToJSON(item);
-			jsonItem.put("Quantity", new Integer(itemIdsAndQuantity.get(itemId)));
+			jsonItem.put("ItemQuantity", new Integer(itemIdsAndQuantity.get(itemId)));
 			
 			jsonItems.put(jsonItem);
 		}

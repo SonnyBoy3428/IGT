@@ -57,6 +57,8 @@ public class CustomerRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			customer = null;
 		}finally {
 			if(session != null) {
 				session.close();
@@ -273,6 +275,8 @@ public class CustomerRepository extends EntityRepository{
 	public static Customer updateCustomer(int customerId, String firstName, String lastName, String address, String telephone, String creditCardNr, int districtId) {
 		Session session = null;
 		
+		boolean customerUpdated = true;
+		
 		try {			
 			Customer customer = getCustomer(customerId);
 			District district = DistrictRepository.getDistrict(districtId);
@@ -293,11 +297,17 @@ public class CustomerRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			customerUpdated = false;
 		}finally {
 			session.close();
 		}
 		
 		Customer updatedCustomer = getCustomer(customerId);
+		
+		if(!customerUpdated) {
+			updatedCustomer = null;
+		}
 		
 		return updatedCustomer;
 	}

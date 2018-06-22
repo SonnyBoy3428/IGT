@@ -42,6 +42,8 @@ public class ItemRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			item = null;
 		}finally {
 			if(session != null) {
 				session.close();
@@ -162,6 +164,8 @@ public class ItemRepository extends EntityRepository{
 		Session session = null;
 		Item item = null;
 		
+		boolean itemUpdated = true;
+		
 		try {
 			item = getItem(itemId);
 			item.setItemName(itemName);
@@ -176,6 +180,8 @@ public class ItemRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			itemUpdated = false;
 		}finally{
 			if(session != null) {
 				session.close();
@@ -183,6 +189,10 @@ public class ItemRepository extends EntityRepository{
 		}
 		
 		Item updatedItem = getItem(itemId);
+		
+		if(!itemUpdated) {
+			updatedItem = null;
+		}
 		
 		return updatedItem;
 	}

@@ -2,15 +2,15 @@
 	"ItemsAndQuantities" : [
 		{
 			"ItemId" : 1,
-			"ItemQuantity": 1
+			"ItemQuantity" : 1			
 		},
 		{
 			"ItemId" : 1,
-			"ItemQuantity": 1
+			"ItemQuantity" : 1			
 		},
 		{
 			"ItemId" : 1,
-			"ItemQuantity": 1
+			"ItemQuantity" : 1			
 		}
 	]
 }

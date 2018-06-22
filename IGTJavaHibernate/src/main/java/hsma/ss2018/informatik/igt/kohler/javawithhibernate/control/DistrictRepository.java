@@ -48,6 +48,8 @@ public class DistrictRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			district = null;
 		}finally {
 			if(session != null) {
 				session.close();
@@ -197,6 +199,8 @@ public class DistrictRepository extends EntityRepository{
 	public static District updateDistrict(int districtId, String districtName, double districtSize, int warehouseId) {
 		Session session = null;
 		
+		boolean districtUpdated = true;
+		
 		try {
 			District district = getDistrict(districtId);
 			Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
@@ -214,6 +218,8 @@ public class DistrictRepository extends EntityRepository{
 			session.getTransaction().commit();
 		}catch(Exception ex) {
 			// TODO
+			
+			districtUpdated = false;
 		}finally{
 			if(session != null) {
 				session.close();
@@ -221,6 +227,10 @@ public class DistrictRepository extends EntityRepository{
 		}
 		
 		District updatedDistrict = getDistrict(districtId);
+		
+		if(!districtUpdated) {
+			updatedDistrict = null;
+		}
 		
 		return updatedDistrict;
 	}

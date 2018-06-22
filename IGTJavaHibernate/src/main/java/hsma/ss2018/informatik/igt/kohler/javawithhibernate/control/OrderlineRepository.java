@@ -31,9 +31,11 @@ public class OrderlineRepository extends EntityRepository {
 		Order newOrder = null;
 		Set<Item> items = new HashSet<Item>();
 		
+		boolean itemIsNull = false;
+		
 		// If the customer does not exist we don't need to continue.
 		if(customer != null) {
-			newOrder = OrderRepository.createOrder();
+			newOrder = OrderRepository.createOrder(customerId);
 			
 			// If the order could not be created we don't need to continue.
 			if(newOrder != null) {
@@ -46,6 +48,65 @@ public class OrderlineRepository extends EntityRepository {
 						items.add(item);
 					}else {
 						// TODO
+						
+						itemIsNull = true;
+					}
+				}
+				
+				if(!itemIsNull) {
+					double totalCost = 0.0d;
+					
+					// Here we set the relationships.
+					for(Item item : items) {
+						totalCost += (item.getPrice() * itemsAndQuantity.get(item.getItemId()));
+						
+						// The orderline needs a link to the order and the item 
+						Orderline orderline = new Orderline();
+						orderline.setOrder(newOrder);
+						orderline.setItem(item);
+						orderline.setQuantity(itemsAndQuantity.get(item.getItemId()));
+						
+						// The order needs a link to the orderline and the customer
+						newOrder.getOrderline().add(orderline);
+						
+						// The item needs a link to the orderline.
+						item.getOrderline().add(orderline);
+					
+						Session session = null;
+						
+						try {
+							session = sessionFactory.openSession();
+							
+							session.beginTransaction();
+							session.save(orderline);
+							session.getTransaction().commit();
+							
+							session.beginTransaction();
+							session.update(item);
+							session.getTransaction().commit();
+						}catch(Exception ex) {
+							// TODO
+						}finally {
+							session.close();
+						}
+					}
+					
+					Session session = null;
+					newOrder.setTotalCost(totalCost);
+					newOrder.setCustomer(customer);
+					
+					try {
+						session = sessionFactory.openSession();
+						
+						session.beginTransaction();
+						session.update(newOrder);
+						session.getTransaction().commit();
+					}catch(Exception ex) {
+						// TODO
+					}finally {
+						if(session != null) {
+							session.close();
+						}
 					}
 				}
 			}else {
@@ -53,59 +114,6 @@ public class OrderlineRepository extends EntityRepository {
 			}
 		}else {
 			// TODO
-		}
-		
-		double totalCost = 0.0d;
-		
-		// Here we set the relationships.
-		for(Item item : items) {
-			totalCost += (item.getPrice() * itemsAndQuantity.get(item.getItemId()));
-			
-			// The orderline needs a link to the order and the item 
-			Orderline orderline = new Orderline();
-			orderline.setOrder(newOrder);
-			orderline.setItem(item);
-			orderline.setQuantity(itemsAndQuantity.get(item.getItemId()));
-			
-			// The order needs a link to the orderline and the customer
-			newOrder.getOrderline().add(orderline);
-			
-			// The item needs a link to the orderline.
-			item.getOrderline().add(orderline);
-		
-			Session session = null;
-			
-			try {
-				session = sessionFactory.openSession();
-				
-				session.beginTransaction();
-				session.save(orderline);
-				session.getTransaction().commit();
-				
-				session.beginTransaction();
-				session.update(item);
-				session.getTransaction().commit();
-			}catch(Exception ex) {
-				// TODO
-			}finally {
-				session.close();
-			}
-		}
-		
-		Session session = null;
-		newOrder.setTotalCost(totalCost);
-		newOrder.setCustomer(customer);
-		
-		try {
-			session = sessionFactory.openSession();
-			
-			session.beginTransaction();
-			session.update(newOrder);
-			session.getTransaction().commit();
-		}catch(Exception ex) {
-			// TODO
-		}finally {
-			session.close();
 		}
 		
 		return newOrder;
@@ -135,7 +143,9 @@ public class OrderlineRepository extends EntityRepository {
 		}catch(Exception ex) {
 			// TODO
 		}finally {
-			session.close();
+			if(session != null) {
+				session.close();
+			}
 		}
 		
 		return orderline;
@@ -256,7 +266,9 @@ public class OrderlineRepository extends EntityRepository {
 		}catch(Exception ex) {
 			// TODO
 		}finally {
-			session.close();
+			if(session != null) {
+				session.close();
+			}
 		}
 		
 		Order updatedOrder = OrderRepository.getOrder(orderId);
@@ -310,7 +322,9 @@ public class OrderlineRepository extends EntityRepository {
 			
 			orderlineDeleted = false;
 		}finally {
-			session.close();
+			if(session != null) {
+				session.close();
+			}
 		}
 		
 		return orderlineDeleted;

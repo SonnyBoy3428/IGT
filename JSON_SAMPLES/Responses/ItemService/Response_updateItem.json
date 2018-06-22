@@ -1,0 +1,13 @@
+{
+	"Item" : {
+		"ItemId" : 1,
+		"ItemName" : "ABC",
+		"Price" : 20.0
+	}
+}
+
+OR
+
+{
+	"Message" : "Update of item with id 1 failed!"
+}
