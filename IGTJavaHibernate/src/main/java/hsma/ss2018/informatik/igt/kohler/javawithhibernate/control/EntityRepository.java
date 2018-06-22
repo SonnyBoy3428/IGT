@@ -16,7 +16,7 @@ public abstract class EntityRepository {
 	/**
 	 * Sets up the session factory properly.
 	 */
-	public void setUp() {
+	public static void setUp() {
 		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
 				.configure()
 				.build();
@@ -31,7 +31,7 @@ public abstract class EntityRepository {
 	/**
 	 * Closes a session factory for good.
 	 */
-	public void exit() {
+	public static void exit() {
 		sessionFactory.close();
 	}
 }

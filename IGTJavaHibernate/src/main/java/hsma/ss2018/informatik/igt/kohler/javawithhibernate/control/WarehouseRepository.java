@@ -29,7 +29,7 @@ public class WarehouseRepository extends EntityRepository{
 	 * 
 	 * @return The newly created warehouse.
 	 */
-	public static Warehouse createWarehouse(String location, String owner) {
+	public static Warehouse createWarehouse(String location, String owner) {		
 		Warehouse warehouse = new Warehouse();
 		warehouse.setLocation(location);
 		warehouse.setOwner(owner);
@@ -45,7 +45,7 @@ public class WarehouseRepository extends EntityRepository{
 			
 			session.getTransaction().commit();
 		}catch(Exception ex) {
-			// TODO
+			System.out.println(ex.getMessage());
 		}finally {
 			if(session != null) {
 				session.close();

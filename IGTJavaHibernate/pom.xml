@@ -36,6 +36,13 @@
           <artifactId>maven-war-plugin</artifactId>
           <version>3.2.0</version>
         </plugin>
+        <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+             <mainClass>hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.initdatabases.Main</mainClass>
+        </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>

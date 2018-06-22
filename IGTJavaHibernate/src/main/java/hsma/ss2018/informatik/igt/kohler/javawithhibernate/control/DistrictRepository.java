@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
-import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
 /**
@@ -150,7 +149,7 @@ public class DistrictRepository extends EntityRepository{
 			
 			District district = getDistrict(districtId);
 			
-			// Remove the warehouse from the District
+			// Remove the district from the warehouse
 			Warehouse warehouse = district.getWarehouse();
 			warehouse.getDistricts().remove(district);
 			

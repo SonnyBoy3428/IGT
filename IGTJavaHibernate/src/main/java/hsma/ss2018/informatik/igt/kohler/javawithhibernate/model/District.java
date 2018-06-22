@@ -30,7 +30,6 @@ public class District implements Serializable{
 	private Warehouse warehouse;
 	
 	@OneToMany(mappedBy = "district", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "CustomerId")
 	private Set<Customer> customers;
 	
 	public District() {

@@ -1,0 +1,21 @@
+version: '3.6'
+
+services:
+  mysql:
+    image: mysql/mysql-server:5.7
+    container_name: igtDatabase
+    volumes:
+      - ./IGT_Aufgabe2_Daten.sql:/docker-entrypoint-initdb.d/IGT_Aufgabe2_Daten.sql
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_HOST: 172.18.0.1
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: customerOrderManager
+      
+    tomcat:
+        image: tomcat
+        ports:
+            - "8000:8080"
+        volumes:
+            - ./ORMApplication.war:/usr/local/tomcat/webapps/ORMApplication.war

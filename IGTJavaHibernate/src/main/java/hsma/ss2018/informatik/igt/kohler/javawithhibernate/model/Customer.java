@@ -40,7 +40,6 @@ public class Customer implements Serializable{
 	
 	
 	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "OrderId")
 	private Set<Order> orders;
 	
 	public Customer() {

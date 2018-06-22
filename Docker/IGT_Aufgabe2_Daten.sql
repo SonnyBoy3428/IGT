@@ -4,9 +4,9 @@ use customerOrderManager;
 
 /*Tables representing the entities*/
 create table if not exists WAREHOUSE(WarehouseId int not null auto_increment, Location varchar(50), Owner char(60), primary key(WarehouseId));
-create table if not exists DISTRICT(DistrictId int not null auto_increment, DistrictName varchar(50) not null, DistrictSize double default 0.0, WarehouseId int not null, primary key(DistrictId), foreign key(WarehouseId) references WAREHOUSE(WarehouseId));
-create table if not exists CUSTOMER(CustomerId int not null auto_increment, FirstName varchar(30) not null, LastName varchar(30) not null, Address varchar(50), Telephone varchar(15), CreditCardNr varchar(12) not null, DistrictId int not null,  primary key(CustomerId), foreign key(DistrictId) references DISTRICT(DistrictId));
-create table if not exists CUSTOMER_ORDER(OrderId int not null auto_increment, OrderDate varchar(10), OrderCarriedOut boolean default false, TotalCost double default 0.0, CustomerId int not null, primary key(OrderId), foreign key(CustomerId) references CUSTOMER(CustomerId));
+create table if not exists DISTRICT(DistrictId int not null auto_increment, DistrictName varchar(50), DistrictSize double default 0.0, WarehouseId int, primary key(DistrictId), foreign key(WarehouseId) references WAREHOUSE(WarehouseId));
+create table if not exists CUSTOMER(CustomerId int not null auto_increment, FirstName varchar(30), LastName varchar(30), Address varchar(50), Telephone varchar(15), CreditCardNr varchar(12), DistrictId int,  primary key(CustomerId), foreign key(DistrictId) references DISTRICT(DistrictId));
+create table if not exists CUSTOMER_ORDER(OrderId int not null auto_increment, OrderDate varchar(10), OrderCarriedOut boolean default false, TotalCost double default 0.0, CustomerId int, primary key(OrderId), foreign key(CustomerId) references CUSTOMER(CustomerId));
 create table if not exists ITEM(ItemId int not null auto_increment, ItemName varchar(50), Price double default 0.0, primary key(ItemId));
 
 /*Many-to-Many Relationships*/
@@ -141,7 +141,7 @@ insert into CUSTOMER_ORDER(OrderDate, OrderCarriedOut, TotalCost, CustomerId) va
 /*Data for ITEM*/
 insert into ITEM(ItemName, Price) values('Monitor', 10.0);
 insert into ITEM(ItemName, Price) values('Mouse', 20.0);
-insert into ITEM(ItemName, Price) values('Keyboard' 30.0);
+insert into ITEM(ItemName, Price) values('Keyboard', 30.0);
 
 /*Data for ORDERLINE*/
 insert into ORDERLINE(OrderId, ItemId, Quantity) values(1, 1, 3);

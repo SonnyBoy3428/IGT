@@ -26,7 +26,6 @@ public class Warehouse implements Serializable{
 	private String owner;
 	
 	@OneToMany(mappedBy = "warehouse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "DistrictId")
 	private Set<District> districts;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "stockId.warehouse", cascade = CascadeType.ALL)

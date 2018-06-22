@@ -46,7 +46,7 @@ public class OrderRepository extends EntityRepository{
 			
 			session.getTransaction().commit();
 		}catch(Exception ex) {
-			//TODO
+			throw new NullPointerException(ex.getMessage());
 		}finally {
 			if(session != null) {
 				session.close();

@@ -5,7 +5,7 @@ services:
     image: mysql/mysql-server:5.7
     container_name: igtDatabase
     volumes:
-      - ./IGT_Aufgabe2_Daten.sql:/docker-entrypoint-initdb.d/IGT_Aufgabe2_Daten.sql
+      - ./IGT_Aufgabe2_Tabellen.sql:/docker-entrypoint-initdb.d/IGT_Aufgabe2_Tabellen.sql
     ports:
       - "3308:3306"
     environment:
