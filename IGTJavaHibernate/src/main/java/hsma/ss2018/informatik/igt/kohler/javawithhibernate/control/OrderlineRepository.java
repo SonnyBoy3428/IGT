@@ -31,7 +31,7 @@ public class OrderlineRepository extends EntityRepository {
 		Order newOrder = null;
 		Set<Item> items = new HashSet<Item>();
 		
-		boolean itemIsNull = false;
+		boolean errorOccured = false;
 		
 		// If the customer does not exist we don't need to continue.
 		if(customer != null) {
@@ -49,11 +49,12 @@ public class OrderlineRepository extends EntityRepository {
 					}else {
 						// TODO
 						
-						itemIsNull = true;
+						errorOccured = true;
+						break;
 					}
 				}
 				
-				if(!itemIsNull) {
+				if(!errorOccured) {
 					double totalCost = 0.0d;
 					
 					// Here we set the relationships.
@@ -86,27 +87,34 @@ public class OrderlineRepository extends EntityRepository {
 							session.getTransaction().commit();
 						}catch(Exception ex) {
 							// TODO
+							
+							errorOccured = true;
+							newOrder = null;
+							break;
 						}finally {
 							session.close();
 						}
 					}
 					
-					Session session = null;
-					newOrder.setTotalCost(totalCost);
-					newOrder.setCustomer(customer);
-					
-					try {
-						session = sessionFactory.openSession();
+					if(!errorOccured) {
+						Session session = null;
+						newOrder.setTotalCost(totalCost);
 						
-						session.beginTransaction();
-						session.update(newOrder);
-						session.getTransaction().commit();
-					}catch(Exception ex) {
-						// TODO
-					}finally {
-						if(session != null) {
-							session.close();
-						}
+						try {
+							session = sessionFactory.openSession();
+							
+							session.beginTransaction();
+							session.update(newOrder);
+							session.getTransaction().commit();
+						}catch(Exception ex) {
+							// TODO
+							
+							newOrder = null;
+						}finally {
+							if(session != null) {
+								session.close();
+							}
+						}	
 					}
 				}
 			}else {

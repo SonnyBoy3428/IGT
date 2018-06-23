@@ -6,30 +6,36 @@
 		"TotalCost" : 20.0,
 		"OrderCarriedOut" : false
 	},
-	"Items" : [
+	"ItemsAndQuantities" : [
 		{
 			"ItemId" : 1,
-			"ItemName" : "MusterMonitor",
+			"ItemName" : "ABC",
 			"Price" : 10.0,
-			"Quantity" : 1
+			"ItemQuantity": 1
 		},
 		{
 			"ItemId" : 1,
-			"ItemName" : "MusterMonitor",
+			"ItemName" : "ABC",
 			"Price" : 10.0,
-			"Quantity" : 1
+			"ItemQuantity": 1
 		},
 		{
 			"ItemId" : 1,
-			"ItemName" : "MusterMonitor",
+			"ItemName" : "ABC",
 			"Price" : 10.0,
-			"Quantity" : 1
+			"ItemQuantity": 1
 		}
 	]
 }
 
-ODER 
+OR
 
 {
-	"Message" : "Creation of order failed!"
+	"Message" : "Order with id 1 does not have any items!"
+}
+
+OR
+
+{
+	"Message" : "Update of order with id 1 failed!"
 }

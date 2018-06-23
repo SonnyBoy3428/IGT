@@ -99,7 +99,7 @@ public class OrderAndOrderlineService extends EntityService{
 				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
-				response.put("Message", "Order id " + orderId + " does not have any items!");
+				response.put("Message", "Order with the id " + orderId + " does not have any items!");
 				
 				return Response.status(500).entity(response.toString()).build();
 			}
@@ -162,11 +162,11 @@ public class OrderAndOrderlineService extends EntityService{
 		JSONObject response = new JSONObject();
 		
 		if(orderlineDeleted) {
-			response.put("Message", "Deletion of order with id: " + orderId + " successful!");
+			response.put("Message", "Deletion of order with id " + orderId + " successful!");
 			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
-			response.put("Message", "Deletion of order with id: " + orderId + " failed!");
+			response.put("Message", "Deletion of order with id " + orderId + " failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -185,28 +185,26 @@ public class OrderAndOrderlineService extends EntityService{
 	 */
 	@PUT
 	@Path("/updateOrderById={order}/item={item}/updateType={type}/quantity={quantity}")
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response updateOrder(@PathParam("order") int orderId, @PathParam("item") int itemId, @PathParam("type") String updateType, @PathParam("quantity") int quantity){		
 		Order order = OrderlineRepository.updateOrderline(orderId, itemId, updateType, quantity);
 		
 		JSONObject response = new JSONObject();
 		
-		if(order == null) {
-			response.put("Message", "Update of order with id: " + orderId + " failed!");
-		
-			return Response.status(500).entity(response.toString()).build();
-		}
-		
-		Map<Integer, Integer> itemsAndQuantities = new HashMap<Integer, Integer>();
-		itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
-		
-		if(itemsAndQuantities.size() > 0) {
-			response = OrderRepository.completeOrderToJSON(order, itemsAndQuantities);
+		if(order != null) {
+			Map<Integer, Integer> itemsAndQuantities = OrderRepository.getAllItemsOfOrder(orderId);
 			
-			return Response.status(200).entity(response.toString()).build();
+			if(itemsAndQuantities.size() > 0) {
+				response = OrderRepository.completeOrderToJSON(order, itemsAndQuantities);
+				
+				return Response.status(200).entity(response.toString()).build();
+			}else {
+				response.put("Message", "Order with id " + orderId + " does not have any items!");
+				
+				return Response.status(500).entity(response.toString()).build();
+			}	
 		}else {
-			response.put("Message", "Order id " + orderId + " does not have any items!");
+			response.put("Message", "Update of order with id " + orderId + " failed!");
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

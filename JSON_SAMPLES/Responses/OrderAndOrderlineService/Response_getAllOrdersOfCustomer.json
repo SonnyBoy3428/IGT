@@ -8,24 +8,24 @@
 				"TotalCost" : 20.0,
 				"OrderCarriedOut" : false
 			},
-			"Items" : [
+			"ItemsAndQuantities" : [
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				},
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				},
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				}
 			]
 		},
@@ -37,24 +37,24 @@
 				"TotalCost" : 20.0,
 				"OrderCarriedOut" : false
 			},
-			"Items" : [
+			"ItemsAndQuantities" : [
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				},
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				},
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				}
 			]
 		},
@@ -66,37 +66,37 @@
 				"TotalCost" : 20.0,
 				"OrderCarriedOut" : false
 			},
-			"Items" : [
+			"ItemsAndQuantities" : [
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				},
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				},
 				{
 					"ItemId" : 1,
-					"ItemName" : "MusterMonitor",
+					"ItemName" : "ABC",
 					"Price" : 10.0,
-					"Quantity" : 1
+					"ItemQuantity": 1
 				}
 			]
 		}
 	]
 }
 
-ODER 
+OR
 
 {
-	"Message" : "Order id 1 does not have any items!"
+	"Message" : "The order with the id 1 does not have any items!"
 }
 
-ODER 
+OR
 
 {
 	"Message" : "The customer with the id 1 does not have any orders!"

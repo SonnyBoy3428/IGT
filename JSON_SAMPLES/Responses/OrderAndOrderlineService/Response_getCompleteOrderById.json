@@ -6,35 +6,35 @@
 		"TotalCost" : 20.0,
 		"OrderCarriedOut" : false
 	},
-	"Items" : [
+	"ItemsAndQuantities" : [
 		{
 			"ItemId" : 1,
-			"ItemName" : "MusterMonitor",
+			"ItemName" : "ABC",
 			"Price" : 10.0,
-			"Quantity" : 1
+			"ItemQuantity": 1
 		},
 		{
 			"ItemId" : 1,
-			"ItemName" : "MusterMonitor",
+			"ItemName" : "ABC",
 			"Price" : 10.0,
-			"Quantity" : 1
+			"ItemQuantity": 1
 		},
 		{
 			"ItemId" : 1,
-			"ItemName" : "MusterMonitor",
+			"ItemName" : "ABC",
 			"Price" : 10.0,
-			"Quantity" : 1
+			"ItemQuantity": 1
 		}
 	]
 }
 
-ODER 
+OR
 
 {
-	"Message" : "Order id 1 does not have any items!"
+	"Message" : "Order with the id 1 does not have any items!"
 }
 
-ODER 
+OR
 
 {
 	"Message" : "Fetching of order with id 1 failed!"
