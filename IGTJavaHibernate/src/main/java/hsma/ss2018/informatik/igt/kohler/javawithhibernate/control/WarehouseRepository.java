@@ -126,23 +126,11 @@ public class WarehouseRepository extends EntityRepository{
 	 * @return All districts belonging to the warehouse.
 	 */
 	public static Set<District> getWarehouseDistricts(int warehouseId) {
-		Warehouse warehouse = null;
+		Warehouse warehouse = getWarehouse(warehouseId);
 		Set<District> districts = null;
 		
-		Session session = null;
-		
-		try {
-			session = sessionFactory.openSession();
-			
-			warehouse = session.get(Warehouse.class,  warehouseId);
-			
+		if(warehouse != null) {
 			districts = warehouse.getDistricts();
-		}catch(Exception ex) {
-			// TODO
-		}finally {
-			if(session != null) {
-				session.close();	
-			}
 		}
 						
 		return districts;
@@ -227,11 +215,14 @@ public class WarehouseRepository extends EntityRepository{
 	 */
 	public static Map<Integer, Integer> getAllItemsOfWarehouse(int warehouseId) {
 		Warehouse warehouse = getWarehouse(warehouseId);
-		Set<Stock> stock = warehouse.getStock();
 		Map<Integer, Integer> itemIdsAndQuantity = new HashMap<Integer, Integer>();
 		
-		for(Stock stockElement : stock) {
-			itemIdsAndQuantity.put(stockElement.getItem().getItemId(), stockElement.getQuantity());
+		if(warehouse != null) {
+			Set<Stock> stock = warehouse.getStock();
+			
+			for(Stock stockElement : stock) {
+				itemIdsAndQuantity.put(stockElement.getItem().getItemId(), stockElement.getQuantity());
+			}	
 		}
 		
 		return itemIdsAndQuantity;
@@ -247,7 +238,7 @@ public class WarehouseRepository extends EntityRepository{
 	public static JSONObject warehouseToJSON(Warehouse warehouse) {
 		JSONObject jsonWarehouse = new JSONObject().put("WarehouseId", new Integer(warehouse.getWarehouseId()));
 		jsonWarehouse.put("Location", warehouse.getLocation());
-		jsonWarehouse.put("Owner", warehouse.getOwner());
+		jsonWarehouse.put("WarehouseOwner", warehouse.getOwner());
 
 		return jsonWarehouse;
 	}
@@ -295,7 +286,7 @@ public class WarehouseRepository extends EntityRepository{
 			jsonItems.put(jsonItem);
 		}
 		
-		jsonWarehouseAndItems.put("Items", jsonItems);
+		jsonWarehouseAndItems.put("ItemsAndQuantities", jsonItems);
 		
 		return jsonWarehouseAndItems;
 	}
@@ -332,9 +323,7 @@ public class WarehouseRepository extends EntityRepository{
 		JSONObject jsonWarehouseAndDistricts = new JSONObject();
 		jsonWarehouseAndDistricts.put("Warehouse", warehouseToJSON(warehouse));
 		jsonWarehouseAndDistricts.put("Districts", DistrictRepository.districtsToJSON(districts));
-		
-		JSONObject jsonCompleteWarehouseAndDistricts = new JSONObject().put("WarehouseAndDistricts", jsonWarehouseAndDistricts);
-		
-		return jsonCompleteWarehouseAndDistricts;
+				
+		return jsonWarehouseAndDistricts;
 	}
 }

@@ -131,7 +131,11 @@ public class DistrictRepository extends EntityRepository{
 	 */
 	public static Set<Customer> getDistrictCustomers(int districtId) {
 		District district = getDistrict(districtId);	
-		Set<Customer> customers = district.getCustomers();
+		Set<Customer> customers = null;
+		
+		if(district != null) {
+			customers = district.getCustomers();
+		}
 						
 		return customers;
 	}

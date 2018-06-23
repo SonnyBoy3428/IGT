@@ -1,0 +1,42 @@
+{
+	"Warehouse" : {
+		"WarehouseId" : 1,
+		"Location" : "ABC",
+		"WarehouseOwner" : "ABC"
+	},
+	"Districts" : [
+		{
+			"DistrictId" : 1,
+			"DistrictName" : "ABC",
+			"WarehouseId" : 1,
+			"WarehouseLocation" : "ABC",
+			"WarehouseOwner" : "ABC"
+		},
+		{
+			"DistrictId" : 1,
+			"DistrictName" : "ABC",
+			"WarehouseId" : 1,
+			"WarehouseLocation" : "ABC",
+			"WarehouseOwner" : "ABC"
+		},
+		{
+			"DistrictId" : 1,
+			"DistrictName" : "ABC",
+			"WarehouseId" : 1,
+			"WarehouseLocation" : "ABC",
+			"WarehouseOwner" : "ABC"
+		}
+	]
+}
+
+OR 
+
+{
+	"Message" : "Warehouse with id 1 does not have any districts!"
+}
+
+OR 
+
+{
+	"Message" : "Fetching of warehouse with id 1 failed!"
+}

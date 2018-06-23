@@ -1,0 +1,9 @@
+{
+	"Message" : "Deletion of warehouse with id 1 successful!"
+}
+
+OR 
+
+{
+	"Message" : "Deletion of warehouse with id 1 failed!"
+}

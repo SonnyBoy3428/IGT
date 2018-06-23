@@ -1,0 +1,39 @@
+{
+	"Warehouse" : {
+		"WarehouseId" : 1,
+		"Location" : "ABC",
+		"WarehouseOwner" : "ABC"
+	},
+	"ItemsAndQuantities" : [
+		{
+			"ItemId" : 1,
+			"ItemName" : "ABC",
+			"Price" : 10.0,
+			"ItemQuantity": 1
+		},
+		{
+			"ItemId" : 1,
+			"ItemName" : "ABC",
+			"Price" : 10.0,
+			"ItemQuantity": 1
+		},
+		{
+			"ItemId" : 1,
+			"ItemName" : "ABC",
+			"Price" : 10.0,
+			"ItemQuantity": 1
+		}
+	]
+}
+
+OR
+
+{
+	"Message" : "Warehouse with the id 1 does not have any items!"
+}
+
+OR
+
+{
+	"Message" : "Creation of stock failed!"
+}

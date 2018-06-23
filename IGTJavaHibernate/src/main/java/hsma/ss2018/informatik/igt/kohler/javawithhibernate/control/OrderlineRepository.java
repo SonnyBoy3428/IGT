@@ -171,6 +171,8 @@ public class OrderlineRepository extends EntityRepository {
 	 */
 	public static Order updateOrderline(int orderId, int itemId, String updateType, int quantity) {
 		Session session = null;
+		
+		boolean updateSuccessful = true;
 				
 		try {			
 			Order order = OrderRepository.getOrder(orderId);
@@ -183,96 +185,101 @@ public class OrderlineRepository extends EntityRepository {
 			
 			session = sessionFactory.openSession();
 
-			if(!updateType.equals("Insert")) {
-				for(Orderline orderlineElement : orderline) {
-					Item orderlineItem = orderlineElement.getItem();
-				
-					// Item found
-					if(orderlineItem.getItemId() == itemId) {	
-						switch(updateType) {
-							case "Update":
-								oldQuantity = orderlineElement.getQuantity();
-								double oldPrice = item.getPrice() * oldQuantity;
-								orderlineElement.setQuantity(quantity);
+			boolean itemExists = false;
+			
+			for(Orderline orderlineElement : orderline) {
+				Item orderlineItem = orderlineElement.getItem();
+			
+				// Item found
+				if(orderlineItem.getItemId() == itemId) {
+					itemExists = true;
+					switch(updateType) {
+						case "Update":
+							oldQuantity = orderlineElement.getQuantity();
+							double oldPrice = item.getPrice() * oldQuantity;
+							orderlineElement.setQuantity(quantity);
 								
-								order.setOrderline(orderline);
-								totalCost = order.getTotalCost();
-								totalCost -= oldPrice;
-								totalCost += (item.getPrice() * quantity);
-								order.setTotalCost(totalCost);
+							order.setOrderline(orderline);
+							totalCost = order.getTotalCost();
+							totalCost -= oldPrice;
+							totalCost += (item.getPrice() * quantity);
+							order.setTotalCost(totalCost);
 								
-								item.setOrderline(orderline);
+							item.setOrderline(orderline);
 						
-								session.beginTransaction();
-								session.update(orderlineElement);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.update(orderlineElement);
+							session.getTransaction().commit();
 						
-								session.beginTransaction();
-								session.update(order);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.update(order);
+							session.getTransaction().commit();
 								
-								session.beginTransaction();
-								session.update(item);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.update(item);
+							session.getTransaction().commit();
 								
-								break;
-							case "Delete":	
-								oldQuantity = orderlineElement.getQuantity();
-								orderline.remove(orderlineElement);
+							break;
+						case "Delete":	
+							oldQuantity = orderlineElement.getQuantity();
+							orderline.remove(orderlineElement);
 								
-								order.setOrderline(orderline);
-								totalCost = order.getTotalCost();
-								totalCost -= (item.getPrice() * oldQuantity);
-								order.setTotalCost(totalCost);
+							order.setOrderline(orderline);
+							totalCost = order.getTotalCost();
+							totalCost -= (item.getPrice() * oldQuantity);
+							order.setTotalCost(totalCost);
 								
-								item.setOrderline(orderline);
+							item.setOrderline(orderline);
 								
-								session.beginTransaction();
-								session.delete(orderlineElement);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.delete(orderlineElement);
+							session.getTransaction().commit();
+							
+							session.beginTransaction();
+							session.update(order);
+							session.getTransaction().commit();
 								
-								session.beginTransaction();
-								session.update(order);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.update(item);
+							session.getTransaction().commit();
 								
-								session.beginTransaction();
-								session.update(item);
-								session.getTransaction().commit();
-								
-								break;
-						}
+							break;
 					}
 				}
-			}else {
+			}
+				
+			if(!itemExists && updateType.equals("Insert")) {
 				// The orderline needs a link to the order and the item 
 				Orderline newOrderline = new Orderline();
 				newOrderline.setOrder(order);
 				newOrderline.setItem(item);
 				newOrderline.setQuantity(quantity);
-				
+					
 				// The order needs a link to the orderline.
 				order.getOrderline().add(newOrderline);
 				totalCost = order.getTotalCost();
 				totalCost += (item.getPrice() * quantity);
 				order.setTotalCost(totalCost);
-				
+					
 				// The item needs a link to the orderline.
 				item.getOrderline().add(newOrderline);
 					
 				session.beginTransaction();
 				session.save(newOrderline);
 				session.getTransaction().commit();
-				
+					
 				session.beginTransaction();
 				session.update(order);
 				session.getTransaction().commit();
-					
+						
 				session.beginTransaction();
 				session.update(item);
 				session.getTransaction().commit();
 			}
 		}catch(Exception ex) {
 			// TODO
+			
+			updateSuccessful = false;
 		}finally {
 			if(session != null) {
 				session.close();
@@ -280,6 +287,10 @@ public class OrderlineRepository extends EntityRepository {
 		}
 		
 		Order updatedOrder = OrderRepository.getOrder(orderId);
+		
+		if(!updateSuccessful) {
+			updatedOrder = null;
+		}
 		
 		return updatedOrder;
 	}

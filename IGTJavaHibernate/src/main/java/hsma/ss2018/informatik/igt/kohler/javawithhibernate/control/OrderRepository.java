@@ -133,7 +133,11 @@ public class OrderRepository extends EntityRepository{
 	 */
 	public static Set<Order> getAllOrdersOfCustomer(int customerId) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
-		Set<Order> orders = customer.getOrders();
+		Set<Order> orders = null;
+		
+		if(customer != null) {
+			orders = customer.getOrders();
+		}
 		
 		return orders;
 	}

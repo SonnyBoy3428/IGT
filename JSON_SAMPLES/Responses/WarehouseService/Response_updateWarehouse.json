@@ -1,0 +1,13 @@
+{
+	"Warehouse" : {
+		"WarehouseId" : 1,
+		"Location" : "ABC",
+		"WarehouseOwner" : "ABC"
+	}
+}
+
+OR
+
+{
+	"Message" : "Update of warehouse with id 1 failed!"
+}

@@ -80,6 +80,8 @@ public class StockRepository extends EntityRepository{
 			warehouseCreated = false;
 		}
 		
+		warehouse = WarehouseRepository.getWarehouse(warehouseId);
+		
 		if(!warehouseCreated) {
 			warehouse = null;
 		}
@@ -95,27 +97,13 @@ public class StockRepository extends EntityRepository{
 	 * @return The stocks of the warehouse.
 	 */
 	public static Set<Stock> getStocks(int warehouseId){
+		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		Set<Stock> stock = null;
-		Session session = null;
-		
-		try {
-			Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
-			
-			session = sessionFactory.openSession();
-			
-			session.beginTransaction();
-			
+
+		if(warehouse != null) {
 			stock = warehouse.getStock();
-			
-			session.getTransaction().commit();
-		}catch(Exception ex) {
-			// TODO
-		}finally {
-			if(session != null) {
-				session.close();
-			}
 		}
-		
+
 		return stock;
 	}
 	
@@ -129,97 +117,109 @@ public class StockRepository extends EntityRepository{
 	 */
 	public static Warehouse updateStock(int warehouseId, int itemId, String updateType, int quantity) {
 		Session session = null;
-		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
+		
+		boolean updateSuccessful = true;
 		
 		try {
+			Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
+			
 			session = sessionFactory.openSession();
 		
-			Item item = session.get(Item.class, itemId);
+			Item item = ItemRepository.getItem(itemId);
 			
 			Set<Stock> stock = warehouse.getStock();
 			
-			if(!updateType.equals("Insert")) {
-				for(Stock stockElement : stock) {
-					Item stockItem = stockElement.getItem();
+			boolean itemExists = false;
 				
-					// Item found
-					if(stockItem.getItemId() == itemId) {
-						switch(updateType) {
-							case "Update":
-								stockElement.setQuantity(quantity);
-								warehouse.setStock(stock);
-								item.setStock(stock);
+			for(Stock stockElement : stock) {
+				Item stockItem = stockElement.getItem();
+				
+				// Item found
+				if(stockItem.getItemId() == itemId) {
+					itemExists = true;
+					switch(updateType) {
+						case "Update":
+							stockElement.setQuantity(quantity);
+							warehouse.setStock(stock);
+							item.setStock(stock);
+					
+							session.beginTransaction();
+							session.update(stockElement);
+							session.getTransaction().commit();
 						
-								session.beginTransaction();
-								session.update(stockElement);
-								session.getTransaction().commit();
-						
-								session.beginTransaction();
-								session.update(warehouse);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.update(warehouse);
+							session.getTransaction().commit();
 								
-								session.beginTransaction();
-								session.update(item);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.update(item);
+							session.getTransaction().commit();
 								
-								break;
-							case "Delete":	
-								stock.remove(stockElement);
-								warehouse.setStock(stock);
-								item.setStock(stock);
+							break;
+						case "Delete":	
+							stock.remove(stockElement);
+							warehouse.setStock(stock);
+							item.setStock(stock);
 								
-								session.beginTransaction();
-								session.delete(stockElement);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.delete(stockElement);
+							session.getTransaction().commit();
 								
-								session.beginTransaction();
-								session.update(warehouse);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.update(warehouse);
+							session.getTransaction().commit();
 								
-								session.beginTransaction();
-								session.update(item);
-								session.getTransaction().commit();
+							session.beginTransaction();
+							session.update(item);
+							session.getTransaction().commit();
 								
-								break;
-						}
+							break;
 					}
 				}
-			}else {
+			}
+				
+			if(!itemExists && updateType.equals("Insert")) {
 				// The stock needs a link to the warehouse and the item 
 				Stock newStock = new Stock();
 				newStock.setWarehouse(warehouse);
 				newStock.setItem(item);
 				newStock.setQuantity(quantity);
-				
+					
 				// The warehouse needs a link to the stock.
 				warehouse.getStock().add(newStock);
-				
+					
 				// The item needs a link to the stock.
 				item.getStock().add(newStock);
-					
+						
 				session.beginTransaction();
 				session.save(newStock);
 				session.getTransaction().commit();
-				
+					
 				session.beginTransaction();
 				session.update(warehouse);
 				session.getTransaction().commit();
-					
+						
 				session.beginTransaction();
 				session.update(item);
 				session.getTransaction().commit();
 			}
 		}catch(Exception ex) {
 			// TODO
+			
+			updateSuccessful = false;
 		}finally {
 			if(session != null) {
 				session.close();
 			}
 		}
 		
-		warehouse = WarehouseRepository.getWarehouse(warehouseId);
+		Warehouse updatedWarehouse = WarehouseRepository.getWarehouse(warehouseId);
 		
-		return warehouse;
+		if(!updateSuccessful){
+			updatedWarehouse = null;
+		}
+		
+		return updatedWarehouse;
 	}
 	
 	/**
