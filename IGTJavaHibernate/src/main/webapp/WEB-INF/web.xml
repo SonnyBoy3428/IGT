@@ -18,12 +18,16 @@
 	<servlet>
 		<servlet-name>IGTJavaHibernate</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+		     <param-name>com.sun.jersey.config.property.packages</param-name>
+		     <param-value>hsma.ss2018.informatik.igt.kohler.javawithhibernate.control</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
  
 	<servlet-mapping>
 		<servlet-name>IGTJavaHibernate</servlet-name>
-		<url-pattern>/igt/*</url-pattern>
+		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
  
 </web-app>

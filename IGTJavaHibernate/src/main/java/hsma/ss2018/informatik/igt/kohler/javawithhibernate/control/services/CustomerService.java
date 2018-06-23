@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.CustomerRepository;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.EntityRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 
@@ -39,6 +40,8 @@ public class CustomerService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response createCustomer(String customerInformation) {
+		EntityRepository.setUp();
+		
 		JSONObject newCustomer = new JSONObject(customerInformation);
 		
 		Customer createdCustomer = CustomerRepository.createCustomer(newCustomer.getString("FirstName"), newCustomer.getString("LastName"), newCustomer.getString("Address"), newCustomer.getString("Telephone"), newCustomer.getString("CreditCardNr"), newCustomer.getInt("DistrictId"));
@@ -48,9 +51,13 @@ public class CustomerService extends EntityService{
 		if(createdCustomer != null) {
 			response.put("Customer", CustomerRepository.customerToJSON(createdCustomer));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Creation of customer failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -67,6 +74,8 @@ public class CustomerService extends EntityService{
 	@Path("/getCustomerById={param}")
 	@Produces("application/json")
 	public Response getCustomerById(@PathParam("param") int customerId) {
+		EntityRepository.setUp();
+		
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		
 		JSONObject response = new JSONObject();
@@ -91,6 +100,8 @@ public class CustomerService extends EntityService{
 	@Path("/getAllCustomers")
 	@Produces("application/json")
 	public Response getAllCustomers() {
+		EntityRepository.setUp();
+		
 		Set<Customer> customers = CustomerRepository.getAllCustomers();
 		
 		JSONObject response = new JSONObject();
@@ -117,6 +128,8 @@ public class CustomerService extends EntityService{
 	@Path("/getAllCustomerOrdersByCustomerId={param}")
 	@Produces("application/json")
 	public Response getAllCustomerOrders(@PathParam("param") int customerId) {
+		EntityRepository.setUp();
+		
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		
 		JSONObject response = new JSONObject();
@@ -151,6 +164,8 @@ public class CustomerService extends EntityService{
 	@Path("/getAllNewCustomerOrdersByCustomerId={param}")
 	@Produces("application/json")
 	public Response getNewCustomerOrders(@PathParam("param") int customerId) {
+		EntityRepository.setUp();
+		
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		
 		JSONObject response = new JSONObject();
@@ -185,6 +200,8 @@ public class CustomerService extends EntityService{
 	@Path("/getCustomerOrderHistoryByCustomerId={param}")
 	@Produces("application/json")
 	public Response getCustomerOrderHistory(@PathParam("param") int customerId) {
+		EntityRepository.setUp();
+		
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		
 		JSONObject response = new JSONObject();
@@ -219,6 +236,8 @@ public class CustomerService extends EntityService{
 	@Path("/deleteCustomerByCustomerId={param}")
 	@Produces("application/json")
 	public Response deleteCustomer(@PathParam("param") int customerId) {
+		EntityRepository.setUp();
+		
 		boolean customerDeleted = CustomerRepository.deleteCustomer(customerId);
 		
 		JSONObject response = new JSONObject();
@@ -246,6 +265,8 @@ public class CustomerService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response updateCustomer(String customerInformation){
+		EntityRepository.setUp();
+		
 		JSONObject customer = new JSONObject(customerInformation);
 		
 		Customer updatedCustomer = CustomerRepository.updateCustomer(customer.getInt("CustomerId"), customer.getString("FirstName"), customer.getString("LastName"), customer.getString("Address"), customer.getString("Telephone"), customer.getString("CreditCardNr"), customer.getInt("DistrictId"));
