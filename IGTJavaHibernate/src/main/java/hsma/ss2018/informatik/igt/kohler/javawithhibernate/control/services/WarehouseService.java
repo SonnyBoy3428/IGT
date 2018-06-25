@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.EntityRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.StockRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.WarehouseRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
@@ -29,7 +30,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
  *
  */
 @Path("/warehouseService")
-public class WarehouseService extends EntityService{	
+public class WarehouseService{	
 	/**
 	 * Receives a POST request to create a warehouse. The warehouse information is located in the request body.
 	 * 
@@ -42,6 +43,8 @@ public class WarehouseService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response createWarehouse(String warehouseInformation){
+		EntityRepository.setUp();
+		
 		JSONObject newWarehouse = new JSONObject(warehouseInformation);
 		
 		Warehouse createdWarehouse = WarehouseRepository.createWarehouse(newWarehouse.getString("Location"), newWarehouse.getString("WarehouseOwner"));
@@ -51,9 +54,13 @@ public class WarehouseService extends EntityService{
 		if(createdWarehouse != null) {
 			response.put("Warehouse", WarehouseRepository.warehouseToJSON(createdWarehouse));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Creation of warehouse failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -70,6 +77,8 @@ public class WarehouseService extends EntityService{
 	@Path("/getWarehouseById={param}")
 	@Produces("application/json")
 	public Response getWarehouseById(@PathParam("param") int warehouseId) {
+		EntityRepository.setUp();
+		
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		
 		JSONObject response = new JSONObject();
@@ -77,9 +86,13 @@ public class WarehouseService extends EntityService{
 		if(warehouse != null) {
 			response.put("Warehouse", WarehouseRepository.warehouseToJSON(warehouse));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Fetching of warehouse with id " + warehouseId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -94,6 +107,8 @@ public class WarehouseService extends EntityService{
 	@Path("/getAllWarehouses")
 	@Produces("application/json")
 	public Response getAllWarehouses() {
+		EntityRepository.setUp();
+		
 		Set<Warehouse> warehouses = WarehouseRepository.getAllWarehouses();
 		
 		JSONObject response = new JSONObject();
@@ -101,9 +116,13 @@ public class WarehouseService extends EntityService{
 		if(warehouses != null) {
 			response = new JSONObject().put("Warehouses", WarehouseRepository.warehousesToJSON(warehouses));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Fetching of warehouses failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -120,6 +139,8 @@ public class WarehouseService extends EntityService{
 	@Path("/getWarehouseDistrictsByWarehouseId={param}")
 	@Produces("application/json")
 	public Response getAllWarehouseDistricts(@PathParam("param") int warehouseId) {
+		EntityRepository.setUp();
+		
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		
 		JSONObject response = new JSONObject();
@@ -130,14 +151,20 @@ public class WarehouseService extends EntityService{
 			if(districts != null) {
 				response = WarehouseRepository.warehouseAndDistrictsToJSON(warehouse, districts);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "Warehouse with id " + warehouseId + " does not have any districts!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of warehouse with id " + warehouseId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -154,6 +181,8 @@ public class WarehouseService extends EntityService{
 	@Path("/deleteWarehouseByWarehouseId={param}")
 	@Produces("application/json")
 	public Response deleteWarehouse(@PathParam("param") int warehouseId) {
+		EntityRepository.setUp();
+		
 		boolean districtDeleted = WarehouseRepository.deleteWarehouse(warehouseId);
 		
 		JSONObject response = new JSONObject();
@@ -161,9 +190,13 @@ public class WarehouseService extends EntityService{
 		if(districtDeleted) {
 			response.put("Message", "Deletion of warehouse with id " + warehouseId + " successful!");
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Deletion of warehouse with id " + warehouseId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -181,6 +214,8 @@ public class WarehouseService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response updateWarehouse(String warehouseInformation){
+		EntityRepository.setUp();
+		
 		JSONObject warehouse = new JSONObject(warehouseInformation);
 		
 		Warehouse updatedWarehouse = WarehouseRepository.updateWarehouse(warehouse.getInt("WarehouseId"), warehouse.getString("Location"), warehouse.getString("Owner"));
@@ -190,9 +225,13 @@ public class WarehouseService extends EntityService{
 		if(updatedWarehouse != null) {
 			response.put("Warehouse", WarehouseRepository.warehouseToJSON(updatedWarehouse));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Update of warehouse with id " + warehouse.getInt("WarehouseId") + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -202,6 +241,8 @@ public class WarehouseService extends EntityService{
 	@Path("/createStockForWarehouseId={warehouseId}/itemId={itemId}/quantity={quantity}")
 	@Produces("application/json")
 	public Response createStockForWarehouse(@PathParam("warehouseId") int warehouseId, @PathParam("itemId") int itemId, @PathParam("quantity") int quantity) {
+		EntityRepository.setUp();
+		
 		Warehouse warehouse = StockRepository.createStock(warehouseId, itemId, quantity);
 		Map<Integer, Integer> itemsAndQuantities = WarehouseRepository.getAllItemsOfWarehouse(warehouseId);
 		
@@ -212,14 +253,20 @@ public class WarehouseService extends EntityService{
 			if(itemsAndQuantities.size() > 0) {
 				response = WarehouseRepository.completeWarehouseToJSON(warehouse, itemsAndQuantities);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();	
 			}else {
 				response.put("Message", "Warehouse with id " + warehouseId + " does not have any items!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(500).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Creation of stock failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -236,6 +283,8 @@ public class WarehouseService extends EntityService{
 	@Path("/getWarehouseStockByWarehouseId={param}")
 	@Produces("application/json")
 	public Response getWarehouseStock(@PathParam("param") int warehouseId) {
+		EntityRepository.setUp();
+		
 		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
 		
 		JSONObject response = new JSONObject();
@@ -246,14 +295,20 @@ public class WarehouseService extends EntityService{
 			if(itemsAndQuantities.size() > 0) {
 				response = WarehouseRepository.completeWarehouseToJSON(warehouse, itemsAndQuantities);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "Warehosue with the id " + warehouseId + " does not have any items!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(500).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of warehouse with id " + warehouseId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -270,6 +325,8 @@ public class WarehouseService extends EntityService{
 	@Path("/getAllWarehousesAndTheirStocks")
 	@Produces("application/json")
 	public Response getWarehousesStock() {
+		EntityRepository.setUp();
+		
 		Set<Warehouse> warehouses = WarehouseRepository.getAllWarehouses();
 		
 		Map<Warehouse, Map<Integer, Integer>> completeWarehouses = new HashMap<Warehouse, Map<Integer, Integer>>();
@@ -285,14 +342,20 @@ public class WarehouseService extends EntityService{
 				}else {
 					response.put("Message", "Warehouse with the id " + warehouse.getWarehouseId() + " does not have any items!");
 					
+					EntityRepository.exit();
+					
 					return Response.status(500).entity(response.toString()).build();
 				}
 			}
 		}else {
 			response.put("Message", "Fetching of warehouses failed!");
 			
+			EntityRepository.exit();
+			
 			return Response.status(500).entity(response.toString()).build();
 		}
+		
+		EntityRepository.exit();
 		
 		return Response.status(200).entity(WarehouseRepository.completeWarehousesToJSON(completeWarehouses)).build();
 	}
@@ -308,6 +371,8 @@ public class WarehouseService extends EntityService{
 	@Path("/deleteStockByWarehouseId={param}")
 	@Produces("application/json")
 	public Response deleteStock(@PathParam("param") int warehouseId) {
+		EntityRepository.setUp();
+		
 		boolean stockDeleted = StockRepository.deleteStock(warehouseId);
 		
 		JSONObject response = new JSONObject();
@@ -315,9 +380,13 @@ public class WarehouseService extends EntityService{
 		if(stockDeleted) {
 			response.put("Message", "Deletion of stock of warehouse with id " + warehouseId + " successful!");
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Deletion of stock of warehouse with id " + warehouseId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -334,6 +403,8 @@ public class WarehouseService extends EntityService{
 	@Path("/updateStockByWarehouseId={warehouse}/itemId={item}/updateType={type}/quantity={quantity}")
 	@Produces("application/json")
 	public Response updateWarehouseStock(@PathParam("warehouse") int warehouseId, @PathParam("item") int itemId, @PathParam("type") String updateType, @PathParam("quantity") int quantity){		
+		EntityRepository.setUp();
+		
 		Warehouse warehouse = StockRepository.updateStock(warehouseId, itemId, updateType, quantity);
 		
 		JSONObject response = new JSONObject();
@@ -345,14 +416,20 @@ public class WarehouseService extends EntityService{
 			if(itemsAndQuantities.size() > 0) {
 				response = WarehouseRepository.completeWarehouseToJSON(warehouse, itemsAndQuantities);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "Warehouse id " + warehouseId + " does not have any items!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(500).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Update of warehouse with id: " + warehouseId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

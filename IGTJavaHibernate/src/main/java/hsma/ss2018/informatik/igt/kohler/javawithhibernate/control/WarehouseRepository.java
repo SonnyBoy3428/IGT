@@ -102,7 +102,7 @@ public class WarehouseRepository extends EntityRepository{
 			
 			session.beginTransaction();
 			
-			List<Warehouse> warehousesList = session.createQuery("from WAREHOUSE").getResultList();
+			List<Warehouse> warehousesList = session.createQuery("FROM hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse").getResultList();
 			
 			session.getTransaction().commit();
 			

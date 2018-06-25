@@ -19,7 +19,7 @@ public class Order implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int orderId;
 	
-	@Column(name = "OrderDate", length = 10, nullable = false)
+	@Column(name = "OrderDate", length = 10)
 	private String orderDate;
 	
 	@Column(name = "OrderCarriedOut")

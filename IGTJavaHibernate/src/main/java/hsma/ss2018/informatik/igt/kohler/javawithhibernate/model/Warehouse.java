@@ -19,10 +19,10 @@ public class Warehouse implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int warehouseId;
 	
-	@Column(name = "Location", length = 50, nullable = false)
+	@Column(name = "Location", length = 50)
 	private String location;
 	
-	@Column(name = "Owner", length = 60, nullable = false)
+	@Column(name = "Owner", length = 60)
 	private String owner;
 	
 	@OneToMany(mappedBy = "warehouse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

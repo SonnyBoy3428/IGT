@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import org.json.JSONObject;
 
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.DistrictRepository;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.EntityRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 
@@ -26,7 +27,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
  *
  */
 @Path("/districtService")
-public class DistrictService extends EntityService{
+public class DistrictService{
 	/**
 	 * Receives a POST request to create a district. The district information is located in the request body.
 	 * 
@@ -39,6 +40,8 @@ public class DistrictService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response createDistrict(String districtInformation){
+		EntityRepository.setUp();
+		
 		JSONObject newDistrict = new JSONObject(districtInformation);
 		
 		District createdDistrict = DistrictRepository.createDistrict(newDistrict.getString("DistrictName"),newDistrict.getDouble("DistrictSize"), newDistrict.getInt("WarehouseId"));
@@ -48,9 +51,13 @@ public class DistrictService extends EntityService{
 		if(createdDistrict != null) {
 			response.put("District", DistrictRepository.districtToJSON(createdDistrict));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Creation of district failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -67,6 +74,8 @@ public class DistrictService extends EntityService{
 	@Path("/getDistrictById={param}")
 	@Produces("application/json")
 	public Response getDistrictById(@PathParam("param") int districtId) {
+		EntityRepository.setUp();
+		
 		District district = DistrictRepository.getDistrict(districtId);
 		
 		JSONObject response = new JSONObject();
@@ -74,9 +83,13 @@ public class DistrictService extends EntityService{
 		if(district != null) {
 			response.put("District", DistrictRepository.districtToJSON(district));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Fetching of district with id " + districtId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -91,6 +104,8 @@ public class DistrictService extends EntityService{
 	@Path("/getAllDistricts")
 	@Produces("application/json")
 	public Response getAllDistricts() {
+		EntityRepository.setUp();
+		
 		Set<District> districts = DistrictRepository.getAllDistricts();
 		
 		JSONObject response = new JSONObject();
@@ -98,9 +113,13 @@ public class DistrictService extends EntityService{
 		if(districts != null) {
 			response.put("Districts", DistrictRepository.districtsToJSON(districts));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Fetching of districts failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -117,6 +136,8 @@ public class DistrictService extends EntityService{
 	@Path("/getAllDistrictCustomersByDistrictId={param}")
 	@Produces("application/json")
 	public Response getAllDistrictCustomers(@PathParam("param") int districtId) {
+		EntityRepository.setUp();
+		
 		District district = DistrictRepository.getDistrict(districtId);
 		
 		JSONObject response = new JSONObject();
@@ -127,14 +148,20 @@ public class DistrictService extends EntityService{
 			if(customers != null) {
 				response = DistrictRepository.districtAndCustomersToJSON(district, customers);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "District with id " + districtId + " does not have any customers!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of district with id " + districtId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -151,6 +178,8 @@ public class DistrictService extends EntityService{
 	@Path("/deleteDistrictById={param}")
 	@Produces("application/json")
 	public Response deleteDistrict(@PathParam("param") int districtId) {
+		EntityRepository.setUp();
+		
 		boolean districtDeleted = DistrictRepository.deleteDistrict(districtId);
 		
 		JSONObject response = new JSONObject();
@@ -158,9 +187,13 @@ public class DistrictService extends EntityService{
 		if(districtDeleted) {
 			response.put("Message", "Deletion of district with id " + districtId + " successful!");
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Deletion of district with id " + districtId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -178,6 +211,8 @@ public class DistrictService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response updateDistrict(String districtInformation){
+		EntityRepository.setUp();
+		
 		JSONObject district = new JSONObject(districtInformation);
 		
 		District updatedDistrict = DistrictRepository.updateDistrict(district.getInt("DistrictId"), district.getString("DistrictName"), district.getDouble("DistrictSize"), district.getInt("WarehouseId"));
@@ -187,9 +222,13 @@ public class DistrictService extends EntityService{
 		if(updatedDistrict != null) {
 			response.put("District", DistrictRepository.districtToJSON(updatedDistrict));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Update of district failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

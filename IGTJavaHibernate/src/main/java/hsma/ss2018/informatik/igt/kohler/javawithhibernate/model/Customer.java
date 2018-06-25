@@ -19,10 +19,10 @@ public class Customer implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int customerId;
 	
-	@Column(name = "FirstName", length = 30, nullable = false)
+	@Column(name = "FirstName", length = 30)
 	private String firstName;
 	
-	@Column(name = "LastName", length = 30, nullable = false)
+	@Column(name = "LastName", length = 30)
 	private String lastName;
 	
 	@Column(name = "Address", length = 50)
@@ -31,7 +31,7 @@ public class Customer implements Serializable{
 	@Column(name = "Telephone", length = 15)
 	private String telephone;
 	
-	@Column(name = "CreditCardNr", length = 12, nullable = false)
+	@Column(name = "CreditCardNr", length = 12)
 	private String creditCardNr;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -47,6 +47,10 @@ public class Customer implements Serializable{
 	
 	public int getCustomerId() {
 		return customerId;
+	}
+	
+	public void setCustomerId(int customerId) {
+		this.customerId = customerId;
 	}
 	
 	public String getFirstName() {

@@ -27,7 +27,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
  *
  */
 @Path("/customerService")
-public class CustomerService extends EntityService{
+public class CustomerService{
 	/**
 	 * Receives a POST request to create a customer. The customer information is located in the request body.
 	 * 
@@ -83,9 +83,13 @@ public class CustomerService extends EntityService{
 		if(customer != null) {
 			response.put("Customer", CustomerRepository.customerToJSON(customer));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -109,9 +113,13 @@ public class CustomerService extends EntityService{
 		if(customers != null) {
 			response.put("Customers", CustomerRepository.customersToJSON(customers));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Fetching of customers failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -140,14 +148,20 @@ public class CustomerService extends EntityService{
 			if(orders != null) {
 				response = CustomerRepository.customerAndOrdersToJSON(customer, orders);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "Customer with id " + customerId + " does not have any orders!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -176,14 +190,20 @@ public class CustomerService extends EntityService{
 			if(orders != null) {
 				response = CustomerRepository.customerAndOrdersToJSON(customer, orders);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "Customer with id " + customerId + " does not have any new orders!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -212,14 +232,20 @@ public class CustomerService extends EntityService{
 			if(orders != null) {
 				response = CustomerRepository.customerAndOrdersToJSON(customer, orders);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "Customer with id " + customerId + " does not have an order history!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(200).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of customer with id " + customerId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -245,9 +271,13 @@ public class CustomerService extends EntityService{
 		if(customerDeleted) {
 			response.put("Message", "Deletion of customer with id " + customerId + " successful!");
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Deletion of customer with id " + customerId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -276,9 +306,13 @@ public class CustomerService extends EntityService{
 		if(updatedCustomer != null) {
 			response.put("Customer", CustomerRepository.customerToJSON(updatedCustomer));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Update of customer with id " + customer.getInt("CustomerId") + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.EntityRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.OrderRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.OrderlineRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
@@ -32,7 +33,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
  *
  */
 @Path("/orderAndOrderlineService")
-public class OrderAndOrderlineService extends EntityService{
+public class OrderAndOrderlineService{
 	/**
 	 * Receives a POST request to create an order. The order information is located in the request body.
 	 * Even though we are dealing with orderlines a user would expect an order.
@@ -46,6 +47,8 @@ public class OrderAndOrderlineService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response createCompleteOrder(@PathParam("param") int customerId, String orderlineInformation){
+		EntityRepository.setUp();
+		
 		JSONObject newOrderline = new JSONObject(orderlineInformation);
 		JSONArray items = newOrderline.getJSONArray("ItemsAndQuantities");
 		
@@ -67,9 +70,13 @@ public class OrderAndOrderlineService extends EntityService{
 		if(createdOrder != null) {
 			response = OrderRepository.completeOrderToJSON(createdOrder, itemsAndQuantities);
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Creation of order failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -87,6 +94,8 @@ public class OrderAndOrderlineService extends EntityService{
 	@Path("/getCompleteOrderById={param}")
 	@Produces("application/json")
 	public Response getCompleteOrderById(@PathParam("param") int orderId) {
+		EntityRepository.setUp();
+		
 		Order order = OrderRepository.getOrder(orderId);
 		
 		JSONObject response = new JSONObject();
@@ -97,14 +106,20 @@ public class OrderAndOrderlineService extends EntityService{
 			if(itemsAndQuantities.size() > 0) {
 				response = OrderRepository.completeOrderToJSON(order, itemsAndQuantities);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "Order with the id " + orderId + " does not have any items!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(500).entity(response.toString()).build();
 			}
 		}else {
 			response.put("Message", "Fetching of order with id " + orderId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -119,6 +134,8 @@ public class OrderAndOrderlineService extends EntityService{
 	@Path("/getAllOrdersOfCustomer={param}")
 	@Produces("application/json")
 	public Response getAllOrdersOfCustomer(@PathParam("param") int customerId) {
+		EntityRepository.setUp();
+		
 		Set<Order> orders = OrderRepository.getAllOrdersOfCustomer(customerId);
 		
 		Map<Order, Map<Integer, Integer>> completeOrders = new HashMap<Order, Map<Integer, Integer>>();
@@ -134,14 +151,20 @@ public class OrderAndOrderlineService extends EntityService{
 				}else {
 					response.put("Message", "The order with the id " + order.getOrderId() + " does not have any items!");
 					
+					EntityRepository.exit();
+					
 					return Response.status(500).entity(response.toString()).build();
 				}
 			}
 		}else {
 			response.put("Message", "The customer with the id " + customerId + " does not have any orders!");
 			
+			EntityRepository.exit();
+			
 			return Response.status(500).entity(response.toString()).build();
 		}
+		
+		EntityRepository.exit();
 		
 		return Response.status(200).entity(OrderRepository.completeOrdersToJSON(completeOrders)).build();
 	}
@@ -157,6 +180,8 @@ public class OrderAndOrderlineService extends EntityService{
 	@Path("/deleteOrderById={param}")
 	@Produces("application/json")
 	public Response deleteOrder(@PathParam("param") int orderId) {
+		EntityRepository.setUp();
+		
 		boolean orderlineDeleted = OrderlineRepository.deleteOrderline(orderId);
 		
 		JSONObject response = new JSONObject();
@@ -164,9 +189,13 @@ public class OrderAndOrderlineService extends EntityService{
 		if(orderlineDeleted) {
 			response.put("Message", "Deletion of order with id " + orderId + " successful!");
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Deletion of order with id " + orderId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -187,6 +216,8 @@ public class OrderAndOrderlineService extends EntityService{
 	@Path("/updateOrderById={order}/item={item}/updateType={type}/quantity={quantity}")
 	@Produces("application/json")
 	public Response updateOrder(@PathParam("order") int orderId, @PathParam("item") int itemId, @PathParam("type") String updateType, @PathParam("quantity") int quantity){		
+		EntityRepository.setUp();
+		
 		Order order = OrderlineRepository.updateOrderline(orderId, itemId, updateType, quantity);
 		
 		JSONObject response = new JSONObject();
@@ -197,14 +228,20 @@ public class OrderAndOrderlineService extends EntityService{
 			if(itemsAndQuantities.size() > 0) {
 				response = OrderRepository.completeOrderToJSON(order, itemsAndQuantities);
 				
+				EntityRepository.exit();
+				
 				return Response.status(200).entity(response.toString()).build();
 			}else {
 				response.put("Message", "Order with id " + orderId + " does not have any items!");
+				
+				EntityRepository.exit();
 				
 				return Response.status(500).entity(response.toString()).build();
 			}	
 		}else {
 			response.put("Message", "Update of order with id " + orderId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

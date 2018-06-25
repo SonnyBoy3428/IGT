@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.EntityRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.control.ItemRepository;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 
@@ -25,7 +26,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
  *
  */
 @Path("/itemService")
-public class ItemService extends EntityService{	
+public class ItemService{	
 	/**
 	 * Receives a POST request to create a item. The item information is located in the request body.
 	 * 
@@ -38,6 +39,8 @@ public class ItemService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response createItem(String itemInformation) {
+		EntityRepository.setUp();
+		
 		JSONObject newItem = new JSONObject(itemInformation);
 		
 		Item createdItem = ItemRepository.createItem(newItem.getString("ItemName"), newItem.getDouble("Price"));
@@ -47,9 +50,13 @@ public class ItemService extends EntityService{
 		if(createdItem != null) {
 			response.put("Item", ItemRepository.itemToJSON(createdItem));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Creation of item failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -66,6 +73,8 @@ public class ItemService extends EntityService{
 	@Path("/getItemById={param}")
 	@Produces("application/json")
 	public Response getItemById(@PathParam("param") int itemId) {
+		EntityRepository.setUp();
+		
 		Item item = ItemRepository.getItem(itemId);
 		
 		JSONObject response = new JSONObject();
@@ -73,9 +82,13 @@ public class ItemService extends EntityService{
 		if(item != null) {
 			response.put("Item", ItemRepository.itemToJSON(item));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Fetching of item with id " + itemId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -90,6 +103,8 @@ public class ItemService extends EntityService{
 	@Path("/getAllItems")
 	@Produces("application/json")
 	public Response getAllItems() {
+		EntityRepository.setUp();
+		
 		Set<Item> items = ItemRepository.getAllItems();
 		
 		JSONObject response = new JSONObject();
@@ -97,9 +112,13 @@ public class ItemService extends EntityService{
 		if(items != null) {
 			response = new JSONObject().put("Items", ItemRepository.itemsToJSON(items));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Fetching of items failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -116,6 +135,8 @@ public class ItemService extends EntityService{
 	@Path("/deleteItemByItemId={param}")
 	@Produces("application/json")
 	public Response deleteItem(@PathParam("param") int itemId) {
+		EntityRepository.setUp();
+		
 		boolean itemDeleted = ItemRepository.deleteItem(itemId);
 		
 		JSONObject response = new JSONObject();
@@ -123,9 +144,13 @@ public class ItemService extends EntityService{
 		if(itemDeleted) {
 			response.put("Message", "Deletion of item with id " + itemId + " successful!");
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Deletion of item with id " + itemId + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}
@@ -143,6 +168,8 @@ public class ItemService extends EntityService{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
 	public Response updateItem(String itemInformation){
+		EntityRepository.setUp();
+		
 		JSONObject item = new JSONObject(itemInformation);
 		
 		Item updatedItem = ItemRepository.updateItem(item.getInt("ItemId"), item.getString("ItemName"), item.getDouble("Price"));
@@ -152,9 +179,13 @@ public class ItemService extends EntityService{
 		if(updatedItem != null) {
 			response.put("Item", ItemRepository.itemToJSON(updatedItem));
 			
+			EntityRepository.exit();
+			
 			return Response.status(200).entity(response.toString()).build();
 		}else {
 			response.put("Message", "Update of item with id " + item.getInt("ItemId") + " failed!");
+			
+			EntityRepository.exit();
 			
 			return Response.status(500).entity(response.toString()).build();
 		}

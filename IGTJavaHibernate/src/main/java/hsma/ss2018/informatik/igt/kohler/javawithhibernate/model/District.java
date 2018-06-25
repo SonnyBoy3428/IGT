@@ -19,7 +19,7 @@ public class District implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int districtId;
 	
-	@Column(name = "DistrictName", length = 50, nullable = false)
+	@Column(name = "DistrictName", length = 50)
 	private String districtName;
 	
 	@Column(name = "DistrictSize")

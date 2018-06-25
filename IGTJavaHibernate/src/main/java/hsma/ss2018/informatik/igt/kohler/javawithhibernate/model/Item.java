@@ -19,7 +19,7 @@ public class Item implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int itemId;
 	
-	@Column(name = "ItemName", length = 50, nullable = false)
+	@Column(name = "ItemName", length = 50)
 	private String itemName;
 	
 	@Column(name = "Price")
