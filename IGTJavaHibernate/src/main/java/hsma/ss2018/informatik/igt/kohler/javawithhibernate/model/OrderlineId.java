@@ -14,16 +14,14 @@ import javax.persistence.ManyToOne;
 
 @Embeddable
 public class OrderlineId implements Serializable{
-	@ManyToOne
 	private Order order;
-	
-	@ManyToOne
 	private Item item;
 	
 	public OrderlineId() {
 		
 	}
 	
+	@ManyToOne
 	public Order getOrder() {
 		return order;
 	}
@@ -32,6 +30,7 @@ public class OrderlineId implements Serializable{
 		this.order = order;
 	}
 	
+	@ManyToOne
 	public Item getItem() {
 		return item;
 	}

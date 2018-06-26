@@ -1,5 +1,7 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
@@ -37,12 +39,6 @@ public class StockRepository extends EntityRepository{
 				stock.setWarehouse(warehouse);
 				stock.setItem(item);
 				stock.setQuantity(quantity);
-				
-				// The order needs a link to the stock
-				warehouse.getStock().add(stock);
-				
-				// The item needs a link to the stock.
-				item.getStock().add(stock);
 			
 				Session session = null;
 				
@@ -51,14 +47,6 @@ public class StockRepository extends EntityRepository{
 					
 					session.beginTransaction();
 					session.save(stock);
-					session.getTransaction().commit();
-					
-					session.beginTransaction();
-					session.update(warehouse);
-					session.getTransaction().commit();
-					
-					session.beginTransaction();
-					session.update(item);
 					session.getTransaction().commit();
 				}catch(Exception ex) {
 					// TODO
@@ -90,21 +78,67 @@ public class StockRepository extends EntityRepository{
 	}
 	
 	/**
+	 * Gets the stock belonging to the warehouse and the item.
+	 * 
+	 * @param warehouseId Id of the warehouse associated with the stock.
+	 * @param itemId Id of the item associated with the stock.
+	 * 
+	 * @return The stock of the warehouse.
+	 */
+	public static Stock getStock(int warehouseId, int itemId){
+		Stock stock = null;
+		
+		Set<Stock> stocks = getStocks(warehouseId);
+		
+		for(Stock fetchedStock : stocks) {
+			if(fetchedStock.getItem().getItemId() == itemId) {
+				stock = fetchedStock;
+			}
+		}
+		
+		return stock;
+	}
+	
+	/**
 	 * Gets the stocks belonging to the warehouse Id.
 	 * 
 	 * @param warehouseId Id of the order associated with the warehouse.
 	 * 
 	 * @return The stocks of the warehouse.
 	 */
+	@SuppressWarnings("unchecked")
 	public static Set<Stock> getStocks(int warehouseId){
-		Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
-		Set<Stock> stock = null;
-
-		if(warehouse != null) {
-			stock = warehouse.getStock();
+		Set<Stock> stocks = new HashSet<Stock>();
+		
+		Session session = null;
+		
+		try {
+			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			
+			List<Stock> stockList = session.createQuery("FROM hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock").getResultList();
+			
+			for(Stock stock : stockList) {
+				if(stock.getWarehouse().getWarehouseId() == warehouseId) {
+					stocks.add(stock);
+				}
+			}
+			
+			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();	
+			}
 		}
-
-		return stock;
+		
+		if(stocks.size() <= 0) {
+			stocks = null;
+		}
+		
+		return stocks;
 	}
 	
 	/**
@@ -127,7 +161,7 @@ public class StockRepository extends EntityRepository{
 		
 			Item item = ItemRepository.getItem(itemId);
 			
-			Set<Stock> stock = warehouse.getStock();
+			Set<Stock> stock = getStocks(warehouseId);
 			
 			boolean itemExists = false;
 				
@@ -140,37 +174,15 @@ public class StockRepository extends EntityRepository{
 					switch(updateType) {
 						case "Update":
 							stockElement.setQuantity(quantity);
-							warehouse.setStock(stock);
-							item.setStock(stock);
 					
 							session.beginTransaction();
 							session.update(stockElement);
 							session.getTransaction().commit();
-						
-							session.beginTransaction();
-							session.update(warehouse);
-							session.getTransaction().commit();
-								
-							session.beginTransaction();
-							session.update(item);
-							session.getTransaction().commit();
 								
 							break;
 						case "Delete":	
-							stock.remove(stockElement);
-							warehouse.setStock(stock);
-							item.setStock(stock);
-								
 							session.beginTransaction();
 							session.delete(stockElement);
-							session.getTransaction().commit();
-								
-							session.beginTransaction();
-							session.update(warehouse);
-							session.getTransaction().commit();
-								
-							session.beginTransaction();
-							session.update(item);
 							session.getTransaction().commit();
 								
 							break;
@@ -184,23 +196,9 @@ public class StockRepository extends EntityRepository{
 				newStock.setWarehouse(warehouse);
 				newStock.setItem(item);
 				newStock.setQuantity(quantity);
-					
-				// The warehouse needs a link to the stock.
-				warehouse.getStock().add(newStock);
-					
-				// The item needs a link to the stock.
-				item.getStock().add(newStock);
 						
 				session.beginTransaction();
 				session.save(newStock);
-				session.getTransaction().commit();
-					
-				session.beginTransaction();
-				session.update(warehouse);
-				session.getTransaction().commit();
-						
-				session.beginTransaction();
-				session.update(item);
 				session.getTransaction().commit();
 			}
 		}catch(Exception ex) {
@@ -233,26 +231,12 @@ public class StockRepository extends EntityRepository{
 		
 		boolean stockDeleted = true;
 		
-		try {
-			Warehouse warehouse = WarehouseRepository.getWarehouse(warehouseId);
-			
+		try {			
 			session = sessionFactory.openSession();
 			
-			stock = warehouse.getStock();
+			stock = getStocks(warehouseId);
 			
-			warehouse.setStock(null);
-			
-			for(Stock stockElement : stock) {
-				Item item = stockElement.getItem();
-				Set<Stock> itemStock = item.getStock();
-				
-				itemStock.remove(stockElement);
-				item.setStock(itemStock);
-				
-				session.beginTransaction();
-				session.update(item);
-				session.getTransaction().commit();
-				
+			for(Stock stockElement : stock) {				
 				session.beginTransaction();
 				session.delete(stockElement);
 				session.getTransaction().commit();

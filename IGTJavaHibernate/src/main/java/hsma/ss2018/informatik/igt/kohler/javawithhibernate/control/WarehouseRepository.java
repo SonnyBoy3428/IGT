@@ -208,6 +208,46 @@ public class WarehouseRepository extends EntityRepository{
 	}
 	
 	/**
+	 * Gets all the warehouse's items.
+	 * 
+	 * @return All existing warehouse items.
+	 */
+	@SuppressWarnings("unchecked")
+	public static Set<Item> getAllWarehouseItems(int warehouseId) {
+		Set<Item> items = new HashSet<Item>();
+		
+		Session session = null;
+		
+		try {
+			session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			
+			List<Stock> stockList = session.createQuery("FROM hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock").getResultList();
+			
+			for(Stock stock : stockList) {
+				if(stock.getWarehouse().getWarehouseId() == warehouseId) {
+					items.add(stock.getItem());
+				}
+			}
+			
+			session.getTransaction().commit();
+		}catch(Exception ex) {
+			// TODO
+		}finally {
+			if(session != null) {
+				session.close();	
+			}
+		}
+		
+		if(items.size() <= 0) {
+			items = null;
+		}
+		
+		return items;
+	}
+	
+	/**
 	 * Gets all the items belonging to the warehouse.
 	 * 
 	 * @param warehouseId Id of the warehouse from which the items should be fetched.

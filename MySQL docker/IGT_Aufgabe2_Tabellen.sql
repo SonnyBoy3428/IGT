@@ -10,8 +10,8 @@ create table if not exists CUSTOMER_ORDER(OrderId int not null auto_increment, O
 create table if not exists ITEM(ItemId int not null auto_increment, ItemName varchar(50), Price double default 0.0, primary key(ItemId));
 
 /*Many-to-Many Relationships*/
-create table if not exists ORDERLINE(ItemId int not null, OrderId int not null, Quantity int default 0, primary key(ItemId, OrderId), foreign key(ItemId) references ITEM(ItemId), foreign key(OrderId) references CUSTOMER_ORDER(OrderId));
-create table if not exists STOCK(ItemId int not null, WarehouseId int not null, Quantity int default 0, primary key(ItemId, WarehouseId), foreign key(ItemId) references ITEM(ItemId), foreign key(WarehouseId) references WAREHOUSE(WarehouseId));
+create table if not exists ORDERLINE(ItemId int not null, OrderId int not null, Quantity int default 0, key stock_Item (ItemId), key stock_Order (OrderId), foreign key(ItemId) references ITEM(ItemId), foreign key(OrderId) references CUSTOMER_ORDER(OrderId));
+create table if not exists STOCK(ItemId int not null, WarehouseId int not null, Quantity int default 0, key stock_Item (ItemId), key stock_Warehouse (WarehouseId), foreign key(ItemId) references ITEM(ItemId), foreign key(WarehouseId) references WAREHOUSE(WarehouseId));
 
 /*Views on the orders */
 create view HISTORY as select OrderId, OrderDate, CustomerId from CUSTOMER_ORDER where OrderDate like '%2018%';

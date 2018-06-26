@@ -1,6 +1,7 @@
 package hsma.ss2018.informatik.igt.kohler.javawithhibernate.control;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
 
 /**
  * This class functions as the API with which one can deal with orderlines.
@@ -66,12 +68,6 @@ public class OrderlineRepository extends EntityRepository {
 						orderline.setOrder(newOrder);
 						orderline.setItem(item);
 						orderline.setQuantity(itemsAndQuantity.get(item.getItemId()));
-						
-						// The order needs a link to the orderline and the customer
-						newOrder.getOrderline().add(orderline);
-						
-						// The item needs a link to the orderline.
-						item.getOrderline().add(orderline);
 					
 						Session session = null;
 						
@@ -80,10 +76,6 @@ public class OrderlineRepository extends EntityRepository {
 							
 							session.beginTransaction();
 							session.save(orderline);
-							session.getTransaction().commit();
-							
-							session.beginTransaction();
-							session.update(item);
 							session.getTransaction().commit();
 						}catch(Exception ex) {
 							// TODO
@@ -128,14 +120,37 @@ public class OrderlineRepository extends EntityRepository {
 	}
 	
 	/**
+	 * Gets the orderline belonging to the order and the item.
+	 * 
+	 * @param orderId Id of the order associated with the orderline.
+	 * @param itemId Id of the item associated with the orderline.
+	 * 
+	 * @return The orderline of the order.
+	 */
+	public static Orderline getOrderline(int orderId, int itemId){
+		Orderline orderline = null;
+		
+		Set<Orderline> orderlines = getOrderlines(orderId);
+		
+		for(Orderline fetchedOrderline : orderlines) {
+			if(fetchedOrderline.getItem().getItemId() == itemId) {
+				orderline = fetchedOrderline;
+			}
+		}
+		
+		return orderline;
+	}
+	
+	/**
 	 * Gets the orderline belonging to the order Id.
 	 * 
 	 * @param orderId Id of the order associated with the orderline.
 	 * 
 	 * @return The orderline of the order.
 	 */
+	@SuppressWarnings("unchecked")
 	public static Set<Orderline> getOrderlines(int orderId){
-		Set<Orderline> orderline = null;
+		Set<Orderline> orderlines = new HashSet<Orderline>();
 		Session session = null;
 		
 		try {
@@ -143,20 +158,28 @@ public class OrderlineRepository extends EntityRepository {
 			
 			session.beginTransaction();
 			
-			Order order = session.get(Order.class, orderId);
+			List<Orderline> orderlineList = session.createQuery("FROM hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline").getResultList();
+			
+			for(Orderline fetchedOrderline : orderlineList) {
+				if(fetchedOrderline.getOrder().getOrderId() == orderId) {
+					orderlines.add(fetchedOrderline);
+				}
+			}
 			
 			session.getTransaction().commit();
-			
-			orderline = order.getOrderline();
 		}catch(Exception ex) {
 			// TODO
 		}finally {
 			if(session != null) {
-				session.close();
+				session.close();	
 			}
 		}
 		
-		return orderline;
+		if(orderlines.size() <= 0) {
+			orderlines = null;
+		}
+		
+		return orderlines;
 	}
 	
 	/**
@@ -178,7 +201,7 @@ public class OrderlineRepository extends EntityRepository {
 			Order order = OrderRepository.getOrder(orderId);
 			Item item = ItemRepository.getItem(itemId);
 			
-			Set<Orderline> orderline = order.getOrderline();
+			Set<Orderline> orderline = getOrderlines(orderId);
 			
 			double totalCost = 0.0f;
 			int oldQuantity = 0;
@@ -199,13 +222,10 @@ public class OrderlineRepository extends EntityRepository {
 							double oldPrice = item.getPrice() * oldQuantity;
 							orderlineElement.setQuantity(quantity);
 								
-							order.setOrderline(orderline);
 							totalCost = order.getTotalCost();
 							totalCost -= oldPrice;
 							totalCost += (item.getPrice() * quantity);
 							order.setTotalCost(totalCost);
-								
-							item.setOrderline(orderline);
 						
 							session.beginTransaction();
 							session.update(orderlineElement);
@@ -215,21 +235,13 @@ public class OrderlineRepository extends EntityRepository {
 							session.update(order);
 							session.getTransaction().commit();
 								
-							session.beginTransaction();
-							session.update(item);
-							session.getTransaction().commit();
-								
 							break;
 						case "Delete":	
 							oldQuantity = orderlineElement.getQuantity();
-							orderline.remove(orderlineElement);
 								
-							order.setOrderline(orderline);
 							totalCost = order.getTotalCost();
 							totalCost -= (item.getPrice() * oldQuantity);
 							order.setTotalCost(totalCost);
-								
-							item.setOrderline(orderline);
 								
 							session.beginTransaction();
 							session.delete(orderlineElement);
@@ -237,10 +249,6 @@ public class OrderlineRepository extends EntityRepository {
 							
 							session.beginTransaction();
 							session.update(order);
-							session.getTransaction().commit();
-								
-							session.beginTransaction();
-							session.update(item);
 							session.getTransaction().commit();
 								
 							break;
@@ -256,13 +264,9 @@ public class OrderlineRepository extends EntityRepository {
 				newOrderline.setQuantity(quantity);
 					
 				// The order needs a link to the orderline.
-				order.getOrderline().add(newOrderline);
 				totalCost = order.getTotalCost();
 				totalCost += (item.getPrice() * quantity);
 				order.setTotalCost(totalCost);
-					
-				// The item needs a link to the orderline.
-				item.getOrderline().add(newOrderline);
 					
 				session.beginTransaction();
 				session.save(newOrderline);
@@ -270,10 +274,6 @@ public class OrderlineRepository extends EntityRepository {
 					
 				session.beginTransaction();
 				session.update(order);
-				session.getTransaction().commit();
-						
-				session.beginTransaction();
-				session.update(item);
 				session.getTransaction().commit();
 			}
 		}catch(Exception ex) {
@@ -309,32 +309,16 @@ public class OrderlineRepository extends EntityRepository {
 		
 		try {
 			Order order = OrderRepository.getOrder(orderId);
-			Set<Orderline> orderline = order.getOrderline();
-			
-			order.setCustomer(null);
-			order.setOrderline(null);
+			Set<Orderline> orderline = getOrderlines(orderId);
 			
 			session = sessionFactory.openSession();	
 			
-			session.beginTransaction();
-			session.update(order);
-			session.getTransaction().commit();
-			
-			for(Orderline orderlineElement : orderline) {
-				Item item = orderlineElement.getItem();
-				Set<Orderline> itemOrderline = item.getOrderline();
-				
-				itemOrderline.remove(orderlineElement);
-				item.setOrderline(itemOrderline);
-				
-				session.beginTransaction();
-				session.update(item);
-				session.getTransaction().commit();
-				
+			for(Orderline orderlineElement : orderline) {				
 				session.beginTransaction();
 				session.delete(orderlineElement);
 				session.getTransaction().commit();
 			}
+			
 			OrderRepository.deleteOrder(orderId);
 		}catch(Exception ex) {
 			// TODO

@@ -14,27 +14,18 @@ import java.util.Set;
 @Entity
 @Table(name = "DISTRICT")
 public class District implements Serializable{
-	@Id
-	@Column(name = "DistrictId", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int districtId;
-	
-	@Column(name = "DistrictName", length = 50)
 	private String districtName;
-	
-	@Column(name = "DistrictSize")
 	private double districtSize;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "WarehouseId")
 	private Warehouse warehouse;
-	
-	@OneToMany(mappedBy = "district", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Customer> customers;
 	
 	public District() {
 	}
 	
+	@Id
+	@Column(name = "DistrictId", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getDistrictId() {
 		return districtId;
 	}
@@ -43,6 +34,7 @@ public class District implements Serializable{
 		this.districtId = districtId;
 	}
 	
+	@Column(name = "DistrictName", length = 50)
 	public String getDistrictName() {
 		return districtName;
 	}
@@ -51,6 +43,7 @@ public class District implements Serializable{
 		this.districtName = districtName;
 	}
 	
+	@Column(name = "DistrictSize")
 	public double getDistrictSize() {
 		return districtSize;
 	}
@@ -59,6 +52,8 @@ public class District implements Serializable{
 		this.districtSize = districtSize;
 	}
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "WarehouseId")
 	public Warehouse getWarehouse() {
 		return warehouse;
 	}
@@ -67,6 +62,7 @@ public class District implements Serializable{
 		this.warehouse = warehouse;
 	}
 	
+	@OneToMany(mappedBy = "district", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	public Set<Customer> getCustomers(){
 		return customers;
 	}

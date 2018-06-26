@@ -234,20 +234,6 @@ public class CustomerRepository extends EntityRepository{
 			
 			Customer customer = getCustomer(customerId);
 			
-			// Remove the customer from the District
-			District district = customer.getDistrict();
-			district.getCustomers().remove(customer);
-			
-			session.beginTransaction();
-			session.update(district);
-			session.getTransaction().commit();
-			
-			// Delete all the orders belonging to the customer
-			Set<Order> orders = customer.getOrders();
-			for(Order order : orders) {
-				OrderRepository.deleteOrder(order.getOrderId());
-			}
-			
 			session.beginTransaction();
 			
 			session.delete(customer);

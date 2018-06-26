@@ -16,6 +16,8 @@
     	<mapping class="hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order"/>
     	<mapping class="hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item"/>
     	<mapping class="hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock"/>
+    	<mapping class="hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.StockId"/>
     	<mapping class="hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline"/>
+    	<mapping class="hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.OrderlineId"/>
     </session-factory>
 </hibernate-configuration>

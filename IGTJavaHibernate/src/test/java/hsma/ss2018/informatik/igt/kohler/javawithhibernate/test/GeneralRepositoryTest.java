@@ -24,6 +24,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Orderline;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Stock;
+import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.StockId;
 import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Warehouse;
 
 public class GeneralRepositoryTest {
@@ -228,7 +229,7 @@ public class GeneralRepositoryTest {
         assertEquals("District could not be deleted!", null, gottenDistrictAfterDeletion11);
         
         // UPDATE DISTRICT
-        District updatedDistrict = DistrictRepository.updateDistrict(gottenDistrict12.getDistrictId(), "Tintenstadt", 130.0, 1);
+        District updatedDistrict = DistrictRepository.updateDistrict(gottenDistrict12.getDistrictId(), "Tintenstadt", 130.0, gottenWarehouse1.getWarehouseId());
         
         assertNotEquals("The district was not updated!", district12.getDistrictName(), updatedDistrict.getDistrictName());
         assertEquals("The district was not updated!", "Tintenstadt", updatedDistrict.getDistrictName());
@@ -243,9 +244,9 @@ public class GeneralRepositoryTest {
         Set<District> gottenDistrictsWarehouse2 = WarehouseRepository.getWarehouseDistricts(gottenWarehouse2.getWarehouseId());
         Set<District> gottenDistrictsWarehouse4 = WarehouseRepository.getWarehouseDistricts(gottenWarehouse4.getWarehouseId());
         
-        assertEquals("Not all disrticts are in the set!", 5, gottenDistrictsWarehouse1.size());
+        assertEquals("Not all disrticts are in the set!", 6, gottenDistrictsWarehouse1.size());
         assertEquals("Not all disrticts are in the set!", 5, gottenDistrictsWarehouse2.size());
-        assertEquals("Not all disrticts are in the set!", 1, gottenDistrictsWarehouse4.size());
+        assertEquals("Not all disrticts are in the set!", 0, gottenDistrictsWarehouse4.size());
         
         // ITEMS 
         Item item1 = new Item();
@@ -310,15 +311,15 @@ public class GeneralRepositoryTest {
         assertEquals("Item could not be deleted!", null, gottenItemAfterDeletion4);
         
         // UPDATE ITEM
-        Item updatedItem = ItemRepository.updateItem(gottenItem5.getItemId(), "Headset", 60.0);
+        Item updatedItem = ItemRepository.updateItem(gottenItem5.getItemId(), "Cable", 60.0);
         
         assertNotEquals("The item was not updated!", item5.getItemName(), updatedItem.getItemName());
-        assertEquals("The item was not updated!", "Headset", updatedItem.getItemName());
+        assertEquals("The item was not updated!", "Cable", updatedItem.getItemName());
         
         Item gottenItemAfterUpdate5 = ItemRepository.getItem(createdItem5.getItemId());
         
-        assertEquals("The item was not updated!", item5.getItemName(), gottenItemAfterUpdate5.getItemName());
-        assertEquals("The item was not updated!", "Headset", gottenItemAfterUpdate5.getItemName());
+        assertNotEquals("The item was not updated!", item5.getItemName(), gottenItemAfterUpdate5.getItemName());
+        assertEquals("The item was not updated!", "Cable", gottenItemAfterUpdate5.getItemName());
         
         // STOCK
         Stock stock1 = new Stock();
@@ -390,38 +391,41 @@ public class GeneralRepositoryTest {
         StockRepository.createStock(gottenWarehouse2.getWarehouseId(), gottenItem2.getItemId(), stock6.getQuantity());
         StockRepository.createStock(gottenWarehouse2.getWarehouseId(), gottenItem3.getItemId(), stock7.getQuantity());
         Warehouse createdWarehouseStock2 = StockRepository.createStock(gottenWarehouse2.getWarehouseId(), gottenItem5.getItemId(), stock8.getQuantity());
-        StockRepository.createStock(gottenWarehouse3.getWarehouseId(), gottenItem1.getItemId(), stock9.getQuantity());
-        StockRepository.createStock(gottenWarehouse3.getWarehouseId(), gottenItem2.getItemId(), stock10.getQuantity());
-        StockRepository.createStock(gottenWarehouse3.getWarehouseId(), gottenItem3.getItemId(), stock11.getQuantity());
-        Warehouse createdWarehouseStock3 = StockRepository.createStock(gottenWarehouse3.getWarehouseId(), gottenItem5.getItemId(), stock12.getQuantity());
+        StockRepository.createStock(gottenWarehouse4.getWarehouseId(), gottenItem1.getItemId(), stock9.getQuantity());
+        StockRepository.createStock(gottenWarehouse4.getWarehouseId(), gottenItem2.getItemId(), stock10.getQuantity());
+        StockRepository.createStock(gottenWarehouse4.getWarehouseId(), gottenItem3.getItemId(), stock11.getQuantity());
+        Warehouse createdWarehouseStock4 = StockRepository.createStock(gottenWarehouse4.getWarehouseId(), gottenItem5.getItemId(), stock12.getQuantity());
         
-        assertEquals("The stocks are not equal!", 4, createdWarehouseStock1.getStock().size());
-        assertEquals("The stocks are not equal!", 4, createdWarehouseStock2.getStock().size());
-        assertEquals("The stocks are not equal!", 4, createdWarehouseStock3.getStock().size());
+        assertEquals("The stocks are not equal!", 4, WarehouseRepository.getAllWarehouseItems(createdWarehouseStock1.getWarehouseId()).size());
+        assertEquals("The stocks are not equal!", 4, WarehouseRepository.getAllWarehouseItems(createdWarehouseStock2.getWarehouseId()).size());
+        assertEquals("The stocks are not equal!", 4, WarehouseRepository.getAllWarehouseItems(createdWarehouseStock4.getWarehouseId()).size());
         
         // GET STOCKS
         Set<Stock> stocks1 = StockRepository.getStocks(gottenWarehouse1.getWarehouseId());
         Set<Stock> stocks2 = StockRepository.getStocks(gottenWarehouse2.getWarehouseId());
-        Set<Stock> stocks3 = StockRepository.getStocks(gottenWarehouse3.getWarehouseId());
+        Set<Stock> stocks3 = StockRepository.getStocks(gottenWarehouse4.getWarehouseId());
         
         assertEquals("The stocks are not equal!", 4, stocks1.size());
         assertEquals("The stocks are not equal!", 4, stocks2.size());
         assertEquals("The stocks are not equal!", 4, stocks3.size());
         
         //UPDATE STOCKS
-        Warehouse updatedWarehouseStockAfterDeletion = StockRepository.updateStock(gottenWarehouse3.getWarehouseId(), gottenItem1.getItemId(), "Delete", 0);
-        assertEquals("The stocks are not updated!", 3, updatedWarehouseStockAfterDeletion.getStock().size());
+        Warehouse updatedWarehouseStockAfterDeletion = StockRepository.updateStock(gottenWarehouse4.getWarehouseId(), gottenItem1.getItemId(), "Delete", 0);
+        assertEquals("The stocks are not updated!", 3, WarehouseRepository.getAllWarehouseItems(updatedWarehouseStockAfterDeletion.getWarehouseId()).size());
         
-        Warehouse updatedWarehouseStockAfterInsertion = StockRepository.updateStock(gottenWarehouse3.getWarehouseId(), gottenItem1.getItemId(), "Insert", 0);
-        assertEquals("The stocks are not updated!", 4, updatedWarehouseStockAfterInsertion.getStock().size());
+        Warehouse updatedWarehouseStockAfterInsertion = StockRepository.updateStock(gottenWarehouse4.getWarehouseId(), gottenItem1.getItemId(), "Insert", 0);
+        assertEquals("The stocks are not updated!", 4, WarehouseRepository.getAllWarehouseItems(updatedWarehouseStockAfterInsertion.getWarehouseId()).size());
         
-        Warehouse updatedWarehouseStockAfterUpdate = StockRepository.updateStock(gottenWarehouse3.getWarehouseId(), gottenItem1.getItemId(), "Update", 20);
-        assertEquals("The stocks are not updated!", true, updatedWarehouseStockAfterUpdate.getStock().contains(gottenItem1));
+        Stock updatedStock = StockRepository.getStock(gottenWarehouse4.getWarehouseId(), gottenItem1.getItemId());
+        assertEquals("The stock is not equal!", 0, updatedStock.getQuantity());
+        StockRepository.updateStock(gottenWarehouse4.getWarehouseId(), gottenItem1.getItemId(), "Update", 20);
+        updatedStock = StockRepository.getStock(gottenWarehouse4.getWarehouseId(), gottenItem1.getItemId());
+        assertEquals("The stock is not updated!", 20, updatedStock.getQuantity());
         
         // DELETE STOCKS
-        boolean deletedStockOfWarehouse3 = StockRepository.deleteStock(gottenWarehouse3.getWarehouseId());
+        boolean deletedStockOfWarehouse4 = StockRepository.deleteStock(gottenWarehouse4.getWarehouseId());
         
-        assertEquals("Stock of warehouse was not deleted!", true, deletedStockOfWarehouse3);
+        assertEquals("Stock of warehouse was not deleted!", true, deletedStockOfWarehouse4);
 
         // CUSTOMERS
         Customer customer1 = new Customer();
@@ -505,20 +509,20 @@ public class GeneralRepositoryTest {
         customer10.setDistrict(gottenDistrict2);
         
         Customer customer11 = new Customer();
-        customer10.setFirstName("Helena");
-        customer10.setLastName("Rechteck");
-        customer10.setAddress("Boxweg 5");
-        customer10.setTelephone("0621 124556");
-        customer10.setCreditCardNr("876543219101");
-        customer10.setDistrict(gottenDistrict3);
+        customer11.setFirstName("Helena");
+        customer11.setLastName("Rechteck");
+        customer11.setAddress("Boxweg 5");
+        customer11.setTelephone("0621 124556");
+        customer11.setCreditCardNr("876543219101");
+        customer11.setDistrict(gottenDistrict3);
         
         Customer customer12 = new Customer();
-        customer10.setFirstName("Berta");
-        customer10.setLastName("Kreis");
-        customer10.setAddress("Tuckweg 5");
-        customer10.setTelephone("0621 112314");
-        customer10.setCreditCardNr("987654321101");
-        customer10.setDistrict(gottenDistrict3);
+        customer12.setFirstName("Berta");
+        customer12.setLastName("Kreis");
+        customer12.setAddress("Tuckweg 5");
+        customer12.setTelephone("0621 112314");
+        customer12.setCreditCardNr("987654321101");
+        customer12.setDistrict(gottenDistrict3);
         
         // CREATE CUSTOMER
         Customer createdCustomer1 = CustomerRepository.createCustomer(customer1.getFirstName(), customer1.getLastName(), customer1.getAddress(), customer1.getTelephone(), customer1.getCreditCardNr(), customer1.getDistrict().getDistrictId());
@@ -589,15 +593,10 @@ public class GeneralRepositoryTest {
         
         assertEquals("Customer could not be deleted!", null, gottenCustomerAfterDeletion11);
         
-        // UPDATE C
+        // UPDATE CUSTOMER
         Customer updatedCustomer = CustomerRepository.updateCustomer(gottenCustomer12.getCustomerId(), "Jack", "Black", "Baggerstrasse 5", "0621 24142414", "765432198192", gottenDistrict2.getDistrictId());
         
         assertNotEquals("The customer was not updated!", customer12.getFirstName(), updatedCustomer.getFirstName());
-        assertEquals("The customer was not updated!", "Jack", updatedCustomer.getFirstName());
-        
-        Customer gottenCustomerAfterUpdate5 = CustomerRepository.getCustomer(gottenCustomer12.getCustomerId());
-        
-        assertEquals("The customer was not updated!", customer12.getFirstName(), updatedCustomer.getFirstName());
         assertEquals("The customer was not updated!", "Jack", updatedCustomer.getFirstName());
         
         // GET ALL CUSTOMERS FOR DISTRICTS
@@ -606,28 +605,14 @@ public class GeneralRepositoryTest {
         Set<Customer> gottenCustomersDistrict3 = DistrictRepository.getDistrictCustomers(gottenDistrict3.getDistrictId());
         
         assertEquals("Not all customers are in the set!", 5, gottenCustomersDistrict1.size());
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict1.contains(gottenCustomer1));
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict1.contains(gottenCustomer2));
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict1.contains(gottenCustomer3));
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict1.contains(gottenCustomer4));
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict1.contains(gottenCustomer5));
-        assertEquals("Wrong customer in the set!", false, gottenCustomersDistrict1.contains(gottenCustomer6));
         assertEquals("Not all customers are in the set!", 6, gottenCustomersDistrict2.size());
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict2.contains(gottenCustomer6));
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict2.contains(gottenCustomer7));
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict2.contains(gottenCustomer8));
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict2.contains(gottenCustomer9));
-        assertEquals("Customer not in the set!", true, gottenCustomersDistrict2.contains(gottenCustomer10));
-        assertEquals("Wrong customer in the set!", false, gottenCustomersDistrict2.contains(gottenCustomer1));
-        assertEquals("Not all customers are in the set!", 1, gottenDistrictsWarehouse4.size());
-        assertEquals("Customer not in the set!", true, gottenDistrictsWarehouse4.contains(gottenCustomer12));
-        assertEquals("Wrong customer in the set!", false, gottenDistrictsWarehouse4.contains(gottenCustomer7));
+        assertEquals("Not all customers are in the set!", 0, gottenCustomersDistrict3.size());
         
         Map<Integer, Integer> itemsAndQuantities = new HashMap<Integer, Integer>(gottenItem1.getItemId(), 3);
         itemsAndQuantities.put(gottenItem1.getItemId(), 3);
         itemsAndQuantities.put(gottenItem2.getItemId(), 1);
         itemsAndQuantities.put(gottenItem3.getItemId(), 2);
-        itemsAndQuantities.put(gottenItem4.getItemId(), 4);
+        itemsAndQuantities.put(gottenItem5.getItemId(), 4);
 
         // CREATE ORDER LINES       
         Order order1 = OrderlineRepository.createOrderline(gottenCustomer1.getCustomerId(), itemsAndQuantities, "2017-06-01");
@@ -813,6 +798,8 @@ public class GeneralRepositoryTest {
         assertNotNull("Order was not created!", order88);
         assertNotNull("Order was not created!", order89);
         assertNotNull("Order was not created!", order90);
+        assertNotNull("Order was not created!", order91);
+        assertNotNull("Order was not created!", order92);
 
         // DELETE ORDER LINES
         boolean deletedOrderlineOfOrder91 = OrderlineRepository.deleteOrderline(order91.getOrderId());
@@ -820,18 +807,21 @@ public class GeneralRepositoryTest {
         assertEquals("Orderline of order was not deleted!", true, deletedOrderlineOfOrder91);
         
         //Update ORDER LINES
-        Order updatedOrderOrderlineAfterDeletion = OrderlineRepository.updateOrderline(order91.getOrderId(), gottenItem1.getItemId(), "Delete", 0);
-        assertEquals("The orderlines are not updated!", 3, updatedOrderOrderlineAfterDeletion.getOrderline().size());
+        Order updatedOrderOrderlineAfterDeletion = OrderlineRepository.updateOrderline(order92.getOrderId(), gottenItem1.getItemId(), "Delete", 0);
+        assertEquals("The orderlines are not updated!", 3, OrderlineRepository.getOrderlines(updatedOrderOrderlineAfterDeletion.getOrderId()).size());
         
-        Order updatedOrderOrderlineAfterInsertion = OrderlineRepository.updateOrderline(order91.getOrderId(), gottenItem1.getItemId(), "Insert", 0);
-        assertEquals("The orderlines are not updated!", 4, updatedOrderOrderlineAfterInsertion.getOrderline().size());
+        Order updatedOrderOrderlineAfterInsertion = OrderlineRepository.updateOrderline(order92.getOrderId(), gottenItem1.getItemId(), "Insert", 0);
+        assertEquals("The orderlines are not updated!", 4, OrderlineRepository.getOrderlines(updatedOrderOrderlineAfterInsertion.getOrderId()).size());
         
-        Order updatedOrderOrderlinekAfterUpdate = OrderlineRepository.updateOrderline(order91.getOrderId(), gottenItem1.getItemId(), "Update", 20);
-        assertEquals("The orderlines are not updated!", true, updatedOrderOrderlinekAfterUpdate.getOrderline().contains(gottenItem1));
+        Orderline updatedOrderline = OrderlineRepository.getOrderline(order92.getOrderId(), gottenItem2.getItemId());
+        assertEquals("The orderline was not updated!", 1, updatedOrderline.getQuantity());
+        OrderlineRepository.updateOrderline(order92.getOrderId(), gottenItem2.getItemId(), "Update", 20);
+        updatedOrderline = OrderlineRepository.getOrderline(order92.getOrderId(), gottenItem2.getItemId());
+        assertEquals("The orderline was not updated!", 20, updatedOrderline.getQuantity());
         
         //GET CUSTOMER ORDERS
         Set<Order> customer1Orders = CustomerRepository.getCustomerAllOrders(gottenCustomer1.getCustomerId());
-        assertEquals("The complete orders are not complete!", 10, customer1Orders.size());
+        assertEquals("The complete orders are not complete!", 9, customer1Orders.size());
         
         Set<Order> customer1NewOrders = CustomerRepository.getCustomerNewOrders(gottenCustomer1.getCustomerId());
         assertEquals("The new orders are not complete!", 2, customer1NewOrders.size());

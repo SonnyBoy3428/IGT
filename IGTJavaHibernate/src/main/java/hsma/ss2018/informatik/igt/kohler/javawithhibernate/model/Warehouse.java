@@ -14,26 +14,18 @@ import javax.persistence.*;
 @Entity
 @Table(name = "WAREHOUSE")
 public class Warehouse implements Serializable{
-	@Id
-	@Column(name = "WarehouseId", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int warehouseId;
-	
-	@Column(name = "Location", length = 50)
 	private String location;
-	
-	@Column(name = "Owner", length = 60)
 	private String owner;
-	
-	@OneToMany(mappedBy = "warehouse", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<District> districts;
-	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "stockId.warehouse", cascade = CascadeType.ALL)
 	private Set<Stock> stock;
 	
 	public Warehouse() {
 	}
 	
+	@Id
+	@Column(name = "WarehouseId", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getWarehouseId() {
 		return warehouseId;
 	}
@@ -42,6 +34,7 @@ public class Warehouse implements Serializable{
 		this.warehouseId = warehouseId;
 	}
 	
+	@Column(name = "Location", length = 50)
 	public String getLocation() {
 		return location;
 	}
@@ -50,6 +43,7 @@ public class Warehouse implements Serializable{
 		this.location = location;
 	}
 	
+	@Column(name = "Owner", length = 60)
 	public String getOwner() {
 		return owner;
 	}
@@ -58,6 +52,7 @@ public class Warehouse implements Serializable{
 		this.owner = owner;
 	}
 	
+	@OneToMany(mappedBy = "warehouse", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	public Set<District> getDistricts(){
 		return districts;
 	}
@@ -66,6 +61,7 @@ public class Warehouse implements Serializable{
 		this.districts = districts;
 	}
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "stockId.warehouse", cascade = CascadeType.ALL)
 	public Set<Stock> getStock(){
 		return stock;
 	}

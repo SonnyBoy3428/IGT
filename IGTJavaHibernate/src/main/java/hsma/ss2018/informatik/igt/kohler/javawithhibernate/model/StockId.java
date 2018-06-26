@@ -13,16 +13,14 @@ import javax.persistence.ManyToOne;
 
 @Embeddable
 public class StockId implements Serializable{
-	@ManyToOne
 	private Warehouse warehouse;
-	
-	@ManyToOne
 	private Item item;
 	
 	public StockId() {
 		
 	}
 	
+	@ManyToOne
 	public Warehouse getWarehouse() {
 		return warehouse;
 	}
@@ -31,6 +29,7 @@ public class StockId implements Serializable{
 		this.warehouse = warehouse;
 	}
 	
+	@ManyToOne
 	public Item getItem() {
 		return item;
 	}

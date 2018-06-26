@@ -14,30 +14,19 @@ import javax.persistence.*;
 @Entity
 @Table(name = "CUSTOMER_ORDER")
 public class Order implements Serializable{
-	@Id
-	@Column(name = "OrderId", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int orderId;
-	
-	@Column(name = "OrderDate", length = 10)
 	private String orderDate;
-	
-	@Column(name = "OrderCarriedOut")
 	private boolean orderCarriedOut;
-	
-	@Column(name = "TotalCost")
 	private double totalCost;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "CustomerId")
 	private Customer customer;
-	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "orderlineId.order", cascade = CascadeType.ALL)
 	private Set<Orderline> orderline;
 	
 	public Order() {
 	}
 	
+	@Id
+	@Column(name = "OrderId", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getOrderId() {
 		return orderId;
 	}
@@ -46,6 +35,7 @@ public class Order implements Serializable{
 		this.orderId = orderId;
 	}
 	
+	@Column(name = "OrderDate", length = 10)
 	public String getOrderDate() {
 		return orderDate;
 	}
@@ -54,6 +44,7 @@ public class Order implements Serializable{
 		this.orderDate = orderDate;
 	}
 	
+	@Column(name = "OrderCarriedOut")
 	public boolean getOrderCarriedOut() {
 		return orderCarriedOut;
 	}
@@ -62,6 +53,7 @@ public class Order implements Serializable{
 		this.orderCarriedOut = orderCarriedOut;
 	}
 	
+	@Column(name = "TotalCost")
 	public double getTotalCost() {
 		return totalCost;
 	}
@@ -70,6 +62,8 @@ public class Order implements Serializable{
 		this.totalCost = totalCost;
 	}
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "CustomerId")
 	public Customer getCustomer() {
 		return customer;
 	}
@@ -78,6 +72,7 @@ public class Order implements Serializable{
 		this.customer = customer;
 	}
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.order", cascade = CascadeType.ALL)
 	public Set<Orderline> getOrderline(){
 		return orderline;
 	}

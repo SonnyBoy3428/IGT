@@ -14,37 +14,21 @@ import javax.persistence.*;
 @Entity
 @Table(name = "CUSTOMER")
 public class Customer implements Serializable{
-	@Id
-	@Column(name = "CustomerId", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int customerId;
-	
-	@Column(name = "FirstName", length = 30)
 	private String firstName;
-	
-	@Column(name = "LastName", length = 30)
 	private String lastName;
-	
-	@Column(name = "Address", length = 50)
 	private String address;
-	
-	@Column(name = "Telephone", length = 15)
 	private String telephone;
-	
-	@Column(name = "CreditCardNr", length = 12)
 	private String creditCardNr;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "DistrictId")
 	private District district;
-	
-	
-	@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Order> orders;
 	
 	public Customer() {
 	}
 	
+	@Id
+	@Column(name = "CustomerId", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getCustomerId() {
 		return customerId;
 	}
@@ -53,6 +37,7 @@ public class Customer implements Serializable{
 		this.customerId = customerId;
 	}
 	
+	@Column(name = "FirstName", length = 30)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -61,6 +46,7 @@ public class Customer implements Serializable{
 		this.firstName = firstName;
 	}
 	
+	@Column(name = "LastName", length = 30)
 	public String getLastName() {
 		return lastName;
 	}
@@ -69,6 +55,7 @@ public class Customer implements Serializable{
 		this.lastName = lastName;
 	}
 	
+	@Column(name = "Address", length = 50)
 	public String getAddress() {
 		return address;
 	}
@@ -77,6 +64,7 @@ public class Customer implements Serializable{
 		this.address = address;
 	}
 	
+	@Column(name = "Telephone", length = 15)
 	public String getTelephone() {
 		return telephone;
 	}
@@ -85,6 +73,7 @@ public class Customer implements Serializable{
 		this.telephone = telephone;
 	}
 	
+	@Column(name = "CreditCardNr", length = 12)
 	public String getCreditCardNr() {
 		return creditCardNr;
 	}
@@ -93,6 +82,8 @@ public class Customer implements Serializable{
 		this.creditCardNr = creditCardNr;
 	}
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "DistrictId")
 	public District getDistrict() {
 		return district;
 	}
@@ -101,6 +92,7 @@ public class Customer implements Serializable{
 		this.district = district;
 	}
 	
+	@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	public Set<Order> getOrders() {
 		return orders;
 	}

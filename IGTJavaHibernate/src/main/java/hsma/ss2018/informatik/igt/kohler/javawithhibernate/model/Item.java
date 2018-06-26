@@ -14,26 +14,18 @@ import javax.persistence.*;
 @Entity
 @Table(name = "ITEM")
 public class Item implements Serializable{
-	@Id
-	@Column(name = "ItemId", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int itemId;
-	
-	@Column(name = "ItemName", length = 50)
 	private String itemName;
-	
-	@Column(name = "Price")
 	private double price;
-	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "orderlineId.item", cascade = CascadeType.ALL)
 	private Set<Orderline> orderline;
-	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "stockId.item", cascade = CascadeType.ALL)
 	private Set<Stock> stock;
 	
 	public Item() {
 	}
 	
+	@Id
+	@Column(name = "ItemId", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getItemId() {
 		return itemId;
 	}
@@ -42,6 +34,7 @@ public class Item implements Serializable{
 		this.itemId = itemId;
 	}
 	
+	@Column(name = "ItemName", length = 50)
 	public String getItemName() {
 		return itemName;
 	}
@@ -50,6 +43,7 @@ public class Item implements Serializable{
 		this.itemName = itemName;
 	}
 	
+	@Column(name = "Price")
 	public double getPrice() {
 		return price;
 	}
@@ -58,6 +52,7 @@ public class Item implements Serializable{
 		this.price = price;
 	}
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.item", cascade = CascadeType.ALL)
 	public Set<Orderline> getOrderline(){
 		return orderline;
 	}
@@ -66,6 +61,7 @@ public class Item implements Serializable{
 		this.orderline = orderline;
 	}
 	
+	@OneToMany(mappedBy = "stockId.item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public Set<Stock> getStock(){
 		return stock;
 	}

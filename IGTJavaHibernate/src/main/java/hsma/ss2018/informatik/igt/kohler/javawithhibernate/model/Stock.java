@@ -17,16 +17,14 @@ import javax.persistence.*;
 	@AssociationOverride(name = "stockId.item", joinColumns = @JoinColumn(name = "ItemId")),
 })
 public class Stock implements Serializable{
-	@EmbeddedId
-	private StockId stockId;
-
-	@Column(name = "Quantity")
+	private StockId stockId = new StockId();
 	private int quantity;
 	
 	public Stock() {
 		
 	}
 	
+	@EmbeddedId
 	public StockId getStockId() {
 		return stockId;
 	}
@@ -53,6 +51,7 @@ public class Stock implements Serializable{
 		getStockId().setItem(item);
 	}
 	
+	@Column(name = "Quantity")
 	public int getQuantity() {
 		return quantity;
 	}
