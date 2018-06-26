@@ -43,10 +43,10 @@ public class OrderAndOrderlineService{
 	 * @return The response containing the order.
 	 */
 	@POST
-	@Path("/createCompleteOrderForCustomerId={param}")
+	@Path("/createCompleteOrderForCustomerId={customerId}/date={date}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/json")
-	public Response createCompleteOrder(@PathParam("param") int customerId, String orderlineInformation){
+	public Response createCompleteOrder(@PathParam("customerId") int customerId, @PathParam("date") String date, String orderlineInformation){
 		EntityRepository.setUp();
 		
 		JSONObject newOrderline = new JSONObject(orderlineInformation);
@@ -63,7 +63,7 @@ public class OrderAndOrderlineService{
 			itemsAndQuantities.put(itemId, itemQuantity);
 		}
 				
-		Order createdOrder = OrderlineRepository.createOrderline(customerId, itemsAndQuantities);
+		Order createdOrder = OrderlineRepository.createOrderline(customerId, itemsAndQuantities, date);
 		
 		JSONObject response = new JSONObject();
 		

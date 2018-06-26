@@ -34,12 +34,12 @@ public class Customer implements Serializable{
 	@Column(name = "CreditCardNr", length = 12)
 	private String creditCardNr;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "DistrictId")
 	private District district;
 	
 	
-	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Order> orders;
 	
 	public Customer() {

@@ -25,11 +25,11 @@ public class District implements Serializable{
 	@Column(name = "DistrictSize")
 	private double districtSize;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "WarehouseId")
 	private Warehouse warehouse;
 	
-	@OneToMany(mappedBy = "district", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "district", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Customer> customers;
 	
 	public District() {

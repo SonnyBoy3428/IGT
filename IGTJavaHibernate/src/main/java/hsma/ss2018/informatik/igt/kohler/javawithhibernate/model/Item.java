@@ -25,10 +25,10 @@ public class Item implements Serializable{
 	@Column(name = "Price")
 	private double price;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.item", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "orderlineId.item", cascade = CascadeType.ALL)
 	private Set<Orderline> orderline;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "stockId.item", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "stockId.item", cascade = CascadeType.ALL)
 	private Set<Stock> stock;
 	
 	public Item() {

@@ -100,7 +100,7 @@ public class ItemRepository extends EntityRepository{
 			
 			session.beginTransaction();
 
-			List<Item> itemsList = session.createQuery("from ITEM").getResultList();
+			List<Item> itemsList = session.createQuery("FROM hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item").getResultList();
 			
 			session.getTransaction().commit();
 			

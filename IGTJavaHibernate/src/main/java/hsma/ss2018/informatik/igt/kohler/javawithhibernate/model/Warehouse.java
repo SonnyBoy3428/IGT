@@ -25,10 +25,10 @@ public class Warehouse implements Serializable{
 	@Column(name = "Owner", length = 60)
 	private String owner;
 	
-	@OneToMany(mappedBy = "warehouse", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "warehouse", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<District> districts;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "stockId.warehouse", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "stockId.warehouse", cascade = CascadeType.ALL)
 	private Set<Stock> stock;
 	
 	public Warehouse() {

@@ -27,14 +27,14 @@ public class OrderRepository extends EntityRepository{
 	 * 
 	 * @return The newly created order.
 	 */
-	public static Order createOrder(int customerId) {
+	public static Order createOrder(int customerId, String date) {
 		Order order = new Order();
 		
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		
-		String orderDate = LocalDate.now().toString();
+		//String orderDate = LocalDate.now().toString();
 		
-		order.setOrderDate(orderDate);
+		order.setOrderDate(date);
 		order.setOrderCarriedOut(false);
 		order.setCustomer(customer);
 		
@@ -108,7 +108,7 @@ public class OrderRepository extends EntityRepository{
 			
 			session.beginTransaction();
 		
-			List<Order> ordersList = session.createQuery("from CUSTOMER_ORDER").getResultList();
+			List<Order> ordersList = session.createQuery("FROM hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order").getResultList();
 			
 			session.getTransaction().commit();
 			

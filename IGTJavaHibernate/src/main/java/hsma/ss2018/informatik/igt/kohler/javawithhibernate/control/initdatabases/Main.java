@@ -53,7 +53,7 @@ public class Main {
         Map<Integer, Integer> map3 = new HashMap<Integer, Integer>(3, 2);
         
         // CREATE ORDER LINES
-        OrderlineRepository.createOrderline(1, map1);
+        /*OrderlineRepository.createOrderline(1, map1);
         OrderlineRepository.createOrderline(1, map2);
         OrderlineRepository.createOrderline(1, map3);
         OrderlineRepository.createOrderline(2, map1);
@@ -322,7 +322,7 @@ public class Main {
         OrderlineRepository.createOrderline(89, map3);
         OrderlineRepository.createOrderline(90, map1);
         OrderlineRepository.createOrderline(90, map2);
-        OrderlineRepository.createOrderline(90, map3);
+        OrderlineRepository.createOrderline(90, map3);*/
 
         // CREATE STOCK
         StockRepository.createStock(1, 1, 0);

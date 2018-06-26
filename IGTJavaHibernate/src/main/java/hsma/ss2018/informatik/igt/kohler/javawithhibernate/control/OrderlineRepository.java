@@ -26,7 +26,7 @@ public class OrderlineRepository extends EntityRepository {
 	 * 
 	 * @return Returns the newly created order.
 	 */
-	public static Order createOrderline(int customerId, Map<Integer, Integer> itemsAndQuantity) {
+	public static Order createOrderline(int customerId, Map<Integer, Integer> itemsAndQuantity, String date) {
 		Customer customer = CustomerRepository.getCustomer(customerId);
 		Order newOrder = null;
 		Set<Item> items = new HashSet<Item>();
@@ -35,7 +35,7 @@ public class OrderlineRepository extends EntityRepository {
 		
 		// If the customer does not exist we don't need to continue.
 		if(customer != null) {
-			newOrder = OrderRepository.createOrder(customerId);
+			newOrder = OrderRepository.createOrder(customerId, date);
 			
 			// If the order could not be created we don't need to continue.
 			if(newOrder != null) {
@@ -134,7 +134,7 @@ public class OrderlineRepository extends EntityRepository {
 	 * 
 	 * @return The orderline of the order.
 	 */
-	protected static Set<Orderline> getOrderlines(int orderId){
+	public static Set<Orderline> getOrderlines(int orderId){
 		Set<Orderline> orderline = null;
 		Session session = null;
 		

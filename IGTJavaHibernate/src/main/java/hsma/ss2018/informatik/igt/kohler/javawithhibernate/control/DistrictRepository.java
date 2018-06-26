@@ -106,7 +106,7 @@ public class DistrictRepository extends EntityRepository{
 			
 			session.beginTransaction();
 			
-			List<District> districtsList = session.createQuery("from DISTRICT").getResultList();
+			List<District> districtsList = session.createQuery("FROM hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District").getResultList();
 			
 			session.getTransaction().commit();
 			
@@ -155,7 +155,7 @@ public class DistrictRepository extends EntityRepository{
 			
 			District district = getDistrict(districtId);
 			
-			// Remove the district from the warehouse
+			/*// Remove the district from the warehouse
 			Warehouse warehouse = district.getWarehouse();
 			warehouse.getDistricts().remove(district);
 			
@@ -171,7 +171,7 @@ public class DistrictRepository extends EntityRepository{
 				session.beginTransaction();
 				session.update(customer);
 				session.getTransaction().commit();
-			}
+			}*/
 			
 			session.beginTransaction();
 			

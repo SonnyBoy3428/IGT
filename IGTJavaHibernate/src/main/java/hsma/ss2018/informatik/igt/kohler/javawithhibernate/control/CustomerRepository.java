@@ -115,7 +115,7 @@ public class CustomerRepository extends EntityRepository{
 		
 			session.beginTransaction();
 			
-			List<Customer>  customersList = session.createQuery("from CUSTOMER").getResultList();
+			List<Customer>  customersList = session.createQuery("FROM hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer").getResultList();
 			
 			session.getTransaction().commit();
 			

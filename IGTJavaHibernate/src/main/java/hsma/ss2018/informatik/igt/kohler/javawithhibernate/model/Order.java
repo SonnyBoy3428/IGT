@@ -28,11 +28,11 @@ public class Order implements Serializable{
 	@Column(name = "TotalCost")
 	private double totalCost;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "CustomerId")
 	private Customer customer;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderlineId.order", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "orderlineId.order", cascade = CascadeType.ALL)
 	private Set<Orderline> orderline;
 	
 	public Order() {
