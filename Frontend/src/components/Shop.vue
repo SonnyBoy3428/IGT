@@ -7,7 +7,7 @@
       <span style="float:right">
   
         <a href="#" v-if="customerId==undefined" @click="toggleModal('login')">Login</a>
-        <span v-else>Your customer ID is {{ customerId }}
+        <span v-else>Hello, {{ user.FirstName }} {{ user.LastName }}
           <a href="#" @click="toggleModal('update')">Edit Profile</a>
         </span>
       </span>
@@ -26,14 +26,37 @@
     </div>
     <div><button class="btn btn-primary" @click="sendOrder()">Order now</button></div>
     <div v-if="order_history.length > 0">
-      <h3>Recent Orders:</h3>
-      <div v-for="order in order_history" :key="order.OrderId">
+      <!-- <h3>Recent Orders:</h3> -->
+      <table class="table">
+        <thead><td colspan="6">Recent Orders</td></thead>
+        <tbody>
+        <tr>
+          <td>Order ID</td>
+          <td>Customer ID</td>
+          <td>Order Date</td>
+          <td>Total Cost</td>
+          <td>Order Carried Out?</td>
+          <td></td>
+        </tr>
+        <tr v-for="order in order_history" :key="order.OrderId">
+          <td>{{ order.OrderId }}</td>
+          <td>{{ order.CustomerId }}</td>
+          <td>{{ order.OrderDate }}</td>
+          <td>{{ order.TotalCost }}</td>
+          <td>{{ order.OrderCarriedOut }}</td>
+          <td>
+            <a href="#" @click="getFullOrder(order.OrderId)">Show Full Order</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <!-- <div v-for="order in order_history" :key="order.OrderId">
         <span>Order ID {{ order.OrderId }}</span>
         <span>Customer ID {{ order.CustomerId }}</span>
         <span>Order Date {{ order.OrderDate }}</span>
         <span>Total Cost {{ order.TotalCost }}</span>
         <span>Order Carried Out {{ order.OrderCarriedOut }}</span>
-      </div>
+      </div> -->
     </div>
     <b-modal v-model="show" :ok-only="true" ok-title="Close">
       <b-container fluid>
@@ -75,6 +98,28 @@
         </b-row>
       </b-container>
     </b-modal>
+
+    <b-modal v-model="showFullOrder" :ok-only="true" ok-title="Close">
+      <b-container fluid>
+        <table class="table">
+          <tr>
+            <td>Item ID</td>
+            <td>Item Name</td>
+            <td>Price</td>
+            <td>Quantity</td>
+          </tr>
+          <tr v-for="item in full_order" :key="item.ItemId">
+            <td>{{ item.ItemId }}</td>
+            <td>{{ item.ItemName }}</td>
+            <td>{{ item.Price }}</td>
+            <td>{{ item.ItemQuantity }}</td>
+          </tr>
+        </table>
+        <!-- <div v-for="item in full_order" :key="item.ItemId">
+          {{ item }}
+        </div> -->
+      </b-container>
+    </b-modal>
   </div>
 </template>
 
@@ -84,6 +129,7 @@
     data() {
       return {
         show: false,
+        showFullOrder: false,
         customerId: undefined,
         newCustomer: {
           FirstName: undefined,
@@ -106,6 +152,9 @@
       order_history: function() {
         return this.$store.state.order_history;
       },
+      full_order: function() {
+        return this.$store.state.full_order;
+      }
     },
     methods: {
       increaseQuantity(id) {
@@ -115,11 +164,12 @@
         this.$store.commit('decreaseQuantity', id);
       },
       sendOrder() {
+        const custId = this.customerId;
         if (!this.customerId) return this.toggleModal('login');
   
         let items = this.$store.state.Items.filter(s => s.ItemId && s.ItemQuantity > 0);
-        // console.log(items, this.customerId);
-        if (items.length > 0) this.$store.commit('sendOrder', { ItemsAndQuantities: items }, this.customerId);
+        // console.log(items, custId);
+        if (items.length > 0) this.$store.commit('sendOrder', [{ ItemsAndQuantities: items }, custId]);
       },
       toggleModal(s) {
         this.show = !this.show;
@@ -135,6 +185,10 @@
       },
       deleteUser() {
         this.$store.commit('deleteUser', this.customerId);
+      },
+      getFullOrder(orderId) {
+        this.$store.commit('getFullOrder', orderId);
+        this.showFullOrder = true;
       }
     },
     mounted() {
@@ -168,5 +222,9 @@
     left: 0;
     width: 100%;
     padding: 20px;
+  }
+
+  .table {
+    margin-top: 30px;
   }
 </style>

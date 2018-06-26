@@ -1,0 +1,83 @@
+{
+  "items": {
+    "Items": [{
+        "ItemId": 1,
+        "ItemName": "ABC",
+        "Price": 20.0
+      },
+      {
+        "ItemId": 2,
+        "ItemName": "ABC",
+        "Price": 20.0
+      },
+      {
+        "ItemId": 3,
+        "ItemName": "ABC",
+        "Price": 20.0
+      }
+    ]
+  },
+  "allCustomerOrders": {
+    "Customer": {
+      "CustomerId": 1,
+      "FirstName": "Max",
+      "LastName": "Max",
+      "Address": "Max",
+      "Telephone": "123",
+      "CreditCardNr": "123",
+      "DistrictId": 1,
+      "DistrictName": "ABC"
+    },
+    "Orders": [{
+        "OrderId": 1,
+        "CustomerId": 1,
+        "OrderDate": "2018-08-01",
+        "TotalCost": 20.0,
+        "OrderCarriedOut": false
+      },
+      {
+        "OrderId": 2,
+        "CustomerId": 1,
+        "OrderDate": "2018-08-01",
+        "TotalCost": 20.0,
+        "OrderCarriedOut": false
+      },
+      {
+        "OrderId": 3,
+        "CustomerId": 1,
+        "OrderDate": "2018-08-01",
+        "TotalCost": 20.0,
+        "OrderCarriedOut": false
+      }
+    ]
+  },
+  "completeOrder": {
+    "Order": {
+      "OrderId": 1,
+      "CustomerId": 1,
+      "OrderDate": "2018-06-01",
+      "TotalCost": 20.0,
+      "OrderCarriedOut": false
+    },
+    "ItemsAndQuantities": [{
+        "ItemId": 1,
+        "ItemName": "ABC",
+        "Price": 10.0,
+        "ItemQuantity": 1
+      },
+      {
+        "ItemId": 1,
+        "ItemName": "ABC",
+        "Price": 10.0,
+        "ItemQuantity": 1
+      },
+      {
+        "ItemId": 1,
+        "ItemName": "ABC",
+        "Price": 10.0,
+        "ItemQuantity": 1
+      }
+    ]
+  }
+
+}

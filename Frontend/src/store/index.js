@@ -20,7 +20,8 @@ const state = {
             Price: 20.0,
         },
     ],
-    order_history: []
+    order_history: [],
+    full_order: undefined
 }
 
 const getters = {
@@ -32,9 +33,10 @@ const getters = {
 const mutations = {
     addPseudoQuantity(state) {
         state.Items = [];
-        axios.get(HOST + '/itemService/getAllItems').then(function(items) {
-            items.Items.forEach(s => {
-                s.quantity = 0;
+        axios.get('http://localhost:3000/items').then(items => {
+        // axios.get(HOST + '/itemService/getAllItems').then(function(items) {
+            items.data.Items.forEach(s => {
+                s.ItemQuantity = 0;
                 state.Items.push(s);
             });
         });
@@ -57,14 +59,15 @@ const mutations = {
         }).ItemQuantity--;
         state.Items.push({});
     },
-    sendOrder(state, items, customerId) {
-        axios.post(`${HOST}/orderAndOrderlineService/createCompleteOrderForCustomerId=${customerId}`, items).then(order => state.order_history = [...order.Order, ...state.order_history])
+    sendOrder(state, [items, customerId]) {
+        console.log(items, customerId);
+        axios.post(`${HOST}/orderAndOrderlineService/createCompleteOrderForCustomerId=${customerId}`, items).then(order => state.order_history = [...order.data.Order, ...state.order_history])
     },
     createUser(state, user) {
-        axios.post(HOST + '/customerService/createCustomer', user).then(user => state.user = user.Customer);
+        axios.post(HOST + '/customerService/createCustomer', user).then(user => state.user = user.data.Customer);
     },
     alterUser(state, user) {
-        axios.post(HOST + '/customerService/updateCustomer', user).then(user => state.user = user.Customer);
+        axios.post(HOST + '/customerService/updateCustomer', user).then(user => state.user = user.data.Customer);
     },
     deleteUser(state, userId) {
         axios.delete(`${HOST}/customerService/deleteCustomerByCustomerId=${userId}`).then(user => { 
@@ -72,11 +75,18 @@ const mutations = {
         });
     },
     getUser(state, userId) {
-        // axios.get(`${HOST}/customerService/getCustomerById=${userId}`).then(user => state.user = user.Customer);
-        axios.get(`${HOST}/customerService/getAllCustomerOrdersByCustomerId=${userId}`).then(obj => {
-            state.user = obj.Customer;
-            state.order_history = obj.Orders;
+        // axios.get(`${HOST}/customerService/getAllCustomerOrdersByCustomerId=${userId}`).then(obj => {
+        axios.get('http://localhost:3000/allCustomerOrders').then(obj => {
+            state.user = obj.data.Customer;
+            state.order_history = obj.data.Orders;
         });
+    },
+    getFullOrder(state, orderId) {
+        // axios.get(`${HOST}/orderAndOrderlineService/getCompleteOrderById=${orderId}`).then(obj => {
+        axios.get('http://localhost:3000/completeOrder').then(obj => {
+            state.full_order = obj.data.ItemsAndQuantities;
+        });
+
     }
 }
 
