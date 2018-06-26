@@ -33,8 +33,8 @@ const getters = {
 const mutations = {
     addPseudoQuantity(state) {
         state.Items = [];
-        axios.get('http://localhost:3000/items').then(items => {
-        // axios.get(HOST + '/itemService/getAllItems').then(function(items) {
+        // axios.get('http://localhost:3000/items').then(items => {
+        axios.get(HOST + '/itemService/getAllItems').then(function(items) {
             items.data.Items.forEach(s => {
                 s.ItemQuantity = 0;
                 state.Items.push(s);
@@ -75,15 +75,15 @@ const mutations = {
         });
     },
     getUser(state, userId) {
-        // axios.get(`${HOST}/customerService/getAllCustomerOrdersByCustomerId=${userId}`).then(obj => {
-        axios.get('http://localhost:3000/allCustomerOrders').then(obj => {
+        axios.get(`${HOST}/customerService/getAllCustomerOrdersByCustomerId=${userId}`).then(obj => {
+        // axios.get('http://localhost:3000/allCustomerOrders').then(obj => {
             state.user = obj.data.Customer;
             state.order_history = obj.data.Orders;
         });
     },
     getFullOrder(state, orderId) {
-        // axios.get(`${HOST}/orderAndOrderlineService/getCompleteOrderById=${orderId}`).then(obj => {
-        axios.get('http://localhost:3000/completeOrder').then(obj => {
+        axios.get(`${HOST}/orderAndOrderlineService/getCompleteOrderById=${orderId}`).then(obj => {
+        // axios.get('http://localhost:3000/completeOrder').then(obj => {
             state.full_order = obj.data.ItemsAndQuantities;
         });
 

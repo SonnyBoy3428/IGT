@@ -17,11 +17,13 @@
 
 	Your location has to be this folder (path/to/repository/Frontend).
 
+    Make sure your local repository is up-to-date.
+
  - **Change the API URL in the file src/store/index.js**
 
-	  In line 7 you will find the following: const HOST = '';
+	In line 7 you will find the following: const HOST = '';
 
-	  Insert the API URL in the following format: const HOST = 'http://localhost:9080';
+	Insert the API URL in the following format: const HOST = 'http://localhost:9080';
 
 - Install node/npm dependencies (they are described in package.json)
 	```bash
