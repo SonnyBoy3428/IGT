@@ -13,4 +13,4 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, HOST);
-console.log('Listening on ', HOST, ':', PORT)
+console.log('Listening on localhost:44044');
