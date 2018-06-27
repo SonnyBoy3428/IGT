@@ -26,7 +26,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Item;
  *
  */
 @Path("/itemService")
-public class ItemService{	
+public class ItemService extends EntityRepository{	
 	/**
 	 * Receives a POST request to create a item. The item information is located in the request body.
 	 * 

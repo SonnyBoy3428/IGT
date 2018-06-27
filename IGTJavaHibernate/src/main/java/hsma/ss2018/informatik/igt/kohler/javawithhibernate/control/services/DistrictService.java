@@ -27,7 +27,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Customer;
  *
  */
 @Path("/districtService")
-public class DistrictService{
+public class DistrictService extends EntityRepository{
 	/**
 	 * Receives a POST request to create a district. The district information is located in the request body.
 	 * 

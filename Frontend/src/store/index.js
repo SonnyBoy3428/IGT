@@ -4,7 +4,7 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
-const HOST = '';
+const HOST = 'http://localhost:8000/IGTJavaHibernate/rest';
 
 const state = {
     user: undefined,

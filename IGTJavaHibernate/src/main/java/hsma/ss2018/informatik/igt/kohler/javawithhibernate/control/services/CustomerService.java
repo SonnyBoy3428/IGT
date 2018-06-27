@@ -27,7 +27,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
  *
  */
 @Path("/customerService")
-public class CustomerService{
+public class CustomerService extends EntityRepository{
 	/**
 	 * Receives a POST request to create a customer. The customer information is located in the request body.
 	 * 

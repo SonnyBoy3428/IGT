@@ -33,7 +33,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.Order;
  *
  */
 @Path("/orderAndOrderlineService")
-public class OrderAndOrderlineService{
+public class OrderAndOrderlineService extends EntityRepository{
 	/**
 	 * Receives a POST request to create an order. The order information is located in the request body.
 	 * Even though we are dealing with orderlines a user would expect an order.

@@ -30,7 +30,7 @@ import hsma.ss2018.informatik.igt.kohler.javawithhibernate.model.District;
  *
  */
 @Path("/warehouseService")
-public class WarehouseService{	
+public class WarehouseService extends EntityRepository{	
 	/**
 	 * Receives a POST request to create a warehouse. The warehouse information is located in the request body.
 	 * 
